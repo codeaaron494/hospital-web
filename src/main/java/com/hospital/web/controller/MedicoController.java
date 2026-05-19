@@ -18,4 +18,10 @@ public class MedicoController {
         model.addAttribute("titulo", "Atención Médica");
         return "medico/atencion";
     }
+
+    @GetMapping("/medico/receta")
+    public String recetaMedica(Model model) {
+        model.addAttribute("titulo", "Generar Receta Médica");
+        return "medico/receta";
+    }
 }
