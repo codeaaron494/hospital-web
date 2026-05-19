@@ -1,0 +1,43 @@
+/* =========================
+   Login
+   ========================= */
+
+.login-body {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #0d6efd, #0b5ed7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.login-card {
+    width: 100%;
+    max-width: 420px;
+    border: none;
+    border-radius: 18px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
+}
+
+.login-logo {
+    width: 72px;
+    height: 72px;
+    border-radius: 18px;
+    background-color: #e7f1ff;
+    color: #0d6efd;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    font-weight: 700;
+    margin: 0 auto 16px auto;
+}
+
+.login-title {
+    font-weight: 700;
+    color: #1f2937;
+}
+
+.login-subtitle {
+    color: #6b7280;
+    font-size: 14px;
+}
