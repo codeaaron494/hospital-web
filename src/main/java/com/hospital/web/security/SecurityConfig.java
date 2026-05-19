@@ -29,7 +29,31 @@ public class SecurityConfig {
             .formLogin(form -> form
                 .loginPage("/login")
                 .loginProcessingUrl("/login")
-                .defaultSuccessUrl("/dashboard", true)
+                .successHandler((request, response, authentication) -> {
+                    boolean isAdmin = authentication.getAuthorities().stream()
+                            .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"));
+
+                    boolean isRecepcionista = authentication.getAuthorities().stream()
+                            .anyMatch(auth -> auth.getAuthority().equals("ROLE_RECEPCIONISTA"));
+
+                    boolean isEnfermero = authentication.getAuthorities().stream()
+                            .anyMatch(auth -> auth.getAuthority().equals("ROLE_ENFERMERO"));
+
+                    boolean isMedico = authentication.getAuthorities().stream()
+                            .anyMatch(auth -> auth.getAuthority().equals("ROLE_MEDICO"));
+
+                    if (isAdmin) {
+                        response.sendRedirect("/admin/dashboard");
+                    } else if (isRecepcionista) {
+                        response.sendRedirect("/dashboard");
+                    } else if (isEnfermero) {
+                        response.sendRedirect("/enfermeria/dashboard");
+                    } else if (isMedico) {
+                        response.sendRedirect("/medico/dashboard");
+                    } else {
+                        response.sendRedirect("/login");
+                    }
+                })
                 .failureUrl("/login?error")
                 .permitAll()
             )
@@ -57,6 +81,18 @@ public class SecurityConfig {
                 .roles("RECEPCIONISTA")
                 .build();
 
-        return new InMemoryUserDetailsManager(admin, recepcionista);
+        UserDetails enfermero = User
+                .withUsername("enfermero")
+                .password("{noop}enfermero123")
+                .roles("ENFERMERO")
+                .build();
+
+        UserDetails medico = User
+                .withUsername("medico")
+                .password("{noop}medico123")
+                .roles("MEDICO")
+                .build();
+
+        return new InMemoryUserDetailsManager(admin, recepcionista, enfermero, medico);
     }
 }

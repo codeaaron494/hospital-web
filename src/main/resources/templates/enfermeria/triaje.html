@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Triaje de Paciente | Sistema Hospitalario</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+
+<body>
+
+<div class="container-fluid">
+    <div class="row">
+
+        <aside class="col-md-3 col-lg-2 sidebar p-3">
+            <h4 class="text-white mb-4">Enfermería</h4>
+
+            <nav class="nav flex-column">
+                <a class="nav-link" th:href="@{/enfermeria/dashboard}">Dashboard</a>
+                <a class="nav-link" th:href="@{/enfermeria/fichas}">Fichas de admisión</a>
+                <a class="nav-link" th:href="@{/enfermeria/triaje}">Triaje</a>
+
+                <hr class="text-white">
+
+                <a class="nav-link" th:href="@{/logout}">Cerrar sesión</a>
+            </nav>
+        </aside>
+
+        <main class="col-md-9 col-lg-10 content-wrapper">
+
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h1 class="page-title">Triaje de Paciente</h1>
+                    <p class="text-muted">
+                        Registro de signos vitales y actualización inicial de la historia clínica.
+                    </p>
+                </div>
+
+                <a th:href="@{/enfermeria/fichas}" class="btn btn-outline-secondary">
+                    Volver a fichas
+                </a>
+            </div>
+
+            <div class="card card-stat mb-4">
+                <div class="card-body">
+                    <h5 class="mb-3">Ficha de admisión asociada</h5>
+
+                    <div class="row g-3">
+                        <div class="col-md-3">
+                            <label class="form-label">Código ficha</label>
+                            <input type="text" class="form-control" value="FIC-0001" readonly>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label">Paciente</label>
+                            <input type="text" class="form-control" value="Juan Pérez Ramos" readonly>
+                        </div>
+
+                        <div class="col-md-2">
+                            <label class="form-label">DNI</label>
+                            <input type="text" class="form-control" value="76543210" readonly>
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="form-label">Especialidad</label>
+                            <input type="text" class="form-control" value="Medicina General" readonly>
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="form-label">Hora de cita</label>
+                            <input type="text" class="form-control" value="09:00" readonly>
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="form-label">Prioridad</label>
+                            <input type="text" class="form-control" value="Normal" readonly>
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="form-label">Estado ficha</label>
+                            <input type="text" class="form-control" value="EN TRIAGE" readonly>
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="form-label">Edad</label>
+                            <input type="text" class="form-control" value="35" readonly>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <form action="#" method="post">
+
+                <div class="card card-stat mb-4">
+                    <div class="card-body">
+                        <h5 class="mb-3">Signos vitales</h5>
+
+                        <div class="row g-3">
+                            <div class="col-md-3">
+                                <label class="form-label">Peso (kg)</label>
+                                <input type="number" class="form-control" placeholder="Ej. 70">
+                            </div>
+
+                            <div class="col-md-3">
+                                <label class="form-label">Talla (cm)</label>
+                                <input type="number" class="form-control" placeholder="Ej. 170">
+                            </div>
+
+                            <div class="col-md-3">
+                                <label class="form-label">Temperatura (°C)</label>
+                                <input type="number" step="0.1" class="form-control" placeholder="Ej. 36.5">
+                            </div>
+
+                            <div class="col-md-3">
+                                <label class="form-label">Presión arterial</label>
+                                <input type="text" class="form-control" placeholder="Ej. 120/80">
+                            </div>
+
+                            <div class="col-md-3">
+                                <label class="form-label">Frecuencia cardíaca</label>
+                                <input type="number" class="form-control" placeholder="Ej. 75">
+                            </div>
+
+                            <div class="col-md-3">
+                                <label class="form-label">Frecuencia respiratoria</label>
+                                <input type="number" class="form-control" placeholder="Ej. 18">
+                            </div>
+
+                            <div class="col-md-3">
+                                <label class="form-label">Saturación O₂ (%)</label>
+                                <input type="number" class="form-control" placeholder="Ej. 98">
+                            </div>
+
+                            <div class="col-md-3">
+                                <label class="form-label">Nivel de dolor</label>
+                                <select class="form-select">
+                                    <option selected>Seleccione</option>
+                                    <option>Sin dolor</option>
+                                    <option>Leve</option>
+                                    <option>Moderado</option>
+                                    <option>Intenso</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card card-stat mb-4">
+                    <div class="card-body">
+                        <h5 class="mb-3">Observaciones de enfermería</h5>
+
+                        <div class="row g-3">
+                            <div class="col-md-12">
+                                <label class="form-label">Observaciones</label>
+                                <textarea class="form-control"
+                                          rows="4"
+                                          placeholder="Ingrese observaciones relevantes del triaje"></textarea>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label">Estado posterior</label>
+                                <input type="text" class="form-control" value="TRIAGE COMPLETADO" readonly>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card card-stat">
+                    <div class="card-body d-flex justify-content-end gap-2">
+                        <a th:href="@{/enfermeria/fichas}" class="btn btn-outline-secondary">
+                            Cancelar
+                        </a>
+
+                        <button type="submit" class="btn btn-primary">
+                            Guardar triaje
+                        </button>
+                    </div>
+                </div>
+
+            </form>
+
+        </main>
+
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script th:src="@{/js/app.js}"></script>
+
+</body>
+</html>

@@ -12,4 +12,22 @@ public class DashboardController {
         model.addAttribute("titulo", "Dashboard Hospitalario");
         return "dashboard/index";
     }
+
+    @GetMapping("/enfermeria/dashboard")
+    public String dashboardEnfermeria(Model model) {
+        model.addAttribute("titulo", "Dashboard Enfermería");
+        return "dashboard/enfermeria";
+    }
+
+    @GetMapping("/medico/dashboard")
+    public String dashboardMedico(Model model) {
+        model.addAttribute("titulo", "Dashboard Médico");
+        return "dashboard/medico";
+    }
+
+    @GetMapping("/admin/dashboard")
+    public String dashboardAdmin(Model model) {
+        model.addAttribute("titulo", "Dashboard Administrador");
+        return "dashboard/admin";
+    }
 }

@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Fichas de Admisión | Sistema Hospitalario</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+
+<body>
+
+<div class="container-fluid">
+    <div class="row">
+
+        <aside class="col-md-3 col-lg-2 sidebar p-3">
+            <h4 class="text-white mb-4">Enfermería</h4>
+
+            <nav class="nav flex-column">
+                <a class="nav-link" th:href="@{/enfermeria/dashboard}">Dashboard</a>
+                <a class="nav-link" th:href="@{/enfermeria/fichas}">Fichas de admisión</a>
+                <a class="nav-link" th:href="@{/enfermeria/triaje}">Triaje</a>
+
+                <hr class="text-white">
+
+                <a class="nav-link" th:href="@{/logout}">Cerrar sesión</a>
+            </nav>
+        </aside>
+
+        <main class="col-md-9 col-lg-10 content-wrapper">
+
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h1 class="page-title">Fichas de Admisión</h1>
+                    <p class="text-muted">
+                        Consulta de pacientes admitidos que están pendientes de triaje.
+                    </p>
+                </div>
+
+                <a th:href="@{/enfermeria/dashboard}" class="btn btn-outline-secondary">
+                    Volver al dashboard
+                </a>
+            </div>
+
+            <div class="card card-stat mb-4">
+                <div class="card-body">
+                    <h5 class="mb-3">Buscar ficha</h5>
+
+                    <form action="#" method="get" class="row g-3">
+                        <div class="col-md-4">
+                            <label class="form-label">DNI del paciente</label>
+                            <input type="text"
+                                   class="form-control"
+                                   maxlength="8"
+                                   placeholder="Ingrese DNI">
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label">Estado de ficha</label>
+                            <select class="form-select">
+                                <option selected>Todos</option>
+                                <option>PENDIENTE_TRIAGE</option>
+                                <option>EN_TRIAGE</option>
+                                <option>TRIAGE_COMPLETADO</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-4 d-flex align-items-end">
+                            <button type="submit" class="btn btn-outline-primary w-100">
+                                Consultar fichas
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="card card-stat">
+                <div class="card-body">
+                    <h5 class="mb-3">Fichas pendientes</h5>
+
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead>
+                            <tr>
+                                <th>Código ficha</th>
+                                <th>Paciente</th>
+                                <th>DNI</th>
+                                <th>Hora cita</th>
+                                <th>Especialidad</th>
+                                <th>Prioridad</th>
+                                <th>Estado</th>
+                                <th class="text-end">Acciones</th>
+                            </tr>
+                            </thead>
+
+                            <tbody>
+                            <tr>
+                                <td>FIC-0001</td>
+                                <td>Juan Pérez Ramos</td>
+                                <td>76543210</td>
+                                <td>09:00</td>
+                                <td>Medicina General</td>
+                                <td>Normal</td>
+                                <td>
+                                    <span class="badge bg-warning text-dark">PENDIENTE TRIAGE</span>
+                                </td>
+                                <td class="text-end">
+                                    <a th:href="@{/enfermeria/triaje}" class="btn btn-sm btn-outline-primary">
+                                        Iniciar triaje
+                                    </a>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td>FIC-0002</td>
+                                <td>María López Torres</td>
+                                <td>70123456</td>
+                                <td>09:30</td>
+                                <td>Cardiología</td>
+                                <td>Preferencial</td>
+                                <td>
+                                    <span class="badge bg-info text-dark">EN TRIAGE</span>
+                                </td>
+                                <td class="text-end">
+                                    <a th:href="@{/enfermeria/triaje}" class="btn btn-sm btn-outline-primary">
+                                        Continuar triaje
+                                    </a>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td>FIC-0003</td>
+                                <td>Carlos Ramírez Díaz</td>
+                                <td>71234567</td>
+                                <td>10:00</td>
+                                <td>Traumatología</td>
+                                <td>Normal</td>
+                                <td>
+                                    <span class="badge bg-success">TRIAGE COMPLETADO</span>
+                                </td>
+                                <td class="text-end">
+                                    <a th:href="@{/enfermeria/triaje}" class="btn btn-sm btn-outline-secondary">
+                                        Ver triaje
+                                    </a>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <p class="text-muted small mb-0">
+                        Las fichas provienen del registro de admisión realizado por recepción.
+                    </p>
+                </div>
+            </div>
+
+        </main>
+
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script th:src="@{/js/app.js}"></script>
+
+</body>
+</html>
