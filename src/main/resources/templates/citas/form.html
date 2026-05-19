@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Registrar Nueva Cita | Sistema Hospitalario</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+
+<body>
+
+<div class="container-fluid">
+    <div class="row">
+
+        <aside class="col-md-3 col-lg-2 sidebar p-3">
+            <h4 class="text-white mb-4">Recepci�n</h4>
+
+            <nav class="nav flex-column">
+                <a class="nav-link" th:href="@{/dashboard}">Dashboard</a>
+                <a class="nav-link" th:href="@{/citas/nueva}">Registrar nueva cita</a>
+                <a class="nav-link" th:href="@{/citas}">Consultar citas</a>
+
+                <hr class="text-white">
+
+                <a class="nav-link" th:href="@{/logout}">Cerrar sesi�n</a>
+            </nav>
+        </aside>
+
+        <main class="col-md-9 col-lg-10 content-wrapper">
+
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h1 class="page-title">Registrar Nueva Cita</h1>
+                    <p class="text-muted">
+                        Complete los datos necesarios para generar una cita m�dica.
+                    </p>
+                </div>
+
+                <a th:href="@{/citas}" class="btn btn-outline-secondary">
+                    Volver a consultar citas
+                </a>
+            </div>
+
+            <form action="#" method="post">
+
+                <div class="card card-stat mb-4">
+                    <div class="card-body">
+                        <h5 class="mb-3">1. Datos del paciente</h5>
+
+                        <div class="row g-3">
+
+                            <div class="col-md-4">
+                                <label class="form-label">DNI del paciente</label>
+                                <input type="text"
+                                       class="form-control"
+                                       placeholder="Ingrese DNI"
+                                       maxlength="8">
+                            </div>
+
+                            <div class="col-md-2 d-flex align-items-end">
+                                <button type="button" class="btn btn-outline-primary w-100">
+                                    Buscar
+                                </button>
+                            </div>
+
+                            <div class="col-md-6 d-flex align-items-end">
+                                <a href="#" class="btn btn-outline-success w-100">
+                                    Registrar paciente nuevo
+                                </a>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">Paciente</label>
+                                <input type="text"
+                                       class="form-control"
+                                       value="Juan P�rez Ramos"
+                                       readonly>
+                            </div>
+
+                            <div class="col-md-3">
+                                <label class="form-label">Edad</label>
+                                <input type="text"
+                                       class="form-control"
+                                       value="35"
+                                       readonly>
+                            </div>
+
+                            <div class="col-md-3">
+                                <label class="form-label">Tel�fono</label>
+                                <input type="text"
+                                       class="form-control"
+                                       value="987654321"
+                                       readonly>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card card-stat mb-4">
+                    <div class="card-body">
+                        <h5 class="mb-3">2. Datos de la cita</h5>
+
+                        <div class="row g-3">
+
+                            <div class="col-md-6">
+                                <label class="form-label">Especialidad</label>
+                                <select class="form-select">
+                                    <option selected>Seleccione una especialidad</option>
+                                    <option>Medicina General</option>
+                                    <option>Pediatr�a</option>
+                                    <option>Traumatolog�a</option>
+                                    <option>Cardiolog�a</option>
+                                    <option>Dermatolog�a</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">M�dico</label>
+                                <select class="form-select">
+                                    <option selected>Seleccione un m�dico</option>
+                                    <option>Dr. Carlos Mendoza</option>
+                                    <option>Dra. Rosa Salinas</option>
+                                    <option>Dra. Ana Torres</option>
+                                    <option>Dr. Luis Herrera</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label">Fecha</label>
+                                <input type="date" class="form-control">
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label">Horario disponible</label>
+                                <select class="form-select">
+                                    <option selected>Seleccione horario</option>
+                                    <option>08:00</option>
+                                    <option>08:30</option>
+                                    <option>09:00</option>
+                                    <option>09:30</option>
+                                    <option>10:00</option>
+                                    <option>10:30</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label">Estado</label>
+                                <input type="text"
+                                       class="form-control"
+                                       value="PROGRAMADA"
+                                       readonly>
+                            </div>
+
+                            <div class="col-md-12">
+                                <label class="form-label">Motivo de consulta</label>
+                                <textarea class="form-control"
+                                          rows="3"
+                                          placeholder="Ingrese el motivo de la cita"></textarea>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card card-stat">
+                    <div class="card-body d-flex justify-content-end gap-2">
+                        <a th:href="@{/citas}" class="btn btn-outline-secondary">
+                            Cancelar
+                        </a>
+
+                        <button type="submit" class="btn btn-primary">
+                            Generar cita m�dica
+                        </button>
+                    </div>
+                </div>
+
+            </form>
+
+        </main>
+
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script th:src="@{/js/app.js}"></script>
+
+</body>
+</html>
