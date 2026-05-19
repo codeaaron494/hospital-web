@@ -16,7 +16,7 @@
     <div class="row">
 
         <aside class="col-md-3 col-lg-2 sidebar p-3">
-            <h4 class="text-white mb-4">Recepci�n</h4>
+            <h4 class="text-white mb-4">Recepción</h4>
 
             <nav class="nav flex-column">
                 <a class="nav-link" th:href="@{/dashboard}">Dashboard</a>
@@ -25,7 +25,7 @@
 
                 <hr class="text-white">
 
-                <a class="nav-link" th:href="@{/logout}">Cerrar sesi�n</a>
+                <a class="nav-link" th:href="@{/logout}">Cerrar sesión</a>
             </nav>
         </aside>
 
@@ -35,7 +35,7 @@
                 <div>
                     <h1 class="page-title">Registrar Nueva Cita</h1>
                     <p class="text-muted">
-                        Complete los datos necesarios para generar una cita m�dica.
+                        Complete los datos necesarios para generar una cita médica.
                     </p>
                 </div>
 
@@ -67,7 +67,7 @@
                             </div>
 
                             <div class="col-md-6 d-flex align-items-end">
-                                <a href="#" class="btn btn-outline-success w-100">
+                                <a th:href="@{/pacientes/nuevo}" class="btn btn-outline-success w-100">
                                     Registrar paciente nuevo
                                 </a>
                             </div>
@@ -76,7 +76,7 @@
                                 <label class="form-label">Paciente</label>
                                 <input type="text"
                                        class="form-control"
-                                       value="Juan P�rez Ramos"
+                                       value="Juan Pérez Ramos"
                                        readonly>
                             </div>
 
@@ -89,7 +89,7 @@
                             </div>
 
                             <div class="col-md-3">
-                                <label class="form-label">Tel�fono</label>
+                                <label class="form-label">Teléfono</label>
                                 <input type="text"
                                        class="form-control"
                                        value="987654321"
@@ -111,17 +111,17 @@
                                 <select class="form-select">
                                     <option selected>Seleccione una especialidad</option>
                                     <option>Medicina General</option>
-                                    <option>Pediatr�a</option>
-                                    <option>Traumatolog�a</option>
-                                    <option>Cardiolog�a</option>
-                                    <option>Dermatolog�a</option>
+                                    <option>Pediatría</option>
+                                    <option>Traumatología</option>
+                                    <option>Cardiología</option>
+                                    <option>Dermatología</option>
                                 </select>
                             </div>
 
                             <div class="col-md-6">
-                                <label class="form-label">M�dico</label>
+                                <label class="form-label">Médico</label>
                                 <select class="form-select">
-                                    <option selected>Seleccione un m�dico</option>
+                                    <option selected>Seleccione un médico</option>
                                     <option>Dr. Carlos Mendoza</option>
                                     <option>Dra. Rosa Salinas</option>
                                     <option>Dra. Ana Torres</option>
@@ -173,7 +173,7 @@
                         </a>
 
                         <button type="submit" class="btn btn-primary">
-                            Generar cita m�dica
+                            Generar cita médica
                         </button>
                     </div>
                 </div>
