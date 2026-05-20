@@ -42,6 +42,15 @@ public class SecurityConfig {
                     boolean isMedico = authentication.getAuthorities().stream()
                             .anyMatch(auth -> auth.getAuthority().equals("ROLE_MEDICO"));
 
+                    boolean isAlmacenero = authentication.getAuthorities().stream()
+                            .anyMatch(auth -> auth.getAuthority().equals("ROLE_ALMACENERO"));
+
+                    boolean isQuimico = authentication.getAuthorities().stream()
+                            .anyMatch(auth -> auth.getAuthority().equals("ROLE_QUIMICO_FARMACEUTICO"));
+
+                    boolean isCobranza = authentication.getAuthorities().stream()
+                            .anyMatch(auth -> auth.getAuthority().equals("ROLE_COBRANZA"));
+
                     if (isAdmin) {
                         response.sendRedirect("/admin/dashboard");
                     } else if (isRecepcionista) {
@@ -50,6 +59,12 @@ public class SecurityConfig {
                         response.sendRedirect("/enfermeria/dashboard");
                     } else if (isMedico) {
                         response.sendRedirect("/medico/dashboard");
+                    } else if (isAlmacenero) {
+                        response.sendRedirect("/farmacia/compras/dashboard");
+                    } else if (isQuimico) {
+                        response.sendRedirect("/farmacia/compras/quimico/dashboard");
+                    } else if (isCobranza) {
+                        response.sendRedirect("/farmacia/compras/cobranza/dashboard");
                     } else {
                         response.sendRedirect("/login");
                     }
@@ -93,6 +108,32 @@ public class SecurityConfig {
                 .roles("MEDICO")
                 .build();
 
-        return new InMemoryUserDetailsManager(admin, recepcionista, enfermero, medico);
+        UserDetails almacenero = User
+                .withUsername("almacenero")
+                .password("{noop}almacen123")
+                .roles("ALMACENERO")
+                .build();
+
+        UserDetails quimico = User
+                .withUsername("quimico")
+                .password("{noop}quimico123")
+                .roles("QUIMICO_FARMACEUTICO")
+                .build();
+
+        UserDetails cobranza = User
+                .withUsername("cobranza")
+                .password("{noop}cobranza123")
+                .roles("COBRANZA")
+                .build();
+
+        return new InMemoryUserDetailsManager(
+        admin,
+        recepcionista,
+        enfermero,
+        medico,
+        almacenero,
+        quimico,
+        cobranza
+        );
     }
 }

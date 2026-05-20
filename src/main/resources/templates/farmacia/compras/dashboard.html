@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Compras - Almacén | Sistema Hospitalario</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+
+<body>
+
+<div class="container-fluid">
+    <div class="row">
+
+        <aside class="col-md-3 col-lg-2 sidebar p-3">
+            <h4 class="text-white mb-4">Almacén</h4>
+
+            <nav class="nav flex-column">
+                <a class="nav-link" th:href="@{/farmacia/compras/dashboard}">Dashboard</a>
+                <a class="nav-link" th:href="@{/farmacia/compras/inventario}">Consultar inventario</a>
+                <a class="nav-link" th:href="@{/farmacia/compras/ordenes/nueva}">Generar orden de compra</a>
+                <a class="nav-link" th:href="@{/farmacia/compras/recepcion}">Recepción de mercadería</a>
+
+                <hr class="text-white">
+
+                <a class="nav-link" th:href="@{/logout}">Cerrar sesión</a>
+            </nav>
+        </aside>
+
+        <main class="col-md-9 col-lg-10 content-wrapper">
+
+            <div class="mb-4">
+                <h1 class="page-title">Dashboard de Almacén</h1>
+                <p class="text-muted">
+                    Gestión inicial de compras a partir del inventario y medicamentos con bajo stock.
+                </p>
+            </div>
+
+            <div class="row g-4">
+
+                <div class="col-md-3">
+                    <div class="card card-stat">
+                        <div class="card-body">
+                            <h6 class="text-muted">Medicamentos bajo stock</h6>
+                            <h2>0</h2>
+                            <p class="text-muted mb-0">Pendientes de reposición</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="card card-stat">
+                        <div class="card-body">
+                            <h6 class="text-muted">Órdenes generadas</h6>
+                            <h2>0</h2>
+                            <p class="text-muted mb-0">Enviadas a químico</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="card card-stat">
+                        <div class="card-body">
+                            <h6 class="text-muted">Mercadería recibida</h6>
+                            <h2>0</h2>
+                            <p class="text-muted mb-0">Pendiente de validación</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="card card-stat">
+                        <div class="card-body">
+                            <h6 class="text-muted">Recepciones conformes</h6>
+                            <h2>0</h2>
+                            <p class="text-muted mb-0">Validadas en almacén</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="card mt-4 card-stat">
+                <div class="card-body">
+                    <h5>Flujo del almacenero</h5>
+                    <p class="text-muted mb-0">
+                        Consultar inventario → identificar medicamentos con bajo stock → generar orden de compra → enviar orden al químico → recibir mercadería y guía → validar recepción.
+                    </p>
+                </div>
+            </div>
+
+            <div class="card mt-4 card-stat">
+                <div class="card-body">
+                    <h5 class="mb-3">Acciones principales</h5>
+
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <a th:href="@{/farmacia/compras/inventario}" class="btn btn-outline-primary w-100">
+                                Consultar inventario
+                            </a>
+                        </div>
+
+                        <div class="col-md-4">
+                            <a th:href="@{/farmacia/compras/ordenes/nueva}" class="btn btn-outline-primary w-100">
+                                Generar orden de compra
+                            </a>
+                        </div>
+
+                        <div class="col-md-4">
+                            <a th:href="@{/farmacia/compras/recepcion}" class="btn btn-outline-primary w-100">
+                                Recepción de mercadería
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+
+    </div>
+</div>
+
+</body>
+</html>

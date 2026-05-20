@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Consultar Inventario | Sistema Hospitalario</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+
+<body>
+
+<div class="container-fluid">
+    <div class="row">
+
+        <aside class="col-md-3 col-lg-2 sidebar p-3">
+            <h4 class="text-white mb-4">Almacén</h4>
+
+            <nav class="nav flex-column">
+                <a class="nav-link" th:href="@{/farmacia/compras/dashboard}">Dashboard</a>
+                <a class="nav-link" th:href="@{/farmacia/compras/inventario}">Consultar inventario</a>
+                <a class="nav-link" th:href="@{/farmacia/compras/ordenes/nueva}">Generar orden de compra</a>
+                <a class="nav-link" th:href="@{/farmacia/compras/recepcion}">Recepción de mercadería</a>
+
+                <hr class="text-white">
+
+                <a class="nav-link" th:href="@{/logout}">Cerrar sesión</a>
+            </nav>
+        </aside>
+
+        <main class="col-md-9 col-lg-10 content-wrapper">
+
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h1 class="page-title">Consultar Inventario</h1>
+                    <p class="text-muted">
+                        Revisión de medicamentos disponibles e identificación de productos con bajo stock.
+                    </p>
+                </div>
+
+                <a th:href="@{/farmacia/compras/ordenes/nueva}" class="btn btn-primary">
+                    Generar orden de compra
+                </a>
+            </div>
+
+            <div class="card card-stat mb-4">
+                <div class="card-body">
+                    <h5 class="mb-3">Filtros de búsqueda</h5>
+
+                    <form action="#" method="get" class="row g-3">
+                        <div class="col-md-4">
+                            <label class="form-label">Medicamento</label>
+                            <input type="text" class="form-control" placeholder="Nombre o código">
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label">Estado de stock</label>
+                            <select class="form-select">
+                                <option selected>Todos</option>
+                                <option>DISPONIBLE</option>
+                                <option>BAJO STOCK</option>
+                                <option>AGOTADO</option>
+                                <option>VENCIDO</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-4 d-flex align-items-end">
+                            <button type="submit" class="btn btn-outline-primary w-100">
+                                Consultar inventario
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="row g-4 mb-4">
+
+                <div class="col-md-3">
+                    <div class="card card-stat">
+                        <div class="card-body">
+                            <h6 class="text-muted">Total medicamentos</h6>
+                            <h2>120</h2>
+                            <p class="text-muted mb-0">Registrados</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="card card-stat">
+                        <div class="card-body">
+                            <h6 class="text-muted">Bajo stock</h6>
+                            <h2>8</h2>
+                            <p class="text-muted mb-0">Requieren reposición</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="card card-stat">
+                        <div class="card-body">
+                            <h6 class="text-muted">Agotados</h6>
+                            <h2>3</h2>
+                            <p class="text-muted mb-0">Sin existencias</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="card card-stat">
+                        <div class="card-body">
+                            <h6 class="text-muted">Vencimiento próximo</h6>
+                            <h2>5</h2>
+                            <p class="text-muted mb-0">Revisión requerida</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="card card-stat">
+                <div class="card-body">
+                    <h5 class="mb-3">Medicamentos en inventario</h5>
+
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead>
+                            <tr>
+                                <th>Código</th>
+                                <th>Medicamento</th>
+                                <th>Presentación</th>
+                                <th>Stock actual</th>
+                                <th>Stock mínimo</th>
+                                <th>Vencimiento</th>
+                                <th>Estado</th>
+                                <th class="text-end">Acción</th>
+                            </tr>
+                            </thead>
+
+                            <tbody>
+                            <tr>
+                                <td>MED-001</td>
+                                <td>Paracetamol 500 mg</td>
+                                <td>Tabletas</td>
+                                <td>18</td>
+                                <td>50</td>
+                                <td>12/2026</td>
+                                <td>
+                                    <span class="badge bg-warning text-dark">BAJO STOCK</span>
+                                </td>
+                                <td class="text-end">
+                                    <a th:href="@{/farmacia/compras/ordenes/nueva}" class="btn btn-sm btn-outline-primary">
+                                        Solicitar compra
+                                    </a>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td>MED-002</td>
+                                <td>Amoxicilina 500 mg</td>
+                                <td>Cápsulas</td>
+                                <td>0</td>
+                                <td>40</td>
+                                <td>09/2026</td>
+                                <td>
+                                    <span class="badge bg-danger">AGOTADO</span>
+                                </td>
+                                <td class="text-end">
+                                    <a th:href="@{/farmacia/compras/ordenes/nueva}" class="btn btn-sm btn-outline-primary">
+                                        Solicitar compra
+                                    </a>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td>MED-003</td>
+                                <td>Ibuprofeno 400 mg</td>
+                                <td>Tabletas</td>
+                                <td>95</td>
+                                <td>30</td>
+                                <td>03/2027</td>
+                                <td>
+                                    <span class="badge bg-success">DISPONIBLE</span>
+                                </td>
+                                <td class="text-end">
+                                    <button type="button" class="btn btn-sm btn-outline-secondary" disabled>
+                                        Sin reposición
+                                    </button>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td>MED-004</td>
+                                <td>Loratadina 10 mg</td>
+                                <td>Tabletas</td>
+                                <td>12</td>
+                                <td>35</td>
+                                <td>11/2026</td>
+                                <td>
+                                    <span class="badge bg-warning text-dark">BAJO STOCK</span>
+                                </td>
+                                <td class="text-end">
+                                    <a th:href="@{/farmacia/compras/ordenes/nueva}" class="btn btn-sm btn-outline-primary">
+                                        Solicitar compra
+                                    </a>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <p class="text-muted small mb-0">
+                        Esta vista permite al almacenero identificar medicamentos que requieren reposición y generar una orden de compra.
+                    </p>
+                </div>
+            </div>
+
+        </main>
+
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script th:src="@{/js/app.js}"></script>
+
+</body>
+</html>

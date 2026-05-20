@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Recepción de Mercadería | Sistema Hospitalario</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+
+<body>
+
+<div class="container-fluid">
+    <div class="row">
+
+        <aside class="col-md-3 col-lg-2 sidebar p-3">
+            <h4 class="text-white mb-4">Almacén</h4>
+
+            <nav class="nav flex-column">
+                <a class="nav-link" th:href="@{/farmacia/compras/dashboard}">Dashboard</a>
+                <a class="nav-link" th:href="@{/farmacia/compras/inventario}">Consultar inventario</a>
+                <a class="nav-link" th:href="@{/farmacia/compras/ordenes/nueva}">Generar orden de compra</a>
+                <a class="nav-link" th:href="@{/farmacia/compras/recepcion}">Recepción de mercadería</a>
+
+                <hr class="text-white">
+
+                <a class="nav-link" th:href="@{/logout}">Cerrar sesión</a>
+            </nav>
+        </aside>
+
+        <main class="col-md-9 col-lg-10 content-wrapper">
+
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h1 class="page-title">Recepción de Mercadería</h1>
+                    <p class="text-muted">
+                        Validación física de medicamentos recibidos contra la orden de compra y guía de remisión.
+                    </p>
+                </div>
+
+                <a th:href="@{/farmacia/compras/dashboard}" class="btn btn-outline-secondary">
+                    Volver al dashboard
+                </a>
+            </div>
+
+            <div class="alert alert-info">
+                Esta etapa ocurre después de que el proveedor envía la mercadería junto con la guía de remisión.
+            </div>
+
+            <form action="#" method="post">
+
+                <div class="card card-stat mb-4">
+                    <div class="card-body">
+                        <h5 class="mb-3">1. Datos de la orden y proveedor</h5>
+
+                        <div class="row g-3">
+
+                            <div class="col-md-3">
+                                <label class="form-label">Orden de compra</label>
+                                <input type="text" class="form-control" value="OC-0001" readonly>
+                            </div>
+
+                            <div class="col-md-3">
+                                <label class="form-label">Fecha de orden</label>
+                                <input type="text" class="form-control" value="19/05/2026" readonly>
+                            </div>
+
+                            <div class="col-md-3">
+                                <label class="form-label">Estado de orden</label>
+                                <input type="text" class="form-control" value="AUTORIZADA" readonly>
+                            </div>
+
+                            <div class="col-md-3">
+                                <label class="form-label">Prioridad</label>
+                                <input type="text" class="form-control" value="Alta" readonly>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">Proveedor</label>
+                                <input type="text"
+                                       class="form-control"
+                                       value="Distribuidora Médica San Gabriel S.A.C."
+                                       readonly>
+                            </div>
+
+                            <div class="col-md-3">
+                                <label class="form-label">RUC proveedor</label>
+                                <input type="text" class="form-control" value="20548796321" readonly>
+                            </div>
+
+                            <div class="col-md-3">
+                                <label class="form-label">Responsable de recepción</label>
+                                <input type="text" class="form-control" value="Almacenero" readonly>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card card-stat mb-4">
+                    <div class="card-body">
+                        <h5 class="mb-3">2. Guía de remisión</h5>
+
+                        <div class="row g-3">
+
+                            <div class="col-md-3">
+                                <label class="form-label">Número de guía</label>
+                                <input type="text" class="form-control" placeholder="Ej. GR-001245">
+                            </div>
+
+                            <div class="col-md-3">
+                                <label class="form-label">Fecha de emisión</label>
+                                <input type="date" class="form-control">
+                            </div>
+
+                            <div class="col-md-3">
+                                <label class="form-label">Fecha de recepción</label>
+                                <input type="date" class="form-control">
+                            </div>
+
+                            <div class="col-md-3">
+                                <label class="form-label">Estado de recepción</label>
+                                <select class="form-select">
+                                    <option selected>PENDIENTE_VALIDACIÓN</option>
+                                    <option>CONFORME</option>
+                                    <option>OBSERVADA</option>
+                                    <option>INCOMPLETA</option>
+                                </select>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card card-stat mb-4">
+                    <div class="card-body">
+                        <h5 class="mb-3">3. Validación de mercadería</h5>
+
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle">
+                                <thead>
+                                <tr>
+                                    <th>Código</th>
+                                    <th>Medicamento</th>
+                                    <th>Presentación</th>
+                                    <th>Cantidad ordenada</th>
+                                    <th>Cantidad recibida</th>
+                                    <th>Lote</th>
+                                    <th>Vencimiento</th>
+                                    <th>Conformidad</th>
+                                </tr>
+                                </thead>
+
+                                <tbody>
+                                <tr>
+                                    <td>MED-001</td>
+                                    <td>Paracetamol 500 mg</td>
+                                    <td>Tabletas</td>
+                                    <td>100</td>
+                                    <td>
+                                        <input type="number" class="form-control" value="100">
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control" value="LOT-PAR-2026">
+                                    </td>
+                                    <td>
+                                        <input type="month" class="form-control">
+                                    </td>
+                                    <td>
+                                        <select class="form-select">
+                                            <option selected>Conforme</option>
+                                            <option>Faltante</option>
+                                            <option>Dañado</option>
+                                            <option>Cambio requerido</option>
+                                        </select>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td>MED-002</td>
+                                    <td>Amoxicilina 500 mg</td>
+                                    <td>Cápsulas</td>
+                                    <td>80</td>
+                                    <td>
+                                        <input type="number" class="form-control" value="70">
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control" value="LOT-AMX-2026">
+                                    </td>
+                                    <td>
+                                        <input type="month" class="form-control">
+                                    </td>
+                                    <td>
+                                        <select class="form-select">
+                                            <option>Conforme</option>
+                                            <option selected>Faltante</option>
+                                            <option>Dañado</option>
+                                            <option>Cambio requerido</option>
+                                        </select>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td>MED-004</td>
+                                    <td>Loratadina 10 mg</td>
+                                    <td>Tabletas</td>
+                                    <td>60</td>
+                                    <td>
+                                        <input type="number" class="form-control" value="60">
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control" value="LOT-LOR-2026">
+                                    </td>
+                                    <td>
+                                        <input type="month" class="form-control">
+                                    </td>
+                                    <td>
+                                        <select class="form-select">
+                                            <option selected>Conforme</option>
+                                            <option>Faltante</option>
+                                            <option>Dañado</option>
+                                            <option>Cambio requerido</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <p class="text-muted small mb-0">
+                            Si la cantidad recibida no coincide con la orden, el almacenero puede registrar la recepción como observada y solicitar el faltante o cambio al proveedor.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="card card-stat mb-4">
+                    <div class="card-body">
+                        <h5 class="mb-3">4. Resultado de recepción</h5>
+
+                        <div class="row g-3">
+
+                            <div class="col-md-4">
+                                <label class="form-label">Resultado</label>
+                                <select class="form-select">
+                                    <option selected>Seleccione resultado</option>
+                                    <option>Mercadería conforme</option>
+                                    <option>Mercadería incompleta</option>
+                                    <option>Mercadería observada</option>
+                                    <option>Solicitar cambio al proveedor</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label">Acción resultante</label>
+                                <select class="form-select">
+                                    <option selected>Registrar conformidad</option>
+                                    <option>Solicitar faltante</option>
+                                    <option>Solicitar cambio</option>
+                                    <option>Retener recepción</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label">Estado posterior</label>
+                                <input type="text" class="form-control" value="RECEPCIÓN_OBSERVADA" readonly>
+                            </div>
+
+                            <div class="col-md-12">
+                                <label class="form-label">Observaciones de recepción</label>
+                                <textarea class="form-control"
+                                          rows="4"
+                                          placeholder="Ingrese observaciones de la recepción">Se detecta faltante de 10 unidades de Amoxicilina 500 mg respecto a la orden autorizada.</textarea>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card card-stat">
+                    <div class="card-body d-flex justify-content-end gap-2">
+                        <a th:href="@{/farmacia/compras/dashboard}" class="btn btn-outline-secondary">
+                            Cancelar
+                        </a>
+
+                        <button type="button" class="btn btn-warning">
+                            Solicitar faltante o cambio
+                        </button>
+
+                        <button type="submit" class="btn btn-success">
+                            Registrar conformidad
+                        </button>
+                    </div>
+                </div>
+
+            </form>
+
+        </main>
+
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script th:src="@{/js/app.js}"></script>
+
+</body>
+</html>
