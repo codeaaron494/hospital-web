@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Exportar Balance DIGEMID | Sistema Hospitalario</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+
+<body>
+
+<div class="container-fluid">
+    <div class="row">
+
+        <aside class="col-md-3 col-lg-2 sidebar p-3">
+            <h4 class="text-white mb-4">Inventario</h4>
+
+            <nav class="nav flex-column">
+                <a class="nav-link" th:href="@{/farmacia/inventario/quimico/dashboard}">Dashboard</a>
+                <a class="nav-link" th:href="@{/farmacia/inventario/quimico/auditoria}">Auditar Kardex</a>
+                <a class="nav-link" th:href="@{/farmacia/inventario/quimico/exportar}">Exportar balance DIGEMID</a>
+                <a class="nav-link" th:href="@{/farmacia/compras/quimico/dashboard}">Gestión de compras</a>
+
+                <hr class="text-white">
+
+                <a class="nav-link" th:href="@{/logout}">Cerrar sesión</a>
+            </nav>
+        </aside>
+
+        <main class="col-md-9 col-lg-10 content-wrapper">
+
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h1 class="page-title">Exportar Balance a DIGEMID</h1>
+                    <p class="text-muted">
+                        Simulación del envío del balance oficial aprobado a la entidad reguladora externa.
+                    </p>
+                </div>
+
+                <a th:href="@{/farmacia/inventario/quimico/dashboard}" class="btn btn-outline-secondary">
+                    Volver al dashboard
+                </a>
+            </div>
+
+            <div class="alert alert-warning">
+                DIGEMID es una entidad externa. En este prototipo no se realiza conexión real; solo se registra una simulación del envío y respuesta.
+            </div>
+
+            <form action="#" method="post">
+
+                <div class="card card-stat mb-4">
+                    <div class="card-body">
+                        <h5 class="mb-3">1. Balance oficial aprobado</h5>
+
+                        <div class="row g-3">
+                            <div class="col-md-3">
+                                <label class="form-label">Código de balance</label>
+                                <input type="text" class="form-control" value="BAL-2026-05" readonly>
+                            </div>
+
+                            <div class="col-md-3">
+                                <label class="form-label">Periodo</label>
+                                <input type="text" class="form-control" value="2026-05" readonly>
+                            </div>
+
+                            <div class="col-md-3">
+                                <label class="form-label">Estado del balance</label>
+                                <input type="text" class="form-control" value="APROBADO" readonly>
+                            </div>
+
+                            <div class="col-md-3">
+                                <label class="form-label">Responsable aprobación</label>
+                                <input type="text" class="form-control" value="Químico Farmacéutico" readonly>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label">Fecha de aprobación</label>
+                                <input type="text" class="form-control" value="21/05/2026" readonly>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label">Tipo de reporte</label>
+                                <input type="text" class="form-control" value="Balance mensual de medicamentos" readonly>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label">Destino</label>
+                                <input type="text" class="form-control" value="DIGEMID" readonly>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card card-stat mb-4">
+                    <div class="card-body">
+                        <h5 class="mb-3">2. Resumen exportable</h5>
+
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle">
+                                <thead>
+                                <tr>
+                                    <th>Código</th>
+                                    <th>Medicamento</th>
+                                    <th>Stock inicial</th>
+                                    <th>Entradas</th>
+                                    <th>Salidas</th>
+                                    <th>Ajustes</th>
+                                    <th>Stock final</th>
+                                    <th>Estado</th>
+                                </tr>
+                                </thead>
+
+                                <tbody>
+                                <tr>
+                                    <td>MED-001</td>
+                                    <td>Paracetamol 500 mg</td>
+                                    <td>20</td>
+                                    <td>100</td>
+                                    <td>2</td>
+                                    <td>-2</td>
+                                    <td>116</td>
+                                    <td><span class="badge bg-success">APROBADO</span></td>
+                                </tr>
+
+                                <tr>
+                                    <td>MED-002</td>
+                                    <td>Amoxicilina 500 mg</td>
+                                    <td>0</td>
+                                    <td>70</td>
+                                    <td>0</td>
+                                    <td>0</td>
+                                    <td>70</td>
+                                    <td><span class="badge bg-success">APROBADO</span></td>
+                                </tr>
+
+                                <tr>
+                                    <td>MED-004</td>
+                                    <td>Loratadina 10 mg</td>
+                                    <td>12</td>
+                                    <td>60</td>
+                                    <td>5</td>
+                                    <td>0</td>
+                                    <td>67</td>
+                                    <td><span class="badge bg-success">APROBADO</span></td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <p class="text-muted small mb-0">
+                            Este resumen representa el balance oficial que sería reportado externamente.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="card card-stat mb-4">
+                    <div class="card-body">
+                        <h5 class="mb-3">3. Simulación de envío externo</h5>
+
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <label class="form-label">Código de envío</label>
+                                <input type="text" class="form-control" value="DIG-ENV-0001" readonly>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label">Fecha de envío</label>
+                                <input type="date" class="form-control">
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label">Estado de envío</label>
+                                <select class="form-select">
+                                    <option selected>PENDIENTE_ENVÍO</option>
+                                    <option>ENVIADO</option>
+                                    <option>OBSERVADO_POR_DIGEMID</option>
+                                    <option>CONFORME_DIGEMID</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label">Canal de envío simulado</label>
+                                <select class="form-select">
+                                    <option selected>Portal DIGEMID</option>
+                                    <option>Mesa de partes virtual</option>
+                                    <option>Registro documental interno</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label">Constancia simulada</label>
+                                <input type="text" class="form-control" value="CONST-DIG-2026-05" readonly>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label">Responsable de envío</label>
+                                <input type="text" class="form-control" value="Químico Farmacéutico" readonly>
+                            </div>
+
+                            <div class="col-md-12">
+                                <label class="form-label">Observaciones del envío</label>
+                                <textarea class="form-control"
+                                          rows="3"
+                                          placeholder="Ingrese observaciones del envío simulado"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card card-stat mb-4">
+                    <div class="card-body">
+                        <h5 class="mb-3">4. Respuesta simulada de DIGEMID</h5>
+
+                        <div class="alert alert-info">
+                            Esta sección permite representar un resultado externo sin integrar realmente con DIGEMID.
+                        </div>
+
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <label class="form-label">Resultado externo simulado</label>
+                                <select class="form-select">
+                                    <option selected>Seleccione resultado</option>
+                                    <option>Conformidad de inventario</option>
+                                    <option>Observaciones al balance</option>
+                                    <option>Requiere subsanación documental</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label">Estado posterior interno</label>
+                                <select class="form-select">
+                                    <option selected>PENDIENTE_RESPUESTA</option>
+                                    <option>CONFORME_DIGEMID</option>
+                                    <option>OBSERVADO_DIGEMID</option>
+                                    <option>SUBSANACIÓN_REQUERIDA</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label">Fecha de respuesta simulada</label>
+                                <input type="date" class="form-control">
+                            </div>
+
+                            <div class="col-md-12">
+                                <label class="form-label">Observaciones simuladas de DIGEMID</label>
+                                <textarea class="form-control"
+                                          rows="4"
+                                          placeholder="Ingrese observaciones o conformidad simulada"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card card-stat">
+                    <div class="card-body d-flex justify-content-end gap-2">
+                        <a th:href="@{/farmacia/inventario/quimico/dashboard}" class="btn btn-outline-secondary">
+                            Cancelar
+                        </a>
+
+                        <button type="button" class="btn btn-outline-primary">
+                            Vista previa de reporte
+                        </button>
+
+                        <button type="submit" class="btn btn-success">
+                            Registrar envío simulado
+                        </button>
+                    </div>
+                </div>
+
+            </form>
+
+        </main>
+
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script th:src="@{/js/app.js}"></script>
+
+</body>
+</html>
