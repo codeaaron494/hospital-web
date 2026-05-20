@@ -50,6 +50,8 @@ public class SecurityConfig {
 
                     boolean isCobranza = authentication.getAuthorities().stream()
                             .anyMatch(auth -> auth.getAuthority().equals("ROLE_COBRANZA"));
+                    boolean isTecnico = authentication.getAuthorities().stream()
+                            .anyMatch(auth -> auth.getAuthority().equals("ROLE_TECNICO_FARMACIA"));
 
                     if (isAdmin) {
                         response.sendRedirect("/admin/dashboard");
@@ -65,6 +67,8 @@ public class SecurityConfig {
                         response.sendRedirect("/farmacia/compras/quimico/dashboard");
                     } else if (isCobranza) {
                         response.sendRedirect("/farmacia/compras/cobranza/dashboard");
+                    } else if (isTecnico) {
+                        response.sendRedirect("/farmacia/entregas/dashboard");
                     } else {
                         response.sendRedirect("/login");
                     }
@@ -126,6 +130,12 @@ public class SecurityConfig {
                 .roles("COBRANZA")
                 .build();
 
+        UserDetails tecnico = User
+                .withUsername("tecnico")
+                .password("{noop}tecnico123")
+                .roles("TECNICO_FARMACIA")
+                .build();
+
         return new InMemoryUserDetailsManager(
         admin,
         recepcionista,
@@ -133,7 +143,8 @@ public class SecurityConfig {
         medico,
         almacenero,
         quimico,
-        cobranza
+        cobranza,
+        tecnico
         );
     }
 }
