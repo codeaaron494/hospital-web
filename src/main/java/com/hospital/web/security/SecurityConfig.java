@@ -56,29 +56,24 @@ public class SecurityConfig {
                 .requestMatchers("/medico/**")
                 .hasAnyRole("ADMIN", "MEDICO")
 
-                // CUS Farmacia - Compras: Almacenero
+                // CUS 3 - Gestión de Compras: Almacenero
                 .requestMatchers(
                     "/farmacia/compras/dashboard",
-                    "/farmacia/compras/inventario",
-                    "/farmacia/compras/ordenes/nueva",
-                    "/farmacia/compras/recepcion"
+                    "/farmacia/compras/kardex",
+                    "/farmacia/compras/ordenes/**",
+                    "/farmacia/compras/guias/**"
                 )
                 .hasAnyRole("ADMIN", "ALMACENERO")
 
-                // CUS Farmacia - Compras: Químico Farmacéutico
+                // CUS 3 - Gestión de Compras: Químico Farmacéutico
                 .requestMatchers(
-                    "/farmacia/compras/quimico/**",
-                    "/farmacia/compras/ordenes/revision",
-                    "/farmacia/compras/ordenes/autorizadas",
-                    "/farmacia/compras/ordenes/rechazadas"
+                    "/farmacia/compras/quimico/**"
                 )
                 .hasAnyRole("ADMIN", "QUIMICO_FARMACEUTICO")
 
-                // CUS Farmacia - Compras: Cobranza
+                // CUS 3 - Gestión de Compras: Cobranza
                 .requestMatchers(
-                    "/farmacia/compras/cobranza/**",
-                    "/farmacia/compras/comprobantes/**",
-                    "/farmacia/compras/pagos"
+                    "/farmacia/compras/cobranza/**"
                 )
                 .hasAnyRole("ADMIN", "COBRANZA")
 

@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Revisión Orden de Compra | Químico</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+
+<div class="container-fluid">
+    <div class="row">
+
+        <aside class="col-md-3 col-lg-2 sidebar p-3">
+            <h4 class="text-white mb-4">Químico</h4>
+
+            <nav class="nav flex-column">
+                <a class="nav-link" th:href="@{/farmacia/compras/quimico/dashboard}">Dashboard</a>
+                <a class="nav-link" th:href="@{/farmacia/compras/quimico/ordenes}">Consultar órdenes de compra</a>
+                <a class="nav-link" th:href="@{/farmacia/compras/quimico/ordenes?estado=PENDIENTE_REVISION}">Autorizar orden de compra</a>
+                <a class="nav-link" th:href="@{/farmacia/compras/quimico/ordenes?estado=PENDIENTE_REVISION}">Rechazar orden de compra</a>
+
+                <hr class="text-white">
+
+                <a class="nav-link" th:href="@{/logout}">Cerrar sesión</a>
+            </nav>
+        </aside>
+
+        <main class="col-md-9 col-lg-10 content-wrapper">
+
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h1 class="page-title">Revisión de Orden de Compra</h1>
+                    <p class="text-muted">
+                        Evaluación técnica de medicamentos solicitados por almacén.
+                    </p>
+                </div>
+
+                <a th:href="@{/farmacia/compras/quimico/ordenes}" class="btn btn-outline-secondary">
+                    Volver a órdenes
+                </a>
+            </div>
+
+            <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+            <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+            <div class="card card-stat mb-4">
+                <div class="card-body">
+                    <h5 class="mb-3">Datos de la orden</h5>
+
+                    <div class="row g-3">
+                        <div class="col-md-3">
+                            <label class="form-label">Código</label>
+                            <input class="form-control" th:value="${'OC-' + orden.idOrdenCompra}" readonly>
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="form-label">Estado</label>
+                            <input class="form-control" th:value="${orden.estadoOrden}" readonly>
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="form-label">Fecha emisión</label>
+                            <input class="form-control" th:value="${#temporals.format(orden.fechaEmision, 'dd/MM/yyyy HH:mm')}" readonly>
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="form-label">Almacenero</label>
+                            <input class="form-control" th:value="${orden.usuarioAlmacenero.username}" readonly>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Proveedor</label>
+                            <input class="form-control" th:value="${orden.proveedor.razonSocial}" readonly>
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="form-label">RUC</label>
+                            <input class="form-control" th:value="${orden.proveedor.rucProveedor}" readonly>
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="form-label">Químico asignado</label>
+                            <input class="form-control" th:value="${orden.usuarioQuimico != null ? orden.usuarioQuimico.username : '-'}" readonly>
+                        </div>
+
+                        <div class="col-md-12">
+                            <label class="form-label">Observación</label>
+                            <textarea class="form-control" rows="3" readonly th:text="${orden.observacion}"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card card-stat mb-4">
+                <div class="card-body">
+                    <h5 class="mb-3">Medicamentos solicitados</h5>
+
+                    <div th:if="${#lists.isEmpty(detalles)}" class="alert alert-warning">
+                        La orden no tiene medicamentos registrados.
+                    </div>
+
+                    <div class="table-responsive" th:if="${!#lists.isEmpty(detalles)}">
+                        <table class="table table-hover align-middle">
+                            <thead>
+                            <tr>
+                                <th>Medicamento</th>
+                                <th>Categoría</th>
+                                <th>Concentración</th>
+                                <th>Presentación</th>
+                                <th>Stock actual</th>
+                                <th>Cantidad solicitada</th>
+                                <th>Precio ref.</th>
+                                <th>Subtotal</th>
+                            </tr>
+                            </thead>
+
+                            <tbody>
+                            <tr th:each="detalle : ${detalles}">
+                                <td th:text="${detalle.medicamento.nombreMedicamento}">Paracetamol</td>
+                                <td th:text="${detalle.medicamento.categoria.nombreCategoria}">Analgésicos</td>
+                                <td th:text="${detalle.medicamento.concentracion}">500 mg</td>
+                                <td th:text="${detalle.medicamento.presentacion}">Tabletas</td>
+                                <td th:text="${detalle.medicamento.stockActual}">120</td>
+                                <td th:text="${detalle.cantidadSolicitada}">100</td>
+                                <td th:text="${detalle.precioReferencial}">0.50</td>
+                                <td th:text="${detalle.subtotal}">50.00</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="card card-stat" th:if="${orden.estadoOrden == 'PENDIENTE_REVISION'}">
+                <div class="card-body">
+                    <h5 class="mb-3">Decisión del químico farmacéutico</h5>
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <form th:action="@{/farmacia/compras/quimico/ordenes/{id}/autorizar(id=${orden.idOrdenCompra})}"
+                                  method="post">
+                                <label class="form-label">Observación de autorización</label>
+                                <textarea name="observacion"
+                                          class="form-control mb-3"
+                                          rows="3"
+                                          placeholder="Orden conforme para compra."></textarea>
+
+                                <button type="submit" class="btn btn-success w-100">
+                                    Autorizar orden de compra
+                                </button>
+                            </form>
+                        </div>
+
+                        <div class="col-md-6">
+                            <form th:action="@{/farmacia/compras/quimico/ordenes/{id}/rechazar(id=${orden.idOrdenCompra})}"
+                                  method="post">
+                                <label class="form-label">Motivo de rechazo</label>
+                                <textarea name="observacion"
+                                          class="form-control mb-3"
+                                          rows="3"
+                                          placeholder="Indique el motivo del rechazo."></textarea>
+
+                                <button type="submit" class="btn btn-danger w-100">
+                                    Rechazar orden de compra
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card card-stat" th:if="${orden.estadoOrden != 'PENDIENTE_REVISION'}">
+                <div class="card-body d-flex justify-content-end">
+                    <a th:href="@{/farmacia/compras/quimico/ordenes}" class="btn btn-outline-secondary">
+                        Volver a órdenes
+                    </a>
+                </div>
+            </div>
+
+        </main>
+    </div>
+</div>
+
+</body>
+</html>
