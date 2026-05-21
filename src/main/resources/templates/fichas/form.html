@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <title>Registrar Ficha de Admisión | Sistema Hospitalario</title>
-
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -22,7 +21,7 @@
                 <a class="nav-link" th:href="@{/dashboard}">Dashboard</a>
                 <a class="nav-link" th:href="@{/citas/nueva}">Registrar nueva cita</a>
                 <a class="nav-link" th:href="@{/citas}">Consultar citas</a>
-                <a class="nav-link" th:href="@{/fichas-admision/nueva}">Registrar ficha de admisión</a>
+                <a class="nav-link" th:href="@{/fichas/nueva}">Registrar ficha de admisión</a>
 
                 <hr class="text-white">
 
@@ -36,7 +35,7 @@
                 <div>
                     <h1 class="page-title">Registrar Ficha de Admisión</h1>
                     <p class="text-muted">
-                        Registro inicial del paciente para continuar con el proceso de atención clínica.
+                        Confirmación de llegada del paciente para iniciar el proceso de historia clínica.
                     </p>
                 </div>
 
@@ -45,59 +44,37 @@
                 </a>
             </div>
 
-            <div class="card card-stat mb-4">
-                <div class="card-body">
-                    <h5 class="mb-3">1. Consulta de paciente y cita médica</h5>
+            <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+            <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
 
-                    <form action="#" method="get" class="row g-3">
-                        <div class="col-md-4">
-                            <label class="form-label">DNI del paciente</label>
-                            <input type="text"
-                                   class="form-control"
-                                   maxlength="8"
-                                   placeholder="Ingrese DNI">
-                        </div>
-
-                        <div class="col-md-4 d-flex align-items-end">
-                            <button type="button" class="btn btn-outline-primary w-100">
-                                Consultar cita médica
-                            </button>
-                        </div>
-
-                        <div class="col-md-4 d-flex align-items-end">
-                            <span class="badge bg-success p-3 w-100">
-                                Cita encontrada
-                            </span>
-                        </div>
-                    </form>
-                </div>
+            <div class="alert alert-info">
+                El recepcionista solo registra la ficha de admisión. La consulta de fichas y el triaje corresponden a enfermería.
             </div>
 
-            <form action="#" method="post">
+            <form th:action="@{/fichas/guardar}" method="post">
 
                 <div class="card card-stat mb-4">
                     <div class="card-body">
-                        <h5 class="mb-3">2. Datos del paciente</h5>
+                        <h5 class="mb-3">1. Selección de cita médica</h5>
 
                         <div class="row g-3">
-                            <div class="col-md-4">
-                                <label class="form-label">Paciente</label>
-                                <input type="text" class="form-control" value="Juan Pérez Ramos" readonly>
-                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label">Cita médica</label>
 
-                            <div class="col-md-2">
-                                <label class="form-label">DNI</label>
-                                <input type="text" class="form-control" value="76543210" readonly>
-                            </div>
+                                <select name="idCita" class="form-select" required>
+                                    <option value="">Seleccione cita</option>
 
-                            <div class="col-md-2">
-                                <label class="form-label">Edad</label>
-                                <input type="text" class="form-control" value="35" readonly>
-                            </div>
+                                    <option th:each="cita : ${citas}"
+                                            th:if="${cita.estadoCita != 'ANULADA'}"
+                                            th:value="${cita.idCita}"
+                                            th:text="${'CIT-' + cita.idCita + ' | DNI: ' + cita.paciente.dniPaciente + ' | ' + cita.paciente.nombreCompleto + ' | ' + cita.especialidad.nombreEspecialidad + ' | ' + #temporals.format(cita.fechaCita, 'dd/MM/yyyy') + ' ' + #temporals.format(cita.horaCita, 'HH:mm') + ' | ' + cita.estadoCita}">
+                                        CIT-1 | Paciente | Especialidad | Fecha
+                                    </option>
+                                </select>
 
-                            <div class="col-md-4">
-                                <label class="form-label">Teléfono</label>
-                                <input type="text" class="form-control" value="987654321" readonly>
+                                <div class="form-text">
+                                    Al registrar la ficha, la cita cambia a estado CONFIRMADA y se habilita el triaje para enfermería.
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -105,80 +82,30 @@
 
                 <div class="card card-stat mb-4">
                     <div class="card-body">
-                        <h5 class="mb-3">3. Datos de la cita asociada</h5>
-
-                        <div class="row g-3">
-                            <div class="col-md-3">
-                                <label class="form-label">Código de cita</label>
-                                <input type="text" class="form-control" value="CIT-0001" readonly>
-                            </div>
-
-                            <div class="col-md-3">
-                                <label class="form-label">Fecha</label>
-                                <input type="text" class="form-control" value="20/05/2026" readonly>
-                            </div>
-
-                            <div class="col-md-3">
-                                <label class="form-label">Hora</label>
-                                <input type="text" class="form-control" value="09:00" readonly>
-                            </div>
-
-                            <div class="col-md-3">
-                                <label class="form-label">Estado de cita</label>
-                                <input type="text" class="form-control" value="PROGRAMADA" readonly>
-                            </div>
-
-                            <div class="col-md-4">
-                                <label class="form-label">Especialidad</label>
-                                <input type="text" class="form-control" value="Medicina General" readonly>
-                            </div>
-
-                            <div class="col-md-4">
-                                <label class="form-label">Médico</label>
-                                <input type="text" class="form-control" value="Dr. Carlos Mendoza" readonly>
-                            </div>
-
-                            <div class="col-md-4">
-                                <label class="form-label">Consultorio</label>
-                                <input type="text" class="form-control" value="Consultorio 201" readonly>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card card-stat mb-4">
-                    <div class="card-body">
-                        <h5 class="mb-3">4. Datos de admisión</h5>
+                        <h5 class="mb-3">2. Datos de admisión</h5>
 
                         <div class="row g-3">
                             <div class="col-md-4">
                                 <label class="form-label">Tipo de admisión</label>
-                                <select class="form-select">
-                                    <option selected>Consulta externa</option>
-                                    <option>Emergencia</option>
-                                    <option>Control médico</option>
+                                <select name="tipoAdmision" class="form-select" required>
+                                    <option value="Consulta externa">Consulta externa</option>
+                                    <option value="Emergencia">Emergencia</option>
+                                    <option value="Control">Control</option>
                                 </select>
                             </div>
 
                             <div class="col-md-4">
                                 <label class="form-label">Prioridad</label>
-                                <select class="form-select">
-                                    <option selected>Normal</option>
-                                    <option>Preferencial</option>
-                                    <option>Urgente</option>
+                                <select name="prioridad" class="form-select" required>
+                                    <option value="Normal">Normal</option>
+                                    <option value="Alta">Alta</option>
+                                    <option value="Urgente">Urgente</option>
                                 </select>
                             </div>
 
                             <div class="col-md-4">
-                                <label class="form-label">Estado de ficha</label>
+                                <label class="form-label">Estado inicial</label>
                                 <input type="text" class="form-control" value="REGISTRADA" readonly>
-                            </div>
-
-                            <div class="col-md-12">
-                                <label class="form-label">Observaciones de admisión</label>
-                                <textarea class="form-control"
-                                          rows="3"
-                                          placeholder="Ingrese observaciones iniciales"></textarea>
                             </div>
                         </div>
                     </div>

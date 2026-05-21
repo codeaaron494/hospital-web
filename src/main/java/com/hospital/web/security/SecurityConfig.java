@@ -31,7 +31,7 @@ public class SecurityConfig {
                 .requestMatchers("/admin/**")
                 .hasRole("ADMIN")
 
-                // CUS Gestión de Citas
+                // CUS 1 - Gestión de Citas
                 .requestMatchers("/dashboard")
                 .hasAnyRole("ADMIN", "RECEPCIONISTA")
 
@@ -41,11 +41,18 @@ public class SecurityConfig {
                 .requestMatchers("/pacientes/**")
                 .hasAnyRole("ADMIN", "RECEPCIONISTA")
 
-                // CUS Gestión de Historia Clínica - Enfermería
+                // CUS 2 - Gestión de Historia Clínica: Recepción
+                // Recepcionista registra ficha de admisión
+                .requestMatchers("/fichas/**")
+                .hasAnyRole("ADMIN", "RECEPCIONISTA")
+
+                // CUS 2 - Gestión de Historia Clínica: Enfermería
+                // Enfermero consulta fichas y actualiza historia clínica mediante triaje
                 .requestMatchers("/enfermeria/**")
                 .hasAnyRole("ADMIN", "ENFERMERO")
 
-                // CUS Gestión de Historia Clínica - Médico
+                // CUS 2 - Gestión de Historia Clínica: Médico
+                // Médico consulta y actualiza historia clínica mediante atención médica
                 .requestMatchers("/medico/**")
                 .hasAnyRole("ADMIN", "MEDICO")
 

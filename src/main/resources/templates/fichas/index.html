@@ -2,7 +2,7 @@
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Consultar Ficha de Admisión | Sistema Hospitalario</title>
+    <title>Fichas de Admisión | Sistema Hospitalario</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -15,12 +15,13 @@
     <div class="row">
 
         <aside class="col-md-3 col-lg-2 sidebar p-3">
-            <h4 class="text-white mb-4">Enfermería</h4>
+            <h4 class="text-white mb-4">Recepción</h4>
 
             <nav class="nav flex-column">
-                <a class="nav-link" th:href="@{/enfermeria/dashboard}">Dashboard</a>
-                <a class="nav-link" th:href="@{/enfermeria/fichas}">Consultar ficha de admisión</a>
-                <a class="nav-link" th:href="@{/enfermeria/fichas}">Actualizar historia clínica</a>
+                <a class="nav-link" th:href="@{/dashboard}">Dashboard</a>
+                <a class="nav-link" th:href="@{/citas/nueva}">Registrar nueva cita</a>
+                <a class="nav-link" th:href="@{/citas}">Consultar citas</a>
+                <a class="nav-link" th:href="@{/fichas}">Fichas de admisión</a>
 
                 <hr class="text-white">
 
@@ -32,14 +33,14 @@
 
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <div>
-                    <h1 class="page-title">Consultar Ficha de Admisión</h1>
+                    <h1 class="page-title">Fichas de Admisión</h1>
                     <p class="text-muted">
-                        Consulta de fichas registradas por recepción para realizar triaje y actualización inicial de historia clínica.
+                        Consulta de fichas registradas para iniciar el flujo de historia clínica.
                     </p>
                 </div>
 
-                <a th:href="@{/enfermeria/dashboard}" class="btn btn-outline-secondary">
-                    Volver al dashboard
+                <a th:href="@{/fichas/nueva}" class="btn btn-primary">
+                    Registrar ficha
                 </a>
             </div>
 
@@ -48,11 +49,10 @@
 
             <div class="card card-stat mb-4">
                 <div class="card-body">
-                    <h5 class="mb-3">Buscar ficha de admisión</h5>
+                    <h5 class="mb-3">Buscar ficha por DNI</h5>
 
-                    <form th:action="@{/enfermeria/fichas}" method="get" class="row g-3">
-
-                        <div class="col-md-5">
+                    <form th:action="@{/fichas}" method="get" class="row g-3">
+                        <div class="col-md-8">
                             <label class="form-label">DNI del paciente</label>
                             <input type="text"
                                    name="dni"
@@ -62,34 +62,18 @@
                                    th:value="${dniBuscado}">
                         </div>
 
-                        <div class="col-md-4">
-                            <label class="form-label">Estado de ficha</label>
-                            <select name="estado" class="form-select">
-                                <option value="">Todos</option>
-                                <option value="REGISTRADA" th:selected="${estadoBuscado == 'REGISTRADA'}">REGISTRADA</option>
-                                <option value="TRIAJE_REGISTRADO" th:selected="${estadoBuscado == 'TRIAJE_REGISTRADO'}">TRIAJE_REGISTRADO</option>
-                            </select>
-                        </div>
-
-                        <div class="col-md-3 d-flex align-items-end">
+                        <div class="col-md-4 d-flex align-items-end">
                             <button type="submit" class="btn btn-outline-primary w-100">
-                                Consultar
+                                Buscar ficha
                             </button>
                         </div>
-
                     </form>
-
-                    <div class="mt-3">
-                        <a th:href="@{/enfermeria/fichas}" class="btn btn-outline-secondary btn-sm">
-                            Limpiar búsqueda
-                        </a>
-                    </div>
                 </div>
             </div>
 
             <div class="card card-stat">
                 <div class="card-body">
-                    <h5 class="mb-3">Fichas de admisión registradas</h5>
+                    <h5 class="mb-3">Fichas registradas</h5>
 
                     <div th:if="${#lists.isEmpty(fichas)}" class="alert alert-warning">
                         No se encontraron fichas de admisión.
@@ -99,15 +83,15 @@
                         <table class="table table-hover align-middle">
                             <thead>
                             <tr>
-                                <th>Código ficha</th>
+                                <th>Código</th>
                                 <th>Paciente</th>
                                 <th>DNI</th>
                                 <th>Cita</th>
-                                <th>Especialidad</th>
-                                <th>Fecha cita</th>
+                                <th>Fecha admisión</th>
+                                <th>Tipo</th>
                                 <th>Prioridad</th>
-                                <th>Estado ficha</th>
-                                <th class="text-end">Acción</th>
+                                <th>Estado</th>
+                                <th class="text-end">Acciones</th>
                             </tr>
                             </thead>
 
@@ -127,12 +111,12 @@
                                     CIT-1
                                 </td>
 
-                                <td th:text="${ficha.cita.especialidad.nombreEspecialidad}">
-                                    Medicina General
+                                <td th:text="${#temporals.format(ficha.fechaAdmision, 'dd/MM/yyyy HH:mm')}">
+                                    21/05/2026 07:45
                                 </td>
 
-                                <td th:text="${#temporals.format(ficha.cita.fechaCita, 'dd/MM/yyyy') + ' ' + #temporals.format(ficha.cita.horaCita, 'HH:mm')}">
-                                    21/05/2026 08:00
+                                <td th:text="${ficha.tipoAdmision}">
+                                    Consulta externa
                                 </td>
 
                                 <td th:text="${ficha.prioridad}">
@@ -140,26 +124,15 @@
                                 </td>
 
                                 <td>
-                                    <span th:if="${ficha.estadoFicha == 'REGISTRADA'}"
-                                          class="badge bg-info"
-                                          th:text="${ficha.estadoFicha}">
-                                    </span>
-
-                                    <span th:if="${ficha.estadoFicha == 'TRIAJE_REGISTRADO'}"
-                                          class="badge bg-success"
-                                          th:text="${ficha.estadoFicha}">
-                                    </span>
-
-                                    <span th:if="${ficha.estadoFicha != 'REGISTRADA' and ficha.estadoFicha != 'TRIAJE_REGISTRADO'}"
-                                          class="badge bg-secondary"
-                                          th:text="${ficha.estadoFicha}">
+                                    <span class="badge bg-info" th:text="${ficha.estadoFicha}">
+                                        REGISTRADA
                                     </span>
                                 </td>
 
                                 <td class="text-end">
-                                    <a th:href="@{/enfermeria/triaje/{idFicha}(idFicha=${ficha.idFichaAdmision})}"
-                                       class="btn btn-sm btn-primary">
-                                        Actualizar historia clínica
+                                    <a th:href="@{/fichas/{id}(id=${ficha.idFichaAdmision})}"
+                                       class="btn btn-sm btn-outline-primary">
+                                        Ver
                                     </a>
                                 </td>
                             </tr>
@@ -168,7 +141,7 @@
                     </div>
 
                     <p class="text-muted small mb-0">
-                        La actualización inicial de historia clínica se realiza mediante el registro de triaje.
+                        La ficha confirma la llegada del paciente y habilita el registro de triaje.
                     </p>
                 </div>
             </div>
@@ -177,6 +150,9 @@
 
     </div>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script th:src="@{/js/app.js}"></script>
 
 </body>
 </html>
