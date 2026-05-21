@@ -2,7 +2,7 @@
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Registrar Nueva Cita | Sistema Hospitalario</title>
+    <title>Registrar Cita | Sistema Hospitalario</title>
 
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -35,133 +35,153 @@
                 <div>
                     <h1 class="page-title">Registrar Nueva Cita</h1>
                     <p class="text-muted">
-                        Complete los datos necesarios para generar una cita médica.
+                        Registro de cita médica validando paciente, especialidad, médico y horario disponible.
                     </p>
                 </div>
 
                 <a th:href="@{/citas}" class="btn btn-outline-secondary">
-                    Volver a consultar citas
+                    Volver a citas
                 </a>
             </div>
 
-            <form action="#" method="post">
+            <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+            <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+            <div class="alert alert-info">
+                Para registrar una cita, el paciente debe estar registrado y activo. El horario seleccionado debe estar disponible.
+            </div>
+
+            <div class="card card-stat mb-4">
+                <div class="card-body">
+                    <h5 class="mb-3">Buscar paciente por DNI</h5>
+
+                    <form th:action="@{/citas}" method="get" class="row g-3">
+                        <div class="col-md-8">
+                            <label class="form-label">DNI del paciente</label>
+                            <input type="text"
+                                   name="dni"
+                                   maxlength="8"
+                                   class="form-control"
+                                   placeholder="Ingrese DNI para consultar citas existentes">
+                        </div>
+
+                        <div class="col-md-4 d-flex align-items-end">
+                            <button type="submit" class="btn btn-outline-primary w-100">
+                                Consultar citas del paciente
+                            </button>
+                        </div>
+                    </form>
+
+                    <div class="mt-3">
+                        <a th:href="@{/pacientes/nuevo}" class="btn btn-outline-success">
+                            Registrar paciente nuevo
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <form th:action="@{/citas/guardar}" method="post">
 
                 <div class="card card-stat mb-4">
                     <div class="card-body">
                         <h5 class="mb-3">1. Datos del paciente</h5>
 
                         <div class="row g-3">
+                            <div class="col-md-12">
+                                <label class="form-label">Paciente registrado</label>
+                                <select name="idPaciente" class="form-select" required>
+                                    <option value="">Seleccione paciente</option>
 
-                            <div class="col-md-4">
-                                <label class="form-label">DNI del paciente</label>
-                                <input type="text"
-                                       class="form-control"
-                                       placeholder="Ingrese DNI"
-                                       maxlength="8">
+                                    <option th:each="paciente : ${pacientes}"
+                                            th:value="${paciente.idPaciente}"
+                                            th:text="${paciente.dniPaciente + ' - ' + paciente.nombreCompleto + ' (' + paciente.estadoPaciente + ')'}">
+                                        76543210 - Juan Pérez Ramos
+                                    </option>
+                                </select>
+
+                                <div class="form-text">
+                                    Si el paciente no aparece en la lista, primero debe registrarse.
+                                </div>
                             </div>
-
-                            <div class="col-md-2 d-flex align-items-end">
-                                <button type="button" class="btn btn-outline-primary w-100">
-                                    Buscar
-                                </button>
-                            </div>
-
-                            <div class="col-md-6 d-flex align-items-end">
-                                <a th:href="@{/pacientes/nuevo}" class="btn btn-outline-success w-100">
-                                    Registrar paciente nuevo
-                                </a>
-                            </div>
-
-                            <div class="col-md-6">
-                                <label class="form-label">Paciente</label>
-                                <input type="text"
-                                       class="form-control"
-                                       value="Juan Pérez Ramos"
-                                       readonly>
-                            </div>
-
-                            <div class="col-md-3">
-                                <label class="form-label">Edad</label>
-                                <input type="text"
-                                       class="form-control"
-                                       value="35"
-                                       readonly>
-                            </div>
-
-                            <div class="col-md-3">
-                                <label class="form-label">Teléfono</label>
-                                <input type="text"
-                                       class="form-control"
-                                       value="987654321"
-                                       readonly>
-                            </div>
-
                         </div>
                     </div>
                 </div>
 
                 <div class="card card-stat mb-4">
                     <div class="card-body">
-                        <h5 class="mb-3">2. Datos de la cita</h5>
+                        <h5 class="mb-3">2. Especialidad y médico</h5>
 
                         <div class="row g-3">
-
                             <div class="col-md-6">
                                 <label class="form-label">Especialidad</label>
-                                <select class="form-select">
-                                    <option selected>Seleccione una especialidad</option>
-                                    <option>Medicina General</option>
-                                    <option>Pediatría</option>
-                                    <option>Traumatología</option>
-                                    <option>Cardiología</option>
-                                    <option>Dermatología</option>
+                                <select name="idEspecialidad" class="form-select" required>
+                                    <option value="">Seleccione especialidad</option>
+
+                                    <option th:each="especialidad : ${especialidades}"
+                                            th:value="${especialidad.idEspecialidad}"
+                                            th:text="${especialidad.nombreEspecialidad}">
+                                        Medicina General
+                                    </option>
                                 </select>
                             </div>
 
                             <div class="col-md-6">
                                 <label class="form-label">Médico</label>
-                                <select class="form-select">
-                                    <option selected>Seleccione un médico</option>
-                                    <option>Dr. Carlos Mendoza</option>
-                                    <option>Dra. Rosa Salinas</option>
-                                    <option>Dra. Ana Torres</option>
-                                    <option>Dr. Luis Herrera</option>
+                                <select name="idMedico" class="form-select" required>
+                                    <option value="">Seleccione médico</option>
+
+                                    <option th:each="medico : ${medicos}"
+                                            th:value="${medico.idMedico}"
+                                            th:text="${medico.nombreCompleto + ' - ' + medico.especialidad.nombreEspecialidad}">
+                                        Carlos Mendoza - Medicina General
+                                    </option>
                                 </select>
-                            </div>
 
-                            <div class="col-md-4">
-                                <label class="form-label">Fecha</label>
-                                <input type="date" class="form-control">
+                                <div class="form-text">
+                                    El sistema validará que el médico pertenezca a la especialidad seleccionada.
+                                </div>
                             </div>
+                        </div>
+                    </div>
+                </div>
 
-                            <div class="col-md-4">
-                                <label class="form-label">Horario disponible</label>
-                                <select class="form-select">
-                                    <option selected>Seleccione horario</option>
-                                    <option>08:00</option>
-                                    <option>08:30</option>
-                                    <option>09:00</option>
-                                    <option>09:30</option>
-                                    <option>10:00</option>
-                                    <option>10:30</option>
+                <div class="card card-stat mb-4">
+                    <div class="card-body">
+                        <h5 class="mb-3">3. Horario disponible</h5>
+
+                        <div class="row g-3">
+                            <div class="col-md-12">
+                                <label class="form-label">Agenda médica disponible</label>
+                                <select name="idAgenda" class="form-select" required>
+                                    <option value="">Seleccione horario disponible</option>
+
+                                    <option th:each="agenda : ${agendasDisponibles}"
+                                            th:value="${agenda.idAgenda}"
+                                            th:text="${agenda.medico.nombreCompleto + ' | ' + agenda.medico.especialidad.nombreEspecialidad + ' | ' + #temporals.format(agenda.fechaAgenda, 'dd/MM/yyyy') + ' ' + #temporals.format(agenda.horaInicio, 'HH:mm') + ' - ' + #temporals.format(agenda.horaFin, 'HH:mm')}">
+                                        Médico | Especialidad | Fecha y hora
+                                    </option>
                                 </select>
-                            </div>
 
-                            <div class="col-md-4">
-                                <label class="form-label">Estado</label>
-                                <input type="text"
-                                       class="form-control"
-                                       value="PROGRAMADA"
-                                       readonly>
+                                <div class="form-text">
+                                    Solo se muestran horarios con estado DISPONIBLE.
+                                </div>
                             </div>
+                        </div>
+                    </div>
+                </div>
 
+                <div class="card card-stat mb-4">
+                    <div class="card-body">
+                        <h5 class="mb-3">4. Motivo de consulta</h5>
+
+                        <div class="row g-3">
                             <div class="col-md-12">
                                 <label class="form-label">Motivo de consulta</label>
-                                <textarea class="form-control"
-                                          rows="3"
-                                          placeholder="Ingrese el motivo de la cita"></textarea>
+                                <textarea name="motivoConsulta"
+                                          class="form-control"
+                                          rows="4"
+                                          placeholder="Ingrese el motivo de la cita médica"></textarea>
                             </div>
-
                         </div>
                     </div>
                 </div>
@@ -173,7 +193,7 @@
                         </a>
 
                         <button type="submit" class="btn btn-primary">
-                            Generar cita médica
+                            Registrar cita médica
                         </button>
                     </div>
                 </div>

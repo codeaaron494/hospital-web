@@ -35,7 +35,7 @@
                 <div>
                     <h1 class="page-title">Registrar Paciente</h1>
                     <p class="text-muted">
-                        Registro auxiliar del paciente cuando no existe durante el proceso de cita médica.
+                        Registro de datos básicos del paciente para poder gestionar citas médicas.
                     </p>
                 </div>
 
@@ -44,86 +44,70 @@
                 </a>
             </div>
 
-            <form action="#" method="post">
+            <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+            <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+            <div class="alert alert-info">
+                Según RN-01, todo paciente debe estar registrado en el sistema antes de gestionar una cita médica.
+            </div>
+
+            <form th:action="@{/pacientes/guardar}" th:object="${paciente}" method="post">
 
                 <div class="card card-stat mb-4">
                     <div class="card-body">
-                        <h5 class="mb-3">Datos personales</h5>
+                        <h5 class="mb-3">Datos personales del paciente</h5>
 
                         <div class="row g-3">
 
                             <div class="col-md-3">
                                 <label class="form-label">DNI</label>
-                                <input type="text" class="form-control" maxlength="8" placeholder="Ingrese DNI">
+                                <input type="text"
+                                       th:field="*{dniPaciente}"
+                                       maxlength="8"
+                                       class="form-control"
+                                       placeholder="Ingrese DNI"
+                                       required>
+                                <div class="form-text">
+                                    Debe contener 8 dígitos.
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label">Nombres</label>
+                                <input type="text"
+                                       th:field="*{nombresPaciente}"
+                                       class="form-control"
+                                       placeholder="Ingrese nombres"
+                                       required>
                             </div>
 
                             <div class="col-md-5">
-                                <label class="form-label">Nombres</label>
-                                <input type="text" class="form-control" placeholder="Ingrese nombres">
-                            </div>
-
-                            <div class="col-md-4">
                                 <label class="form-label">Apellidos</label>
-                                <input type="text" class="form-control" placeholder="Ingrese apellidos">
-                            </div>
-
-                            <div class="col-md-3">
-                                <label class="form-label">Fecha de nacimiento</label>
-                                <input type="date" class="form-control">
-                            </div>
-
-                            <div class="col-md-3">
-                                <label class="form-label">Sexo</label>
-                                <select class="form-select">
-                                    <option selected>Seleccione</option>
-                                    <option>Masculino</option>
-                                    <option>Femenino</option>
-                                </select>
-                            </div>
-
-                            <div class="col-md-3">
-                                <label class="form-label">Teléfono</label>
-                                <input type="text" class="form-control" placeholder="Ingrese teléfono">
-                            </div>
-
-                            <div class="col-md-3">
-                                <label class="form-label">Correo</label>
-                                <input type="email" class="form-control" placeholder="correo@ejemplo.com">
-                            </div>
-
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card card-stat mb-4">
-                    <div class="card-body">
-                        <h5 class="mb-3">Dirección y contacto</h5>
-
-                        <div class="row g-3">
-
-                            <div class="col-md-8">
-                                <label class="form-label">Dirección</label>
-                                <input type="text" class="form-control" placeholder="Ingrese dirección">
+                                <input type="text"
+                                       th:field="*{apellidosPaciente}"
+                                       class="form-control"
+                                       placeholder="Ingrese apellidos"
+                                       required>
                             </div>
 
                             <div class="col-md-4">
-                                <label class="form-label">Distrito</label>
-                                <input type="text" class="form-control" placeholder="Ingrese distrito">
+                                <label class="form-label">Teléfono</label>
+                                <input type="text"
+                                       th:field="*{telefonoPaciente}"
+                                       maxlength="15"
+                                       class="form-control"
+                                       placeholder="Ingrese teléfono">
                             </div>
 
-                            <div class="col-md-6">
-                                <label class="form-label">Contacto de emergencia</label>
-                                <input type="text" class="form-control" placeholder="Nombre del contacto">
-                            </div>
-
-                            <div class="col-md-3">
-                                <label class="form-label">Parentesco</label>
-                                <input type="text" class="form-control" placeholder="Ej. Madre, padre, hermano">
-                            </div>
-
-                            <div class="col-md-3">
-                                <label class="form-label">Teléfono de emergencia</label>
-                                <input type="text" class="form-control" placeholder="Teléfono">
+                            <div class="col-md-4">
+                                <label class="form-label">Estado del paciente</label>
+                                <select th:field="*{estadoPaciente}" class="form-select" required>
+                                    <option value="ACTIVO">ACTIVO</option>
+                                    <option value="INACTIVO">INACTIVO</option>
+                                </select>
+                                <div class="form-text">
+                                    Solo pacientes activos podrán gestionar citas.
+                                </div>
                             </div>
 
                         </div>

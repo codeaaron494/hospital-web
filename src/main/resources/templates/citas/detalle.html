@@ -35,38 +35,62 @@
                 <div>
                     <h1 class="page-title">Detalle de Cita Médica</h1>
                     <p class="text-muted">
-                        Información completa de la cita médica consultada.
+                        Constancia de cita médica registrada en el sistema.
                     </p>
                 </div>
 
                 <a th:href="@{/citas}" class="btn btn-outline-secondary">
-                    Volver a consultar citas
+                    Volver a citas
                 </a>
             </div>
 
+            <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+            <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
             <div class="card card-stat mb-4">
                 <div class="card-body">
-                    <h5 class="mb-3">Datos generales de la cita</h5>
+                    <h5 class="mb-3">Datos de la cita</h5>
 
                     <div class="row g-3">
                         <div class="col-md-3">
                             <label class="form-label">Código de cita</label>
-                            <input type="text" class="form-control" value="CIT-0001" readonly>
-                        </div>
-
-                        <div class="col-md-3">
-                            <label class="form-label">Fecha</label>
-                            <input type="text" class="form-control" value="20/05/2026" readonly>
-                        </div>
-
-                        <div class="col-md-3">
-                            <label class="form-label">Hora</label>
-                            <input type="text" class="form-control" value="09:00" readonly>
+                            <input type="text"
+                                   class="form-control"
+                                   th:value="${'CIT-' + cita.idCita}"
+                                   readonly>
                         </div>
 
                         <div class="col-md-3">
                             <label class="form-label">Estado</label>
-                            <input type="text" class="form-control" value="PROGRAMADA" readonly>
+                            <input type="text"
+                                   class="form-control"
+                                   th:value="${cita.estadoCita}"
+                                   readonly>
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="form-label">Fecha</label>
+                            <input type="text"
+                                   class="form-control"
+                                   th:value="${#temporals.format(cita.fechaCita, 'dd/MM/yyyy')}"
+                                   readonly>
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="form-label">Hora</label>
+                            <input type="text"
+                                   class="form-control"
+                                   th:value="${#temporals.format(cita.horaCita, 'HH:mm')}"
+                                   readonly>
+                        </div>
+
+                        <div class="col-md-12">
+                            <label class="form-label">Motivo de consulta</label>
+                            <textarea class="form-control"
+                                      rows="3"
+                                      readonly
+                                      th:text="${cita.motivoConsulta}">
+                            </textarea>
                         </div>
                     </div>
                 </div>
@@ -77,24 +101,36 @@
                     <h5 class="mb-3">Datos del paciente</h5>
 
                     <div class="row g-3">
-                        <div class="col-md-4">
-                            <label class="form-label">Paciente</label>
-                            <input type="text" class="form-control" value="Juan Pérez Ramos" readonly>
-                        </div>
-
-                        <div class="col-md-2">
+                        <div class="col-md-3">
                             <label class="form-label">DNI</label>
-                            <input type="text" class="form-control" value="76543210" readonly>
+                            <input type="text"
+                                   class="form-control"
+                                   th:value="${cita.paciente.dniPaciente}"
+                                   readonly>
+                        </div>
+
+                        <div class="col-md-5">
+                            <label class="form-label">Paciente</label>
+                            <input type="text"
+                                   class="form-control"
+                                   th:value="${cita.paciente.nombreCompleto}"
+                                   readonly>
                         </div>
 
                         <div class="col-md-2">
-                            <label class="form-label">Edad</label>
-                            <input type="text" class="form-control" value="35" readonly>
+                            <label class="form-label">Teléfono</label>
+                            <input type="text"
+                                   class="form-control"
+                                   th:value="${cita.paciente.telefonoPaciente}"
+                                   readonly>
                         </div>
 
-                        <div class="col-md-4">
-                            <label class="form-label">Teléfono</label>
-                            <input type="text" class="form-control" value="987654321" readonly>
+                        <div class="col-md-2">
+                            <label class="form-label">Estado paciente</label>
+                            <input type="text"
+                                   class="form-control"
+                                   th:value="${cita.paciente.estadoPaciente}"
+                                   readonly>
                         </div>
                     </div>
                 </div>
@@ -102,27 +138,55 @@
 
             <div class="card card-stat mb-4">
                 <div class="card-body">
-                    <h5 class="mb-3">Datos médicos</h5>
+                    <h5 class="mb-3">Datos de atención programada</h5>
 
                     <div class="row g-3">
                         <div class="col-md-4">
                             <label class="form-label">Especialidad</label>
-                            <input type="text" class="form-control" value="Medicina General" readonly>
+                            <input type="text"
+                                   class="form-control"
+                                   th:value="${cita.especialidad.nombreEspecialidad}"
+                                   readonly>
                         </div>
 
                         <div class="col-md-4">
                             <label class="form-label">Médico</label>
-                            <input type="text" class="form-control" value="Dr. Carlos Mendoza" readonly>
+                            <input type="text"
+                                   class="form-control"
+                                   th:value="${cita.medico.nombreCompleto}"
+                                   readonly>
                         </div>
 
                         <div class="col-md-4">
-                            <label class="form-label">Consultorio</label>
-                            <input type="text" class="form-control" value="Consultorio 201" readonly>
+                            <label class="form-label">CMP</label>
+                            <input type="text"
+                                   class="form-control"
+                                   th:value="${cita.medico.cmpMedico}"
+                                   readonly>
                         </div>
 
-                        <div class="col-md-12">
-                            <label class="form-label">Motivo de consulta</label>
-                            <textarea class="form-control" rows="3" readonly>Dolor de cabeza y malestar general.</textarea>
+                        <div class="col-md-4">
+                            <label class="form-label">Horario reservado</label>
+                            <input type="text"
+                                   class="form-control"
+                                   th:value="${#temporals.format(cita.agenda.horaInicio, 'HH:mm') + ' - ' + #temporals.format(cita.agenda.horaFin, 'HH:mm')}"
+                                   readonly>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label">Estado horario</label>
+                            <input type="text"
+                                   class="form-control"
+                                   th:value="${cita.agenda.estadoHorario}"
+                                   readonly>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label">Registrado por</label>
+                            <input type="text"
+                                   class="form-control"
+                                   th:value="${cita.usuario.username}"
+                                   readonly>
                         </div>
                     </div>
                 </div>
@@ -134,12 +198,20 @@
                         Volver
                     </a>
 
-                    <a th:href="@{/citas/reprogramar}" class="btn btn-warning">
-                        Reprogramar cita
+                    <button type="button" class="btn btn-outline-primary" onclick="window.print()">
+                        Imprimir constancia
+                    </button>
+
+                    <a th:if="${cita.estadoCita != 'ANULADA'}"
+                       th:href="@{/citas/{id}/reprogramar(id=${cita.idCita})}"
+                       class="btn btn-warning">
+                        Reprogramar
                     </a>
 
-                    <a th:href="@{/citas/anular}" class="btn btn-danger">
-                        Anular cita
+                    <a th:if="${cita.estadoCita != 'ANULADA'}"
+                       th:href="@{/citas/{id}/anular(id=${cita.idCita})}"
+                       class="btn btn-danger">
+                        Anular
                     </a>
                 </div>
             </div>

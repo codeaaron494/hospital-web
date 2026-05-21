@@ -17,6 +17,8 @@ public class SecurityConfig {
 
         http
             .authorizeHttpRequests(auth -> auth
+
+                // Recursos públicos
                 .requestMatchers(
                     "/login",
                     "/css/**",
@@ -24,12 +26,81 @@ public class SecurityConfig {
                     "/img/**",
                     "/vendor/**"
                 ).permitAll()
+
+                // Dashboard administrador
+                .requestMatchers("/admin/**")
+                .hasRole("ADMIN")
+
+                // CUS Gestión de Citas
+                .requestMatchers("/dashboard")
+                .hasAnyRole("ADMIN", "RECEPCIONISTA")
+
+                .requestMatchers("/citas/**")
+                .hasAnyRole("ADMIN", "RECEPCIONISTA")
+
+                .requestMatchers("/pacientes/**")
+                .hasAnyRole("ADMIN", "RECEPCIONISTA")
+
+                // CUS Gestión de Historia Clínica - Enfermería
+                .requestMatchers("/enfermeria/**")
+                .hasAnyRole("ADMIN", "ENFERMERO")
+
+                // CUS Gestión de Historia Clínica - Médico
+                .requestMatchers("/medico/**")
+                .hasAnyRole("ADMIN", "MEDICO")
+
+                // CUS Farmacia - Compras: Almacenero
+                .requestMatchers(
+                    "/farmacia/compras/dashboard",
+                    "/farmacia/compras/inventario",
+                    "/farmacia/compras/ordenes/nueva",
+                    "/farmacia/compras/recepcion"
+                )
+                .hasAnyRole("ADMIN", "ALMACENERO")
+
+                // CUS Farmacia - Compras: Químico Farmacéutico
+                .requestMatchers(
+                    "/farmacia/compras/quimico/**",
+                    "/farmacia/compras/ordenes/revision",
+                    "/farmacia/compras/ordenes/autorizadas",
+                    "/farmacia/compras/ordenes/rechazadas"
+                )
+                .hasAnyRole("ADMIN", "QUIMICO_FARMACEUTICO")
+
+                // CUS Farmacia - Compras: Cobranza
+                .requestMatchers(
+                    "/farmacia/compras/cobranza/**",
+                    "/farmacia/compras/comprobantes/**",
+                    "/farmacia/compras/pagos"
+                )
+                .hasAnyRole("ADMIN", "COBRANZA")
+
+                // CUS Farmacia - Inventario: Almacenero
+                .requestMatchers(
+                    "/farmacia/inventario/dashboard",
+                    "/farmacia/inventario/medicamentos/**",
+                    "/farmacia/inventario/kardex",
+                    "/farmacia/inventario/balance"
+                )
+                .hasAnyRole("ADMIN", "ALMACENERO")
+
+                // CUS Farmacia - Inventario: Químico Farmacéutico
+                .requestMatchers("/farmacia/inventario/quimico/**")
+                .hasAnyRole("ADMIN", "QUIMICO_FARMACEUTICO")
+
+                // CUS Farmacia - Entrega de Medicamentos
+                .requestMatchers("/farmacia/entregas/**")
+                .hasAnyRole("ADMIN", "TECNICO_FARMACIA")
+
+                // Cualquier otra ruta requiere login
                 .anyRequest().authenticated()
             )
+
             .formLogin(form -> form
                 .loginPage("/login")
                 .loginProcessingUrl("/login")
                 .successHandler((request, response, authentication) -> {
+
                     boolean isAdmin = authentication.getAuthorities().stream()
                             .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"));
 
@@ -50,6 +121,7 @@ public class SecurityConfig {
 
                     boolean isCobranza = authentication.getAuthorities().stream()
                             .anyMatch(auth -> auth.getAuthority().equals("ROLE_COBRANZA"));
+
                     boolean isTecnico = authentication.getAuthorities().stream()
                             .anyMatch(auth -> auth.getAuthority().equals("ROLE_TECNICO_FARMACIA"));
 
@@ -76,6 +148,7 @@ public class SecurityConfig {
                 .failureUrl("/login?error")
                 .permitAll()
             )
+
             .logout(logout -> logout
                 .logoutUrl("/logout")
                 .logoutSuccessUrl("/login?logout")
@@ -137,14 +210,14 @@ public class SecurityConfig {
                 .build();
 
         return new InMemoryUserDetailsManager(
-        admin,
-        recepcionista,
-        enfermero,
-        medico,
-        almacenero,
-        quimico,
-        cobranza,
-        tecnico
+                admin,
+                recepcionista,
+                enfermero,
+                medico,
+                almacenero,
+                quimico,
+                cobranza,
+                tecnico
         );
     }
 }

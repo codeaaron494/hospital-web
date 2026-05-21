@@ -35,7 +35,7 @@
                 <div>
                     <h1 class="page-title">Consultar Citas</h1>
                     <p class="text-muted">
-                        Busque al paciente por DNI para consultar sus citas médicas registradas.
+                        Consulta de citas médicas registradas por paciente, médico, especialidad y estado.
                     </p>
                 </div>
 
@@ -44,18 +44,22 @@
                 </a>
             </div>
 
+            <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+            <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
             <div class="card card-stat mb-4">
                 <div class="card-body">
-                    <h5 class="mb-3">Buscar paciente</h5>
+                    <h5 class="mb-3">Buscar citas por DNI</h5>
 
                     <form th:action="@{/citas}" method="get" class="row g-3">
                         <div class="col-md-8">
                             <label class="form-label">DNI del paciente</label>
                             <input type="text"
                                    name="dni"
+                                   maxlength="8"
                                    class="form-control"
                                    placeholder="Ingrese DNI"
-                                   maxlength="8">
+                                   th:value="${dniBuscado}">
                         </div>
 
                         <div class="col-md-4 d-flex align-items-end">
@@ -69,70 +73,97 @@
 
             <div class="card card-stat">
                 <div class="card-body">
-                    <h5 class="mb-3">Citas encontradas</h5>
+                    <h5 class="mb-3">Citas registradas</h5>
 
-                    <div class="table-responsive">
+                    <div th:if="${#lists.isEmpty(citas)}" class="alert alert-warning">
+                        No se encontraron citas registradas.
+                    </div>
+
+                    <div class="table-responsive" th:if="${!#lists.isEmpty(citas)}">
                         <table class="table table-hover align-middle">
                             <thead>
                             <tr>
-                                <th>Fecha</th>
-                                <th>Hora</th>
+                                <th>Código</th>
                                 <th>Paciente</th>
                                 <th>DNI</th>
                                 <th>Especialidad</th>
                                 <th>Médico</th>
+                                <th>Fecha</th>
+                                <th>Hora</th>
                                 <th>Estado</th>
                                 <th class="text-end">Acciones</th>
                             </tr>
                             </thead>
 
                             <tbody>
-                            <tr>
-                                <td>20/05/2026</td>
-                                <td>09:00</td>
-                                <td>Juan Pérez Ramos</td>
-                                <td>76543210</td>
-                                <td>Medicina General</td>
-                                <td>Dr. Carlos Mendoza</td>
-                                <td>
-                                    <span class="badge bg-success">PROGRAMADA</span>
-                                </td>
-                                <td class="text-end">
-                                    <a th:href="@{/citas/detalle}" class="btn btn-sm btn-outline-secondary">Ver</a>
-                                    <a th:href="@{/citas/reprogramar}" class="btn btn-sm btn-outline-warning">Reprogramar</a>
-                                    <a th:href="@{/citas/anular}" class="btn btn-sm btn-outline-danger">Anular</a>
-                                </td>
-                            </tr>
+                            <tr th:each="cita : ${citas}">
+                                <td th:text="${'CIT-' + cita.idCita}">CIT-1</td>
 
-                            <tr>
-                                <td>15/05/2026</td>
-                                <td>11:30</td>
-                                <td>Juan Pérez Ramos</td>
-                                <td>76543210</td>
-                                <td>Traumatología</td>
-                                <td>Dra. Rosa Salinas</td>
-                                <td>
-                                    <span class="badge bg-warning text-dark">REPROGRAMADA</span>
+                                <td th:text="${cita.paciente.nombreCompleto}">
+                                    Juan Pérez Ramos
                                 </td>
-                                <td class="text-end">
-                                    <a th:href="@{/citas/detalle}" class="btn btn-sm btn-outline-secondary">Ver</a>
-                                    <a th:href="@{/citas/reprogramar}" class="btn btn-sm btn-outline-warning">Reprogramar</a>
-                                    <a th:href="@{/citas/anular}" class="btn btn-sm btn-outline-danger">Anular</a>
-                                </td>
-                            </tr>
 
-                            <tr>
-                                <td>10/05/2026</td>
-                                <td>08:30</td>
-                                <td>Juan Pérez Ramos</td>
-                                <td>76543210</td>
-                                <td>Pediatría</td>
-                                <td>Dra. Ana Torres</td>
-                                <td>
-                                    <span class="badge bg-danger">ANULADA</span>
+                                <td th:text="${cita.paciente.dniPaciente}">
+                                    76543210
                                 </td>
+
+                                <td th:text="${cita.especialidad.nombreEspecialidad}">
+                                    Medicina General
+                                </td>
+
+                                <td th:text="${cita.medico.nombreCompleto}">
+                                    Carlos Mendoza
+                                </td>
+
+                                <td th:text="${#temporals.format(cita.fechaCita, 'dd/MM/yyyy')}">
+                                    21/05/2026
+                                </td>
+
+                                <td th:text="${#temporals.format(cita.horaCita, 'HH:mm')}">
+                                    08:00
+                                </td>
+
+                                <td>
+                                    <span th:if="${cita.estadoCita == 'PROGRAMADA'}"
+                                          class="badge bg-success"
+                                          th:text="${cita.estadoCita}">
+                                    </span>
+
+                                    <span th:if="${cita.estadoCita == 'REPROGRAMADA'}"
+                                          class="badge bg-warning text-dark"
+                                          th:text="${cita.estadoCita}">
+                                    </span>
+
+                                    <span th:if="${cita.estadoCita == 'ANULADA'}"
+                                          class="badge bg-danger"
+                                          th:text="${cita.estadoCita}">
+                                    </span>
+
+                                    <span th:if="${cita.estadoCita != 'PROGRAMADA'
+                                                and cita.estadoCita != 'REPROGRAMADA'
+                                                and cita.estadoCita != 'ANULADA'}"
+                                          class="badge bg-secondary"
+                                          th:text="${cita.estadoCita}">
+                                    </span>
+                                </td>
+
                                 <td class="text-end">
-                                    <a th:href="@{/citas/detalle}" class="btn btn-sm btn-outline-secondary">Ver</a>
+                                    <a th:href="@{/citas/{id}(id=${cita.idCita})}"
+                                       class="btn btn-sm btn-outline-primary">
+                                        Ver
+                                    </a>
+
+                                    <a th:if="${cita.estadoCita != 'ANULADA'}"
+                                       th:href="@{/citas/{id}/reprogramar(id=${cita.idCita})}"
+                                       class="btn btn-sm btn-outline-warning">
+                                        Reprogramar
+                                    </a>
+
+                                    <a th:if="${cita.estadoCita != 'ANULADA'}"
+                                       th:href="@{/citas/{id}/anular(id=${cita.idCita})}"
+                                       class="btn btn-sm btn-outline-danger">
+                                        Anular
+                                    </a>
                                 </td>
                             </tr>
                             </tbody>
@@ -140,7 +171,7 @@
                     </div>
 
                     <p class="text-muted small mb-0">
-                        Las citas anuladas se muestran dentro del historial de citas del paciente.
+                        Esta vista cumple RF-01 y RF-06: búsqueda por DNI, consulta y acceso a detalle/anulación de citas.
                     </p>
                 </div>
             </div>

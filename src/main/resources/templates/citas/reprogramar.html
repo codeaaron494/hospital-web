@@ -35,13 +35,19 @@
                 <div>
                     <h1 class="page-title">Reprogramar Cita Médica</h1>
                     <p class="text-muted">
-                        Actualice la fecha, médico u horario de una cita previamente consultada.
+                        Cambio de horario de una cita médica registrada.
                     </p>
                 </div>
 
-                <a th:href="@{/citas}" class="btn btn-outline-secondary">
-                    Volver a consultar citas
+                <a th:href="@{/citas/{id}(id=${cita.idCita})}" class="btn btn-outline-secondary">
+                    Volver al detalle
                 </a>
+            </div>
+
+            <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+            <div class="alert alert-warning">
+                Al reprogramar la cita, el horario anterior será liberado y el nuevo horario será ocupado.
             </div>
 
             <div class="card card-stat mb-4">
@@ -49,124 +55,86 @@
                     <h5 class="mb-3">Cita actual</h5>
 
                     <div class="row g-3">
-                        <div class="col-md-4">
-                            <label class="form-label">Paciente</label>
-                            <input type="text" class="form-control" value="Juan Pérez Ramos" readonly>
-                        </div>
-
-                        <div class="col-md-2">
-                            <label class="form-label">DNI</label>
-                            <input type="text" class="form-control" value="76543210" readonly>
+                        <div class="col-md-3">
+                            <label class="form-label">Código</label>
+                            <input type="text" class="form-control" th:value="${'CIT-' + cita.idCita}" readonly>
                         </div>
 
                         <div class="col-md-3">
-                            <label class="form-label">Especialidad actual</label>
-                            <input type="text" class="form-control" value="Medicina General" readonly>
-                        </div>
-
-                        <div class="col-md-3">
-                            <label class="form-label">Médico actual</label>
-                            <input type="text" class="form-control" value="Dr. Carlos Mendoza" readonly>
+                            <label class="form-label">Estado</label>
+                            <input type="text" class="form-control" th:value="${cita.estadoCita}" readonly>
                         </div>
 
                         <div class="col-md-3">
                             <label class="form-label">Fecha actual</label>
-                            <input type="text" class="form-control" value="20/05/2026" readonly>
+                            <input type="text" class="form-control" th:value="${#temporals.format(cita.fechaCita, 'dd/MM/yyyy')}" readonly>
                         </div>
 
                         <div class="col-md-3">
                             <label class="form-label">Hora actual</label>
-                            <input type="text" class="form-control" value="09:00" readonly>
+                            <input type="text" class="form-control" th:value="${#temporals.format(cita.horaCita, 'HH:mm')}" readonly>
                         </div>
 
-                        <div class="col-md-3">
-                            <label class="form-label">Estado actual</label>
-                            <input type="text" class="form-control" value="PROGRAMADA" readonly>
+                        <div class="col-md-4">
+                            <label class="form-label">Paciente</label>
+                            <input type="text" class="form-control" th:value="${cita.paciente.nombreCompleto}" readonly>
                         </div>
 
-                        <div class="col-md-3">
-                            <label class="form-label">Código de cita</label>
-                            <input type="text" class="form-control" value="CIT-0001" readonly>
+                        <div class="col-md-4">
+                            <label class="form-label">Especialidad</label>
+                            <input type="text" class="form-control" th:value="${cita.especialidad.nombreEspecialidad}" readonly>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label">Médico</label>
+                            <input type="text" class="form-control" th:value="${cita.medico.nombreCompleto}" readonly>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <form action="#" method="post">
+            <form th:action="@{/citas/{id}/reprogramar(id=${cita.idCita})}" method="post">
 
                 <div class="card card-stat mb-4">
                     <div class="card-body">
-                        <h5 class="mb-3">Nueva programación</h5>
+                        <h5 class="mb-3">Nuevo horario disponible</h5>
 
-                        <div class="alert alert-info">
-                            Al confirmar la reprogramación, el horario anterior se liberará y el nuevo horario seleccionado quedará ocupado.
+                        <div th:if="${#lists.isEmpty(agendasDisponibles)}" class="alert alert-warning">
+                            No hay horarios disponibles para el médico seleccionado.
                         </div>
 
-                        <div class="row g-3">
-
-                            <div class="col-md-6">
-                                <label class="form-label">Especialidad</label>
-                                <select class="form-select">
-                                    <option>Medicina General</option>
-                                    <option>Pediatría</option>
-                                    <option>Traumatología</option>
-                                    <option>Cardiología</option>
-                                    <option>Dermatología</option>
-                                </select>
-                            </div>
-
-                            <div class="col-md-6">
-                                <label class="form-label">Médico</label>
-                                <select class="form-select">
-                                    <option>Dr. Carlos Mendoza</option>
-                                    <option>Dra. Rosa Salinas</option>
-                                    <option>Dra. Ana Torres</option>
-                                    <option>Dr. Luis Herrera</option>
-                                </select>
-                            </div>
-
-                            <div class="col-md-4">
-                                <label class="form-label">Nueva fecha</label>
-                                <input type="date" class="form-control">
-                            </div>
-
-                            <div class="col-md-4">
-                                <label class="form-label">Nuevo horario disponible</label>
-                                <select class="form-select">
-                                    <option selected>Seleccione horario</option>
-                                    <option>08:00</option>
-                                    <option>08:30</option>
-                                    <option>09:30</option>
-                                    <option>10:00</option>
-                                    <option>10:30</option>
-                                    <option>11:00</option>
-                                </select>
-                            </div>
-
-                            <div class="col-md-4">
-                                <label class="form-label">Nuevo estado</label>
-                                <input type="text" class="form-control" value="REPROGRAMADA" readonly>
-                            </div>
-
+                        <div class="row g-3" th:if="${!#lists.isEmpty(agendasDisponibles)}">
                             <div class="col-md-12">
-                                <label class="form-label">Motivo de reprogramación</label>
-                                <textarea class="form-control"
-                                          rows="3"
-                                          placeholder="Ingrese el motivo de la reprogramación"></textarea>
-                            </div>
+                                <label class="form-label">Seleccione nuevo horario</label>
 
+                                <select name="nuevoIdAgenda" class="form-select" required>
+                                    <option value="">Seleccione horario</option>
+
+                                    <option th:each="agenda : ${agendasDisponibles}"
+                                            th:value="${agenda.idAgenda}"
+                                            th:text="${#temporals.format(agenda.fechaAgenda, 'dd/MM/yyyy') + ' | ' + #temporals.format(agenda.horaInicio, 'HH:mm') + ' - ' + #temporals.format(agenda.horaFin, 'HH:mm') + ' | ' + agenda.estadoHorario}">
+                                        21/05/2026 | 09:30 - 10:00 | DISPONIBLE
+                                    </option>
+                                </select>
+
+                                <div class="form-text">
+                                    Solo se muestran horarios disponibles del mismo médico.
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
 
                 <div class="card card-stat">
                     <div class="card-body d-flex justify-content-end gap-2">
-                        <a th:href="@{/citas}" class="btn btn-outline-secondary">
+                        <a th:href="@{/citas/{id}(id=${cita.idCita})}" class="btn btn-outline-secondary">
                             Cancelar
                         </a>
 
-                        <button type="submit" class="btn btn-warning">
-                            Confirmar reprogramación
+                        <button th:if="${!#lists.isEmpty(agendasDisponibles)}"
+                                type="submit"
+                                class="btn btn-warning">
+                            Reprogramar cita
                         </button>
                     </div>
                 </div>
