@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <title>Registrar Paciente | Sistema Hospitalario</title>
-
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -15,27 +14,36 @@
 <div class="container-fluid">
     <div class="row">
 
+        <!-- SIDEBAR RECEPCIÓN -->
         <aside class="col-md-3 col-lg-2 sidebar p-3">
             <h4 class="text-white mb-4">Recepción</h4>
 
-            <nav class="nav flex-column">
+            <nav class="nav flex-column gap-1">
                 <a class="nav-link" th:href="@{/dashboard}">Dashboard</a>
                 <a class="nav-link" th:href="@{/citas/nueva}">Registrar nueva cita</a>
                 <a class="nav-link" th:href="@{/citas}">Consultar citas</a>
+                <a class="nav-link" th:href="@{/pacientes/nuevo}">Registrar paciente</a>
+                <a class="nav-link" th:href="@{/fichas/nueva}">Registrar ficha de admisión</a>
+                <a class="nav-link" th:href="@{/fichas}">Consultar fichas de admisión</a>
 
-                <hr class="text-white">
+                <hr>
 
-                <a class="nav-link" th:href="@{/logout}">Cerrar sesión</a>
+                <form th:action="@{/logout}" method="post" class="m-0">
+                    <button type="submit" class="nav-link btn btn-link text-start px-0">
+                        Cerrar sesión
+                    </button>
+                </form>
             </nav>
         </aside>
 
+        <!-- CONTENIDO PRINCIPAL -->
         <main class="col-md-9 col-lg-10 content-wrapper">
 
-            <div class="d-flex justify-content-between align-items-center mb-4">
+            <div class="d-flex justify-content-between align-items-start mb-4">
                 <div>
                     <h1 class="page-title">Registrar Paciente</h1>
-                    <p class="text-muted">
-                        Registro de datos básicos del paciente para poder gestionar citas médicas.
+                    <p class="text-muted mb-0">
+                        Registra los datos básicos del paciente para gestionar citas médicas y admisión.
                     </p>
                 </div>
 
@@ -47,15 +55,65 @@
             <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
             <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
 
+            <!-- GUÍA DEL FLUJO -->
             <div class="alert alert-info">
-                Según RN-01, todo paciente debe estar registrado en el sistema antes de gestionar una cita médica.
+                <strong>Flujo de recepción:</strong>
+                validar si el paciente existe → registrar paciente si no existe →
+                continuar con el registro de cita médica o ficha de admisión.
+            </div>
+
+            <!-- RESUMEN DE USO -->
+            <div class="row g-3 mb-4">
+                <div class="col-md-4">
+                    <div class="card card-stat h-100">
+                        <div class="card-body">
+                            <h6 class="text-muted">1. Identificación</h6>
+                            <p class="mb-0">
+                                Registra el DNI del paciente con 8 dígitos.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="card card-stat h-100">
+                        <div class="card-body">
+                            <h6 class="text-muted">2. Datos personales</h6>
+                            <p class="mb-0">
+                                Ingresa nombres, apellidos y teléfono de contacto.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="card card-stat h-100">
+                        <div class="card-body">
+                            <h6 class="text-muted">3. Estado</h6>
+                            <p class="mb-0">
+                                Solo pacientes activos podrán gestionar citas.
+                            </p>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <form th:action="@{/pacientes/guardar}" th:object="${paciente}" method="post">
 
                 <div class="card card-stat mb-4">
                     <div class="card-body">
-                        <h5 class="mb-3">Datos personales del paciente</h5>
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <div>
+                                <h5 class="mb-1">Datos personales del paciente</h5>
+                                <p class="text-muted mb-0">
+                                    Completa los datos obligatorios para registrar al paciente en el sistema.
+                                </p>
+                            </div>
+
+                            <span class="badge bg-secondary">
+                                CUN 1 — Gestión de Citas
+                            </span>
+                        </div>
 
                         <div class="row g-3">
 
@@ -65,7 +123,7 @@
                                        th:field="*{dniPaciente}"
                                        maxlength="8"
                                        class="form-control"
-                                       placeholder="Ingrese DNI"
+                                       placeholder="Ej. 76543210"
                                        required>
                                 <div class="form-text">
                                     Debe contener 8 dígitos.
@@ -77,7 +135,7 @@
                                 <input type="text"
                                        th:field="*{nombresPaciente}"
                                        class="form-control"
-                                       placeholder="Ingrese nombres"
+                                       placeholder="Ej. Juan Carlos"
                                        required>
                             </div>
 
@@ -86,7 +144,7 @@
                                 <input type="text"
                                        th:field="*{apellidosPaciente}"
                                        class="form-control"
-                                       placeholder="Ingrese apellidos"
+                                       placeholder="Ej. Pérez Ramos"
                                        required>
                             </div>
 
@@ -96,7 +154,10 @@
                                        th:field="*{telefonoPaciente}"
                                        maxlength="15"
                                        class="form-control"
-                                       placeholder="Ingrese teléfono">
+                                       placeholder="Ej. 987654321">
+                                <div class="form-text">
+                                    Dato útil para confirmar o reprogramar citas.
+                                </div>
                             </div>
 
                             <div class="col-md-4">
@@ -110,19 +171,41 @@
                                 </div>
                             </div>
 
+                            <div class="col-md-4">
+                                <label class="form-label">Destino del registro</label>
+                                <input type="text"
+                                       class="form-control"
+                                       value="Gestión de citas / admisión"
+                                       readonly>
+                                <div class="form-text">
+                                    Luego podrás continuar con la cita o ficha de admisión.
+                                </div>
+                            </div>
+
                         </div>
                     </div>
                 </div>
 
+                <!-- CONFIRMACIÓN -->
                 <div class="card card-stat">
-                    <div class="card-body d-flex justify-content-end gap-2">
-                        <a th:href="@{/citas/nueva}" class="btn btn-outline-secondary">
-                            Cancelar
-                        </a>
+                    <div class="card-body">
+                        <div class="alert alert-warning">
+                            Verifica el DNI, nombres y apellidos antes de guardar para evitar duplicidad o errores de identificación.
+                        </div>
 
-                        <button type="submit" class="btn btn-primary">
-                            Guardar paciente
-                        </button>
+                        <div class="d-flex flex-wrap justify-content-end gap-2">
+                            <a th:href="@{/dashboard}" class="btn btn-outline-secondary">
+                                Cancelar
+                            </a>
+
+                            <a th:href="@{/citas/nueva}" class="btn btn-outline-primary">
+                                Volver a cita
+                            </a>
+
+                            <button type="submit" class="btn btn-primary">
+                                Guardar paciente
+                            </button>
+                        </div>
                     </div>
                 </div>
 

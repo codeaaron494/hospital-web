@@ -14,45 +14,122 @@
 <div class="container-fluid">
     <div class="row">
 
+        <!-- SIDEBAR RECEPCIÓN -->
         <aside class="col-md-3 col-lg-2 sidebar p-3">
             <h4 class="text-white mb-4">Recepción</h4>
 
-            <nav class="nav flex-column">
+            <nav class="nav flex-column gap-1">
                 <a class="nav-link" th:href="@{/dashboard}">Dashboard</a>
                 <a class="nav-link" th:href="@{/citas/nueva}">Registrar nueva cita</a>
                 <a class="nav-link" th:href="@{/citas}">Consultar citas</a>
+                <a class="nav-link" th:href="@{/pacientes/nuevo}">Registrar paciente</a>
                 <a class="nav-link" th:href="@{/fichas/nueva}">Registrar ficha de admisión</a>
+                <a class="nav-link" th:href="@{/fichas}">Consultar fichas de admisión</a>
 
-                <hr class="text-white">
+                <hr>
 
-                <a class="nav-link" th:href="@{/logout}">Cerrar sesión</a>
+                <form th:action="@{/logout}" method="post" class="m-0">
+                    <button type="submit" class="nav-link btn btn-link text-start px-0">
+                        Cerrar sesión
+                    </button>
+                </form>
             </nav>
         </aside>
 
+        <!-- CONTENIDO PRINCIPAL -->
         <main class="col-md-9 col-lg-10 content-wrapper">
 
-            <div class="d-flex justify-content-between align-items-center mb-4">
+            <div class="d-flex justify-content-between align-items-start mb-4">
                 <div>
                     <h1 class="page-title">Registrar Ficha de Admisión</h1>
-                    <p class="text-muted">
-                        Confirmación de llegada del paciente para iniciar el proceso de historia clínica.
+                    <p class="text-muted mb-0">
+                        Confirma la llegada del paciente para iniciar el flujo de historia clínica.
                     </p>
                 </div>
 
-                <a th:href="@{/dashboard}" class="btn btn-outline-secondary">
-                    Volver al dashboard
-                </a>
+                <div class="d-flex gap-2">
+                    <a th:href="@{/fichas}" class="btn btn-outline-primary">
+                        Consultar fichas
+                    </a>
+
+                    <a th:href="@{/dashboard}" class="btn btn-outline-secondary">
+                        Volver al dashboard
+                    </a>
+                </div>
             </div>
 
             <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
             <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
 
+            <!-- GUÍA DEL FLUJO -->
             <div class="alert alert-info">
-                El recepcionista solo registra la ficha de admisión. La consulta de fichas y el triaje corresponden a enfermería.
+                <strong>Flujo de admisión:</strong>
+                consultar cita médica → seleccionar la cita del paciente → registrar ficha de admisión →
+                derivar a enfermería para consulta de ficha y triaje.
+            </div>
+
+            <!-- ACLARACIÓN DE RUTAS -->
+            <div class="row g-3 mb-4">
+                <div class="col-md-6">
+                    <div class="card card-stat h-100">
+                        <div class="card-body">
+                            <h6 class="text-muted">Registrar ficha</h6>
+                            <p class="mb-3">
+                                Usa esta opción cuando el paciente ya llegó al hospital para su cita.
+                            </p>
+
+                            <span class="badge bg-primary">/fichas/nueva</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="card card-stat h-100">
+                        <div class="card-body">
+                            <h6 class="text-muted">Consultar fichas</h6>
+                            <p class="mb-3">
+                                Usa esta opción para buscar fichas registradas por DNI o ver su detalle.
+                            </p>
+
+                            <a th:href="@{/fichas}" class="btn btn-outline-primary btn-sm">
+                                Ir a consultar fichas
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VALIDACIÓN PREVIA -->
+            <div class="card card-stat mb-4">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div>
+                            <h5 class="mb-1">Validación previa</h5>
+                            <p class="text-muted mb-0">
+                                Antes de registrar la ficha, verifica que exista una cita médica válida para el paciente.
+                            </p>
+                        </div>
+
+                        <span class="badge bg-secondary">
+                            CUN 2 — Historia Clínica
+                        </span>
+                    </div>
+
+                    <div class="d-flex flex-wrap gap-2">
+                        <a th:href="@{/citas}" class="btn btn-outline-primary">
+                            Consultar citas médicas
+                        </a>
+
+                        <a th:href="@{/citas/nueva}" class="btn btn-outline-secondary">
+                            Registrar nueva cita
+                        </a>
+                    </div>
+                </div>
             </div>
 
             <form th:action="@{/fichas/guardar}" method="post">
 
+                <!-- SELECCIÓN DE CITA -->
                 <div class="card card-stat mb-4">
                     <div class="card-body">
                         <h5 class="mb-3">1. Selección de cita médica</h5>
@@ -73,13 +150,15 @@
                                 </select>
 
                                 <div class="form-text">
-                                    Al registrar la ficha, la cita cambia a estado CONFIRMADA y se habilita el triaje para enfermería.
+                                    Selecciona la cita asociada al paciente que acudió al hospital.
+                                    No se muestran citas anuladas.
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
+                <!-- DATOS DE ADMISIÓN -->
                 <div class="card card-stat mb-4">
                     <div class="card-body">
                         <h5 class="mb-3">2. Datos de admisión</h5>
@@ -92,6 +171,10 @@
                                     <option value="Emergencia">Emergencia</option>
                                     <option value="Control">Control</option>
                                 </select>
+
+                                <div class="form-text">
+                                    Define el tipo de atención por la cual ingresa el paciente.
+                                </div>
                             </div>
 
                             <div class="col-md-4">
@@ -101,25 +184,80 @@
                                     <option value="Alta">Alta</option>
                                     <option value="Urgente">Urgente</option>
                                 </select>
+
+                                <div class="form-text">
+                                    Selecciona la prioridad inicial para orientar la atención.
+                                </div>
                             </div>
 
                             <div class="col-md-4">
                                 <label class="form-label">Estado inicial</label>
                                 <input type="text" class="form-control" value="REGISTRADA" readonly>
+
+                                <div class="form-text">
+                                    La ficha quedará disponible para enfermería.
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="card card-stat">
-                    <div class="card-body d-flex justify-content-end gap-2">
-                        <a th:href="@{/dashboard}" class="btn btn-outline-secondary">
-                            Cancelar
-                        </a>
+                <!-- EFECTO DEL REGISTRO -->
+                <div class="card card-stat mb-4">
+                    <div class="card-body">
+                        <h5 class="mb-3">¿Qué ocurre al registrar la ficha?</h5>
 
-                        <button type="submit" class="btn btn-primary">
-                            Registrar ficha de admisión
-                        </button>
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <div class="alert alert-light border h-100 mb-0">
+                                    <strong>1. Se confirma llegada</strong>
+                                    <p class="text-muted mb-0">
+                                        El sistema registra que el paciente acudió a su cita.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="alert alert-light border h-100 mb-0">
+                                    <strong>2. Se crea la ficha</strong>
+                                    <p class="text-muted mb-0">
+                                        La ficha queda asociada a la cita y al paciente.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="alert alert-light border h-100 mb-0">
+                                    <strong>3. Continúa enfermería</strong>
+                                    <p class="text-muted mb-0">
+                                        Enfermería podrá consultar la ficha para realizar triaje.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CONFIRMACIÓN -->
+                <div class="card card-stat">
+                    <div class="card-body">
+                        <div class="alert alert-warning">
+                            Verifica que la cita corresponda al paciente presente antes de registrar la ficha de admisión.
+                        </div>
+
+                        <div class="d-flex flex-wrap justify-content-end gap-2">
+                            <a th:href="@{/dashboard}" class="btn btn-outline-secondary">
+                                Cancelar
+                            </a>
+
+                            <a th:href="@{/fichas}" class="btn btn-outline-primary">
+                                Consultar fichas
+                            </a>
+
+                            <button type="submit" class="btn btn-primary">
+                                Registrar ficha de admisión
+                            </button>
+                        </div>
                     </div>
                 </div>
 

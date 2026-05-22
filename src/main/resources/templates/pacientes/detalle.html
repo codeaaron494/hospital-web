@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <title>Detalle de Paciente | Sistema Hospitalario</title>
-
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -15,27 +14,36 @@
 <div class="container-fluid">
     <div class="row">
 
+        <!-- SIDEBAR RECEPCIÓN -->
         <aside class="col-md-3 col-lg-2 sidebar p-3">
             <h4 class="text-white mb-4">Recepción</h4>
 
-            <nav class="nav flex-column">
+            <nav class="nav flex-column gap-1">
                 <a class="nav-link" th:href="@{/dashboard}">Dashboard</a>
                 <a class="nav-link" th:href="@{/citas/nueva}">Registrar nueva cita</a>
                 <a class="nav-link" th:href="@{/citas}">Consultar citas</a>
+                <a class="nav-link" th:href="@{/pacientes/nuevo}">Registrar paciente</a>
+                <a class="nav-link" th:href="@{/fichas/nueva}">Registrar ficha de admisión</a>
+                <a class="nav-link" th:href="@{/fichas}">Consultar fichas de admisión</a>
 
-                <hr class="text-white">
+                <hr>
 
-                <a class="nav-link" th:href="@{/logout}">Cerrar sesión</a>
+                <form th:action="@{/logout}" method="post" class="m-0">
+                    <button type="submit" class="nav-link btn btn-link text-start px-0">
+                        Cerrar sesión
+                    </button>
+                </form>
             </nav>
         </aside>
 
+        <!-- CONTENIDO PRINCIPAL -->
         <main class="col-md-9 col-lg-10 content-wrapper">
 
-            <div class="d-flex justify-content-between align-items-center mb-4">
+            <div class="d-flex justify-content-between align-items-start mb-4">
                 <div>
                     <h1 class="page-title">Detalle de Paciente</h1>
-                    <p class="text-muted">
-                        Información básica del paciente registrado.
+                    <p class="text-muted mb-0">
+                        Consulta de información básica del paciente registrado en el sistema.
                     </p>
                 </div>
 
@@ -44,6 +52,51 @@
                 </a>
             </div>
 
+            <!-- RESUMEN DEL PACIENTE -->
+            <div class="card card-stat mb-4">
+                <div class="card-body">
+                    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+                        <div>
+                            <h5 class="mb-1" th:text="${paciente.nombreCompleto}">
+                                Nombre del paciente
+                            </h5>
+                            <p class="text-muted mb-0">
+                                Paciente identificado con DNI
+                                <span th:text="${paciente.dniPaciente}">76543210</span>
+                            </p>
+                        </div>
+
+                        <div>
+                            <span th:if="${paciente.estadoPaciente == 'ACTIVO'}"
+                                  class="badge bg-success fs-6 px-3 py-2"
+                                  th:text="${paciente.estadoPaciente}">
+                                ACTIVO
+                            </span>
+
+                            <span th:if="${paciente.estadoPaciente == 'INACTIVO'}"
+                                  class="badge bg-danger fs-6 px-3 py-2"
+                                  th:text="${paciente.estadoPaciente}">
+                                INACTIVO
+                            </span>
+
+                            <span th:if="${paciente.estadoPaciente != 'ACTIVO' and paciente.estadoPaciente != 'INACTIVO'}"
+                                  class="badge bg-secondary fs-6 px-3 py-2"
+                                  th:text="${paciente.estadoPaciente}">
+                                ESTADO
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- GUÍA DE USO -->
+            <div class="alert alert-info">
+                <strong>Uso en recepción:</strong>
+                desde esta vista puedes verificar los datos del paciente y continuar con el registro de una cita médica
+                o consultar sus citas registradas por DNI.
+            </div>
+
+            <!-- DATOS DEL PACIENTE -->
             <div class="card card-stat mb-4">
                 <div class="card-body">
                     <h5 class="mb-3">Datos del paciente</h5>
@@ -86,15 +139,70 @@
                 </div>
             </div>
 
-            <div class="card card-stat">
-                <div class="card-body d-flex justify-content-end gap-2">
-                    <a th:href="@{/citas/nueva}" class="btn btn-primary">
-                        Registrar cita para este paciente
-                    </a>
+            <!-- ACCIONES RECOMENDADAS -->
+            <div class="row g-3 mb-4">
+                <div class="col-md-4">
+                    <div class="card card-stat h-100">
+                        <div class="card-body">
+                            <h6 class="text-muted">Registrar cita</h6>
+                            <p class="mb-3">
+                                Continúa con el flujo de gestión de citas para este paciente.
+                            </p>
 
-                    <a th:href="@{/citas}" class="btn btn-outline-secondary">
-                        Consultar citas
-                    </a>
+                            <a th:href="@{/citas/nueva}" class="btn btn-primary btn-sm">
+                                Registrar cita
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="card card-stat h-100">
+                        <div class="card-body">
+                            <h6 class="text-muted">Consultar citas</h6>
+                            <p class="mb-3">
+                                Busca las citas asociadas al DNI del paciente.
+                            </p>
+
+                            <a th:href="@{/citas(dni=${paciente.dniPaciente})}" class="btn btn-outline-primary btn-sm">
+                                Ver citas del paciente
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="card card-stat h-100">
+                        <div class="card-body">
+                            <h6 class="text-muted">Ficha de admisión</h6>
+                            <p class="mb-3">
+                                Registra ficha si el paciente acude a su cita.
+                            </p>
+
+                            <a th:href="@{/fichas/nueva}" class="btn btn-outline-primary btn-sm">
+                                Registrar ficha
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- BOTONES FINALES -->
+            <div class="card card-stat">
+                <div class="card-body">
+                    <div class="d-flex flex-wrap justify-content-end gap-2">
+                        <a th:href="@{/dashboard}" class="btn btn-outline-secondary">
+                            Volver al dashboard
+                        </a>
+
+                        <a th:href="@{/citas}" class="btn btn-outline-primary">
+                            Consultar citas
+                        </a>
+
+                        <a th:href="@{/citas/nueva}" class="btn btn-primary">
+                            Registrar cita para este paciente
+                        </a>
+                    </div>
                 </div>
             </div>
 

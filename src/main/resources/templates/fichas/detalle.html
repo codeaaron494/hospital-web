@@ -14,77 +14,151 @@
 <div class="container-fluid">
     <div class="row">
 
+        <!-- SIDEBAR RECEPCIÓN -->
         <aside class="col-md-3 col-lg-2 sidebar p-3">
             <h4 class="text-white mb-4">Recepción</h4>
 
-            <nav class="nav flex-column">
+            <nav class="nav flex-column gap-1">
                 <a class="nav-link" th:href="@{/dashboard}">Dashboard</a>
                 <a class="nav-link" th:href="@{/citas/nueva}">Registrar nueva cita</a>
                 <a class="nav-link" th:href="@{/citas}">Consultar citas</a>
+                <a class="nav-link" th:href="@{/pacientes/nuevo}">Registrar paciente</a>
                 <a class="nav-link" th:href="@{/fichas/nueva}">Registrar ficha de admisión</a>
+                <a class="nav-link" th:href="@{/fichas}">Consultar fichas de admisión</a>
 
-                <hr class="text-white">
+                <hr>
 
-                <a class="nav-link" th:href="@{/logout}">Cerrar sesión</a>
+                <form th:action="@{/logout}" method="post" class="m-0">
+                    <button type="submit" class="nav-link btn btn-link text-start px-0">
+                        Cerrar sesión
+                    </button>
+                </form>
             </nav>
         </aside>
 
+        <!-- CONTENIDO PRINCIPAL -->
         <main class="col-md-9 col-lg-10 content-wrapper">
 
-            <div class="d-flex justify-content-between align-items-center mb-4">
+            <div class="d-flex justify-content-between align-items-start mb-4">
                 <div>
                     <h1 class="page-title">Ficha de Admisión Registrada</h1>
-                    <p class="text-muted">
-                        Constancia de admisión del paciente. El seguimiento continúa con enfermería.
+                    <p class="text-muted mb-0">
+                        Constancia de admisión del paciente para continuar el flujo de historia clínica.
                     </p>
                 </div>
 
-                <a th:href="@{/dashboard}" class="btn btn-outline-secondary">
-                    Volver al dashboard
-                </a>
+                <div class="d-flex gap-2">
+                    <a th:href="@{/fichas}" class="btn btn-outline-primary">
+                        Consultar fichas
+                    </a>
+
+                    <a th:href="@{/dashboard}" class="btn btn-outline-secondary">
+                        Volver al dashboard
+                    </a>
+                </div>
             </div>
 
             <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
             <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
 
+            <!-- RESUMEN DE ESTADO -->
             <div class="card card-stat mb-4">
                 <div class="card-body">
-                    <h5 class="mb-3">Datos de admisión</h5>
+                    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+                        <div>
+                            <h5 class="mb-1" th:text="${'Ficha FIC-' + ficha.idFichaAdmision}">
+                                Ficha FIC-1
+                            </h5>
+                            <p class="text-muted mb-0">
+                                Admisión registrada para el paciente
+                                <span th:text="${ficha.paciente.nombreCompleto}">Paciente</span>.
+                            </p>
+                        </div>
+
+                        <div>
+                            <span th:if="${ficha.estadoFicha == 'REGISTRADA'}"
+                                  class="badge bg-info fs-6 px-3 py-2"
+                                  th:text="${ficha.estadoFicha}">
+                                REGISTRADA
+                            </span>
+
+                            <span th:if="${ficha.estadoFicha != 'REGISTRADA'}"
+                                  class="badge bg-secondary fs-6 px-3 py-2"
+                                  th:text="${ficha.estadoFicha}">
+                                ESTADO
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- GUÍA -->
+            <div class="alert alert-info">
+                <strong>Flujo posterior:</strong>
+                la ficha confirma la llegada del paciente. Luego enfermería consulta la ficha,
+                realiza triaje y continúa el proceso de historia clínica.
+            </div>
+
+            <!-- DATOS DE ADMISIÓN -->
+            <div class="card card-stat mb-4">
+                <div class="card-body">
+                    <h5 class="mb-3">1. Datos de admisión</h5>
 
                     <div class="row g-3">
                         <div class="col-md-3">
                             <label class="form-label">Código ficha</label>
-                            <input type="text" class="form-control" th:value="${'FIC-' + ficha.idFichaAdmision}" readonly>
+                            <input type="text"
+                                   class="form-control"
+                                   th:value="${'FIC-' + ficha.idFichaAdmision}"
+                                   readonly>
                         </div>
 
                         <div class="col-md-3">
                             <label class="form-label">Fecha admisión</label>
-                            <input type="text" class="form-control" th:value="${#temporals.format(ficha.fechaAdmision, 'dd/MM/yyyy HH:mm')}" readonly>
+                            <input type="text"
+                                   class="form-control"
+                                   th:value="${#temporals.format(ficha.fechaAdmision, 'dd/MM/yyyy HH:mm')}"
+                                   readonly>
                         </div>
 
                         <div class="col-md-3">
                             <label class="form-label">Tipo</label>
-                            <input type="text" class="form-control" th:value="${ficha.tipoAdmision}" readonly>
+                            <input type="text"
+                                   class="form-control"
+                                   th:value="${ficha.tipoAdmision}"
+                                   readonly>
                         </div>
 
                         <div class="col-md-3">
                             <label class="form-label">Prioridad</label>
-                            <input type="text" class="form-control" th:value="${ficha.prioridad}" readonly>
+                            <input type="text"
+                                   class="form-control"
+                                   th:value="${ficha.prioridad}"
+                                   readonly>
                         </div>
 
                         <div class="col-md-3">
                             <label class="form-label">Estado ficha</label>
-                            <input type="text" class="form-control" th:value="${ficha.estadoFicha}" readonly>
+                            <input type="text"
+                                   class="form-control"
+                                   th:value="${ficha.estadoFicha}"
+                                   readonly>
                         </div>
 
                         <div class="col-md-3">
                             <label class="form-label">Cita asociada</label>
-                            <input type="text" class="form-control" th:value="${'CIT-' + ficha.cita.idCita}" readonly>
+                            <input type="text"
+                                   class="form-control"
+                                   th:value="${'CIT-' + ficha.cita.idCita}"
+                                   readonly>
                         </div>
 
                         <div class="col-md-3">
                             <label class="form-label">Estado cita</label>
-                            <input type="text" class="form-control" th:value="${ficha.cita.estadoCita}" readonly>
+                            <input type="text"
+                                   class="form-control"
+                                   th:value="${ficha.cita.estadoCita}"
+                                   readonly>
                         </div>
 
                         <div class="col-md-3">
@@ -98,43 +172,123 @@
                 </div>
             </div>
 
+            <!-- DATOS DEL PACIENTE -->
             <div class="card card-stat mb-4">
                 <div class="card-body">
-                    <h5 class="mb-3">Datos del paciente</h5>
+                    <h5 class="mb-3">2. Datos del paciente</h5>
 
                     <div class="row g-3">
                         <div class="col-md-3">
                             <label class="form-label">DNI</label>
-                            <input type="text" class="form-control" th:value="${ficha.paciente.dniPaciente}" readonly>
+                            <input type="text"
+                                   class="form-control"
+                                   th:value="${ficha.paciente.dniPaciente}"
+                                   readonly>
                         </div>
 
                         <div class="col-md-5">
                             <label class="form-label">Paciente</label>
-                            <input type="text" class="form-control" th:value="${ficha.paciente.nombreCompleto}" readonly>
+                            <input type="text"
+                                   class="form-control"
+                                   th:value="${ficha.paciente.nombreCompleto}"
+                                   readonly>
                         </div>
 
                         <div class="col-md-2">
                             <label class="form-label">Teléfono</label>
-                            <input type="text" class="form-control" th:value="${ficha.paciente.telefonoPaciente}" readonly>
+                            <input type="text"
+                                   class="form-control"
+                                   th:value="${ficha.paciente.telefonoPaciente}"
+                                   readonly>
                         </div>
 
                         <div class="col-md-2">
                             <label class="form-label">Estado paciente</label>
-                            <input type="text" class="form-control" th:value="${ficha.paciente.estadoPaciente}" readonly>
+                            <input type="text"
+                                   class="form-control"
+                                   th:value="${ficha.paciente.estadoPaciente}"
+                                   readonly>
                         </div>
+                    </div>
+
+                    <div class="mt-3">
+                        <a th:href="@{/fichas(dni=${ficha.paciente.dniPaciente})}"
+                           class="btn btn-outline-primary btn-sm">
+                            Ver fichas del paciente
+                        </a>
+
+                        <a th:href="@{/citas(dni=${ficha.paciente.dniPaciente})}"
+                           class="btn btn-outline-secondary btn-sm">
+                            Ver citas del paciente
+                        </a>
                     </div>
                 </div>
             </div>
 
-            <div class="card card-stat">
-                <div class="card-body d-flex justify-content-end gap-2">
-                    <a th:href="@{/dashboard}" class="btn btn-outline-secondary">
-                        Volver al dashboard
-                    </a>
+            <!-- DATOS DE LA CITA -->
+            <div class="card card-stat mb-4">
+                <div class="card-body">
+                    <h5 class="mb-3">3. Cita médica asociada</h5>
 
-                    <a th:href="@{/fichas/nueva}" class="btn btn-primary">
-                        Registrar otra ficha
-                    </a>
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label class="form-label">Especialidad</label>
+                            <input type="text"
+                                   class="form-control"
+                                   th:value="${ficha.cita.especialidad.nombreEspecialidad}"
+                                   readonly>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label">Médico</label>
+                            <input type="text"
+                                   class="form-control"
+                                   th:value="${ficha.cita.medico.nombreCompleto}"
+                                   readonly>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label">Horario</label>
+                            <input type="text"
+                                   class="form-control"
+                                   th:value="${#temporals.format(ficha.cita.horaCita, 'HH:mm')}"
+                                   readonly>
+                        </div>
+                    </div>
+
+                    <div class="mt-3">
+                        <a th:href="@{/citas/{id}(id=${ficha.cita.idCita})}"
+                           class="btn btn-outline-primary btn-sm">
+                            Ver cita asociada
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ACCIONES -->
+            <div class="card card-stat">
+                <div class="card-body">
+                    <div class="alert alert-success">
+                        La ficha fue registrada correctamente y queda disponible para el flujo de enfermería.
+                    </div>
+
+                    <div class="d-flex flex-wrap justify-content-end gap-2">
+                        <a th:href="@{/dashboard}" class="btn btn-outline-secondary">
+                            Volver al dashboard
+                        </a>
+
+                        <a th:href="@{/fichas}" class="btn btn-outline-primary">
+                            Consultar fichas
+                        </a>
+
+                        <a th:href="@{/fichas/nueva}" class="btn btn-primary">
+                            Registrar otra ficha
+                        </a>
+
+                        <button type="button" class="btn btn-outline-dark" onclick="window.print()">
+                            Imprimir constancia
+                        </button>
+                    </div>
                 </div>
             </div>
 

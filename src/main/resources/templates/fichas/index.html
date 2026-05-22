@@ -14,27 +14,35 @@
 <div class="container-fluid">
     <div class="row">
 
+        <!-- SIDEBAR RECEPCIÓN -->
         <aside class="col-md-3 col-lg-2 sidebar p-3">
             <h4 class="text-white mb-4">Recepción</h4>
 
-            <nav class="nav flex-column">
+            <nav class="nav flex-column gap-1">
                 <a class="nav-link" th:href="@{/dashboard}">Dashboard</a>
                 <a class="nav-link" th:href="@{/citas/nueva}">Registrar nueva cita</a>
                 <a class="nav-link" th:href="@{/citas}">Consultar citas</a>
-                <a class="nav-link" th:href="@{/fichas}">Fichas de admisión</a>
+                <a class="nav-link" th:href="@{/pacientes/nuevo}">Registrar paciente</a>
+                <a class="nav-link" th:href="@{/fichas/nueva}">Registrar ficha de admisión</a>
+                <a class="nav-link" th:href="@{/fichas}">Consultar fichas de admisión</a>
 
-                <hr class="text-white">
+                <hr>
 
-                <a class="nav-link" th:href="@{/logout}">Cerrar sesión</a>
+                <form th:action="@{/logout}" method="post" class="m-0">
+                    <button type="submit" class="nav-link btn btn-link text-start px-0">
+                        Cerrar sesión
+                    </button>
+                </form>
             </nav>
         </aside>
 
+        <!-- CONTENIDO PRINCIPAL -->
         <main class="col-md-9 col-lg-10 content-wrapper">
 
-            <div class="d-flex justify-content-between align-items-center mb-4">
+            <div class="d-flex justify-content-between align-items-start mb-4">
                 <div>
                     <h1 class="page-title">Fichas de Admisión</h1>
-                    <p class="text-muted">
+                    <p class="text-muted mb-0">
                         Consulta de fichas registradas para iniciar el flujo de historia clínica.
                     </p>
                 </div>
@@ -47,9 +55,28 @@
             <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
             <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
 
+            <!-- GUÍA DEL FLUJO -->
+            <div class="alert alert-info">
+                <strong>Flujo de admisión:</strong>
+                verificar cita del paciente → registrar ficha de admisión →
+                derivar a enfermería para consulta de ficha y triaje.
+            </div>
+
+            <!-- BUSCADOR -->
             <div class="card card-stat mb-4">
                 <div class="card-body">
-                    <h5 class="mb-3">Buscar ficha por DNI</h5>
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div>
+                            <h5 class="mb-1">Buscar ficha por DNI</h5>
+                            <p class="text-muted mb-0">
+                                Ingresa el DNI del paciente para consultar sus fichas de admisión registradas.
+                            </p>
+                        </div>
+
+                        <span class="badge bg-secondary">
+                            CUN 2 — Historia Clínica
+                        </span>
+                    </div>
 
                     <form th:action="@{/fichas}" method="get" class="row g-3">
                         <div class="col-md-8">
@@ -58,8 +85,11 @@
                                    name="dni"
                                    maxlength="8"
                                    class="form-control"
-                                   placeholder="Ingrese DNI"
+                                   placeholder="Ej. 76543210"
                                    th:value="${dniBuscado}">
+                            <div class="form-text">
+                                Usa 8 dígitos. Si no ingresas DNI, se mostrarán las fichas disponibles según la carga actual.
+                            </div>
                         </div>
 
                         <div class="col-md-4 d-flex align-items-end">
@@ -68,15 +98,73 @@
                             </button>
                         </div>
                     </form>
+
+                    <div class="d-flex flex-wrap gap-2 mt-3">
+                        <a th:href="@{/fichas}" class="btn btn-outline-secondary btn-sm">
+                            Limpiar búsqueda
+                        </a>
+
+                        <a th:href="@{/citas}" class="btn btn-outline-primary btn-sm">
+                            Consultar citas
+                        </a>
+                    </div>
                 </div>
             </div>
 
+            <!-- RESUMEN DE USO -->
+            <div class="row g-3 mb-4">
+                <div class="col-md-4">
+                    <div class="card card-stat h-100">
+                        <div class="card-body">
+                            <h6 class="text-muted">1. Confirmar llegada</h6>
+                            <p class="mb-0">
+                                La ficha registra que el paciente acudió al hospital.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="card card-stat h-100">
+                        <div class="card-body">
+                            <h6 class="text-muted">2. Validar cita</h6>
+                            <p class="mb-0">
+                                La ficha debe asociarse a una cita médica registrada.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="card card-stat h-100">
+                        <div class="card-body">
+                            <h6 class="text-muted">3. Derivar a enfermería</h6>
+                            <p class="mb-0">
+                                Enfermería consulta la ficha para continuar con triaje.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TABLA -->
             <div class="card card-stat">
                 <div class="card-body">
-                    <h5 class="mb-3">Fichas registradas</h5>
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div>
+                            <h5 class="mb-1">Fichas registradas</h5>
+                            <p class="text-muted mb-0">
+                                Lista de fichas de admisión encontradas según el criterio de búsqueda.
+                            </p>
+                        </div>
+
+                        <a th:href="@{/fichas/nueva}" class="btn btn-sm btn-primary">
+                            Nueva ficha
+                        </a>
+                    </div>
 
                     <div th:if="${#lists.isEmpty(fichas)}" class="alert alert-warning">
-                        No se encontraron fichas de admisión.
+                        No se encontraron fichas de admisión. Puedes registrar una nueva ficha si el paciente acudió a su cita.
                     </div>
 
                     <div class="table-responsive" th:if="${!#lists.isEmpty(fichas)}">
@@ -124,15 +212,23 @@
                                 </td>
 
                                 <td>
-                                    <span class="badge bg-info" th:text="${ficha.estadoFicha}">
+                                    <span th:if="${ficha.estadoFicha == 'REGISTRADA'}"
+                                          class="badge bg-info"
+                                          th:text="${ficha.estadoFicha}">
                                         REGISTRADA
+                                    </span>
+
+                                    <span th:if="${ficha.estadoFicha != 'REGISTRADA'}"
+                                          class="badge bg-secondary"
+                                          th:text="${ficha.estadoFicha}">
+                                        ESTADO
                                     </span>
                                 </td>
 
                                 <td class="text-end">
                                     <a th:href="@{/fichas/{id}(id=${ficha.idFichaAdmision})}"
                                        class="btn btn-sm btn-outline-primary">
-                                        Ver
+                                        Ver detalle
                                     </a>
                                 </td>
                             </tr>
@@ -140,8 +236,8 @@
                         </table>
                     </div>
 
-                    <p class="text-muted small mb-0">
-                        La ficha confirma la llegada del paciente y habilita el registro de triaje.
+                    <p class="text-muted small mb-0 mt-3">
+                        La ficha confirma la llegada del paciente y habilita el flujo posterior de enfermería e historia clínica.
                     </p>
                 </div>
             </div>

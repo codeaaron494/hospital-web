@@ -23,9 +23,19 @@ public class FichaAdmisionController {
     }
 
     @GetMapping
-    public String redirigirRegistroFicha() {
-        return "redirect:/fichas/nueva";
+public String listarFichas(
+        @RequestParam(required = false) String dni,
+        Model model
+) {
+    if (dni != null && !dni.isBlank()) {
+        model.addAttribute("fichas", fichaAdmisionService.buscarPorDniPaciente(dni.trim()));
+        model.addAttribute("dniBuscado", dni.trim());
+    } else {
+        model.addAttribute("fichas", fichaAdmisionService.listarTodas());
     }
+
+    return "fichas/index";
+}
 
     @GetMapping("/nueva")
     public String nuevaFicha(Model model) {

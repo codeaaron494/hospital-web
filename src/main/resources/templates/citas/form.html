@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <title>Registrar Cita | Sistema Hospitalario</title>
-
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -15,27 +14,36 @@
 <div class="container-fluid">
     <div class="row">
 
+        <!-- SIDEBAR RECEPCIÓN -->
         <aside class="col-md-3 col-lg-2 sidebar p-3">
             <h4 class="text-white mb-4">Recepción</h4>
 
-            <nav class="nav flex-column">
+            <nav class="nav flex-column gap-1">
                 <a class="nav-link" th:href="@{/dashboard}">Dashboard</a>
                 <a class="nav-link" th:href="@{/citas/nueva}">Registrar nueva cita</a>
                 <a class="nav-link" th:href="@{/citas}">Consultar citas</a>
+                <a class="nav-link" th:href="@{/pacientes/nuevo}">Registrar paciente</a>
+                <a class="nav-link" th:href="@{/fichas/nueva}">Registrar ficha de admisión</a>
+                <a class="nav-link" th:href="@{/fichas}">Consultar fichas de admisión</a>
 
-                <hr class="text-white">
+                <hr>
 
-                <a class="nav-link" th:href="@{/logout}">Cerrar sesión</a>
+                <form th:action="@{/logout}" method="post" class="m-0">
+                    <button type="submit" class="nav-link btn btn-link text-start px-0">
+                        Cerrar sesión
+                    </button>
+                </form>
             </nav>
         </aside>
 
+        <!-- CONTENIDO PRINCIPAL -->
         <main class="col-md-9 col-lg-10 content-wrapper">
 
-            <div class="d-flex justify-content-between align-items-center mb-4">
+            <div class="d-flex justify-content-between align-items-start mb-4">
                 <div>
-                    <h1 class="page-title">Registrar Nueva Cita</h1>
-                    <p class="text-muted">
-                        Registro de cita médica validando paciente, especialidad, médico y horario disponible.
+                    <h1 class="page-title">Registrar Nueva Cita Médica</h1>
+                    <p class="text-muted mb-0">
+                        Registra una cita validando paciente, especialidad, médico y horario disponible.
                     </p>
                 </div>
 
@@ -47,13 +55,28 @@
             <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
             <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
 
+            <!-- GUÍA DEL FLUJO -->
             <div class="alert alert-info">
-                Para registrar una cita, el paciente debe estar registrado y activo. El horario seleccionado debe estar disponible.
+                <strong>Flujo para recepción:</strong>
+                verificar paciente por DNI → registrar paciente si no existe →
+                seleccionar especialidad, médico y horario disponible → confirmar cita médica.
             </div>
 
+            <!-- ACCIONES PREVIAS -->
             <div class="card card-stat mb-4">
                 <div class="card-body">
-                    <h5 class="mb-3">Buscar paciente por DNI</h5>
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div>
+                            <h5 class="mb-1">Validación previa del paciente</h5>
+                            <p class="text-muted mb-0">
+                                Antes de registrar la cita, verifica si el paciente ya tiene citas registradas o si debe ser registrado.
+                            </p>
+                        </div>
+
+                        <span class="badge bg-secondary">
+                            Paso previo
+                        </span>
+                    </div>
 
                     <form th:action="@{/citas}" method="get" class="row g-3">
                         <div class="col-md-8">
@@ -62,7 +85,10 @@
                                    name="dni"
                                    maxlength="8"
                                    class="form-control"
-                                   placeholder="Ingrese DNI para consultar citas existentes">
+                                   placeholder="Ej. 76543210">
+                            <div class="form-text">
+                                Usa esta búsqueda para revisar si el paciente ya tiene citas registradas.
+                            </div>
                         </div>
 
                         <div class="col-md-4 d-flex align-items-end">
@@ -72,14 +98,58 @@
                         </div>
                     </form>
 
-                    <div class="mt-3">
+                    <div class="d-flex flex-wrap gap-2 mt-3">
                         <a th:href="@{/pacientes/nuevo}" class="btn btn-outline-success">
                             Registrar paciente nuevo
+                        </a>
+
+                        <a th:href="@{/citas}" class="btn btn-outline-secondary">
+                            Ver todas las citas
                         </a>
                     </div>
                 </div>
             </div>
 
+            <!-- RESUMEN DE PASOS -->
+            <div class="row g-3 mb-4">
+                <div class="col-md-3">
+                    <div class="card card-stat h-100">
+                        <div class="card-body">
+                            <h6 class="text-muted">1. Paciente</h6>
+                            <p class="mb-0">Selecciona el paciente registrado.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="card card-stat h-100">
+                        <div class="card-body">
+                            <h6 class="text-muted">2. Especialidad</h6>
+                            <p class="mb-0">Elige la especialidad solicitada.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="card card-stat h-100">
+                        <div class="card-body">
+                            <h6 class="text-muted">3. Médico y horario</h6>
+                            <p class="mb-0">Selecciona médico y agenda disponible.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="card card-stat h-100">
+                        <div class="card-body">
+                            <h6 class="text-muted">4. Confirmación</h6>
+                            <p class="mb-0">Registra el motivo y confirma la cita.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- FORMULARIO PRINCIPAL -->
             <form th:action="@{/citas/guardar}" method="post">
 
                 <div class="card card-stat mb-4">
@@ -100,7 +170,7 @@
                                 </select>
 
                                 <div class="form-text">
-                                    Si el paciente no aparece en la lista, primero debe registrarse.
+                                    Si el paciente no aparece en la lista, primero debe registrarse desde la opción “Registrar paciente nuevo”.
                                 </div>
                             </div>
                         </div>
@@ -123,6 +193,10 @@
                                         Medicina General
                                     </option>
                                 </select>
+
+                                <div class="form-text">
+                                    Selecciona la especialidad requerida para la atención.
+                                </div>
                             </div>
 
                             <div class="col-md-6">
@@ -163,7 +237,7 @@
                                 </select>
 
                                 <div class="form-text">
-                                    Solo se muestran horarios con estado DISPONIBLE.
+                                    Solo se muestran horarios con estado disponible para asignación de cita.
                                 </div>
                             </div>
                         </div>
@@ -180,21 +254,33 @@
                                 <textarea name="motivoConsulta"
                                           class="form-control"
                                           rows="4"
-                                          placeholder="Ingrese el motivo de la cita médica"></textarea>
+                                          placeholder="Ej. Dolor abdominal, control médico, fiebre, consulta general..."></textarea>
+
+                                <div class="form-text">
+                                    Describe brevemente el motivo informado por el paciente.
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
+                <!-- CONFIRMACIÓN -->
                 <div class="card card-stat">
-                    <div class="card-body d-flex justify-content-end gap-2">
-                        <a th:href="@{/citas}" class="btn btn-outline-secondary">
-                            Cancelar
-                        </a>
+                    <div class="card-body">
+                        <div class="alert alert-warning">
+                            Revisa los datos antes de registrar. Una vez guardada la cita, quedará asociada al paciente,
+                            médico, especialidad y horario seleccionado.
+                        </div>
 
-                        <button type="submit" class="btn btn-primary">
-                            Registrar cita médica
-                        </button>
+                        <div class="d-flex justify-content-end gap-2">
+                            <a th:href="@{/citas}" class="btn btn-outline-secondary">
+                                Cancelar
+                            </a>
+
+                            <button type="submit" class="btn btn-primary">
+                                Registrar cita médica
+                            </button>
+                        </div>
                     </div>
                 </div>
 
