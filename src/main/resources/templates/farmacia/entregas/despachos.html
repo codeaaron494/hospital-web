@@ -2,7 +2,7 @@
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Recetas Médicas | Suministro</title>
+    <title>Despachos de Medicamentos | Suministro</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -34,14 +34,14 @@
 
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <div>
-                    <h1 class="page-title">Recetas Médicas</h1>
+                    <h1 class="page-title">Despachos de Medicamentos</h1>
                     <p class="text-muted">
-                        Consulta de recetas médicas para validación y despacho de medicamentos.
+                        Historial de despachos atendidos, rechazados o sin stock.
                     </p>
                 </div>
 
-                <a th:href="@{/farmacia/entregas/dashboard}" class="btn btn-outline-secondary">
-                    Volver al dashboard
+                <a th:href="@{/farmacia/entregas/recetas?estado=VIGENTE}" class="btn btn-primary">
+                    Registrar despacho
                 </a>
             </div>
 
@@ -50,17 +50,16 @@
 
             <div class="card card-stat mb-4">
                 <div class="card-body">
-                    <h5 class="mb-3">Filtrar recetas</h5>
+                    <h5 class="mb-3">Filtrar despachos</h5>
 
-                    <form th:action="@{/farmacia/entregas/recetas}" method="get" class="row g-3">
+                    <form th:action="@{/farmacia/entregas/despachos}" method="get" class="row g-3">
                         <div class="col-md-8">
-                            <label class="form-label">Estado de receta</label>
+                            <label class="form-label">Estado del despacho</label>
                             <select name="estado" class="form-select">
-                                <option value="">Todas</option>
-                                <option value="VIGENTE" th:selected="${estadoBuscado == 'VIGENTE'}">VIGENTE</option>
-                                <option value="ATENDIDA" th:selected="${estadoBuscado == 'ATENDIDA'}">ATENDIDA</option>
-                                <option value="ANULADA" th:selected="${estadoBuscado == 'ANULADA'}">ANULADA</option>
-                                <option value="VENCIDA" th:selected="${estadoBuscado == 'VENCIDA'}">VENCIDA</option>
+                                <option value="">Todos</option>
+                                <option value="ATENDIDO" th:selected="${estadoBuscado == 'ATENDIDO'}">ATENDIDO</option>
+                                <option value="SIN_STOCK" th:selected="${estadoBuscado == 'SIN_STOCK'}">SIN_STOCK</option>
+                                <option value="RECHAZADO" th:selected="${estadoBuscado == 'RECHAZADO'}">RECHAZADO</option>
                             </select>
                         </div>
 
@@ -72,7 +71,7 @@
                     </form>
 
                     <div class="mt-3">
-                        <a th:href="@{/farmacia/entregas/recetas}" class="btn btn-outline-secondary btn-sm">
+                        <a th:href="@{/farmacia/entregas/despachos}" class="btn btn-outline-secondary btn-sm">
                             Limpiar filtro
                         </a>
                     </div>
@@ -81,38 +80,42 @@
 
             <div class="card card-stat">
                 <div class="card-body">
-                    <h5 class="mb-3">Recetas registradas</h5>
+                    <h5 class="mb-3">Despachos registrados</h5>
 
-                    <div th:if="${#lists.isEmpty(recetas)}" class="alert alert-warning">
-                        No existen recetas médicas registradas.
+                    <div th:if="${#lists.isEmpty(despachos)}" class="alert alert-warning">
+                        No existen despachos registrados.
                     </div>
 
-                    <div class="table-responsive" th:if="${!#lists.isEmpty(recetas)}">
+                    <div class="table-responsive" th:if="${!#lists.isEmpty(despachos)}">
                         <table class="table table-hover align-middle">
                             <thead>
                             <tr>
-                                <th>Código receta</th>
-                                <th>Fecha emisión</th>
-                                <th>Estado receta</th>
-                                <th>Atención</th>
+                                <th>Código despacho</th>
+                                <th>Receta</th>
+                                <th>Fecha despacho</th>
+                                <th>Estado</th>
+                                <th>Técnico</th>
+                                <th>Observación</th>
                                 <th class="text-end">Acción</th>
                             </tr>
                             </thead>
 
                             <tbody>
-                            <tr th:each="receta : ${recetas}">
-                                <td th:text="${'REC-' + receta.idReceta}">REC-1</td>
-                                <td th:text="${#temporals.format(receta.fechaEmision, 'dd/MM/yyyy HH:mm')}">21/05/2026</td>
+                            <tr th:each="despacho : ${despachos}">
+                                <td th:text="${'DSP-' + despacho.idDespachoMedicamento}">DSP-1</td>
+                                <td th:text="${'REC-' + despacho.recetaMedica.idReceta}">REC-1</td>
+                                <td th:text="${#temporals.format(despacho.fechaDespacho, 'dd/MM/yyyy HH:mm')}">21/05/2026</td>
                                 <td>
-                                    <span class="badge bg-secondary" th:text="${receta.estadoReceta}">
-                                        VIGENTE
+                                    <span class="badge bg-secondary" th:text="${despacho.estadoDespacho}">
+                                        ATENDIDO
                                     </span>
                                 </td>
-                                <td th:text="${receta.atencion != null ? 'AT-' + receta.atencion.idAtencion : '-'}">AT-1</td>
+                                <td th:text="${despacho.usuarioTecnico.username}">tecnico</td>
+                                <td th:text="${despacho.observacion}">Observación</td>
                                 <td class="text-end">
-                                    <a th:href="@{/farmacia/entregas/recetas/{id}(id=${receta.idReceta})}"
+                                    <a th:href="@{/farmacia/entregas/despachos/{id}(id=${despacho.idDespachoMedicamento})}"
                                        class="btn btn-sm btn-primary">
-                                        Ver / Validar
+                                        Ver detalle
                                     </a>
                                 </td>
                             </tr>

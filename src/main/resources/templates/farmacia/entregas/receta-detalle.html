@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Detalle Receta | Suministro</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+
+<div class="container-fluid">
+    <div class="row">
+
+        <aside class="col-md-3 col-lg-2 sidebar p-3">
+            <h4 class="text-white mb-4">Farmacia</h4>
+
+            <nav class="nav flex-column">
+                <a class="nav-link" th:href="@{/farmacia/entregas/dashboard}">Dashboard</a>
+                <a class="nav-link" th:href="@{/farmacia/entregas/recetas}">Consultar recetas médicas</a>
+                <a class="nav-link" th:href="@{/farmacia/entregas/recetas?estado=VIGENTE}">Registrar despacho</a>
+                <a class="nav-link" th:href="@{/farmacia/entregas/despachos}">Consultar despachos</a>
+                <a class="nav-link" th:href="@{/farmacia/entregas/despachos?estado=ATENDIDO}">Despachos atendidos</a>
+                <a class="nav-link" th:href="@{/farmacia/entregas/despachos?estado=SIN_STOCK}">Despachos sin stock</a>
+
+                <hr class="text-white">
+
+                <a class="nav-link" th:href="@{/logout}">Cerrar sesión</a>
+            </nav>
+        </aside>
+
+        <main class="col-md-9 col-lg-10 content-wrapper">
+
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h1 class="page-title">Detalle de Receta Médica</h1>
+                    <p class="text-muted">
+                        Validación de receta, medicamentos indicados y stock disponible en Kardex.
+                    </p>
+                </div>
+
+                <a th:href="@{/farmacia/entregas/recetas}" class="btn btn-outline-secondary">
+                    Volver a recetas
+                </a>
+            </div>
+
+            <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+            <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+            <div class="card card-stat mb-4">
+                <div class="card-body">
+                    <h5 class="mb-3">Datos de la receta</h5>
+
+                    <div class="row g-3">
+                        <div class="col-md-3">
+                            <label class="form-label">Código receta</label>
+                            <input class="form-control" th:value="${'REC-' + receta.idReceta}" readonly>
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="form-label">Fecha emisión</label>
+                            <input class="form-control"
+                                   th:value="${#temporals.format(receta.fechaEmision, 'dd/MM/yyyy HH:mm')}"
+                                   readonly>
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="form-label">Estado receta</label>
+                            <input class="form-control" th:value="${receta.estadoReceta}" readonly>
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="form-label">Atención médica</label>
+                            <input class="form-control"
+       th:value="${receta.atencion != null ? 'AT-' + receta.atencion.idAtencion : '-'}"
+       readonly>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Validación de stock</label>
+                            <input class="form-control"
+                                   th:value="${stockSuficiente ? 'STOCK DISPONIBLE' : 'SIN STOCK SUFICIENTE'}"
+                                   readonly>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Estado de despacho</label>
+                            <input class="form-control"
+                                   th:value="${yaDespachada ? despacho.estadoDespacho : 'PENDIENTE_DESPACHO'}"
+                                   readonly>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card card-stat mb-4">
+                <div class="card-body">
+                    <h5 class="mb-3">Medicamentos indicados</h5>
+
+                    <div th:if="${#lists.isEmpty(detalles)}" class="alert alert-warning">
+                        Esta receta no tiene medicamentos indicados.
+                    </div>
+
+                    <div class="table-responsive" th:if="${!#lists.isEmpty(detalles)}">
+                        <table class="table table-hover align-middle">
+                            <thead>
+                            <tr>
+                                <th>Medicamento</th>
+                                <th>Concentración</th>
+                                <th>Presentación</th>
+                                <th>Cantidad indicada</th>
+                                <th>Dosis</th>
+                                <th>Frecuencia</th>
+                                <th>Duración</th>
+                            </tr>
+                            </thead>
+
+                            <tbody>
+                            <tr th:each="detalle : ${detalles}">
+                                <td th:text="${detalle.medicamento.nombreCompleto}">Paracetamol 500 mg</td>
+                                <td th:text="${detalle.medicamento.concentracion}">500 mg</td>
+                                <td th:text="${detalle.medicamento.presentacion}">Tabletas</td>
+                                <td th:text="${detalle.cantidadIndicada}">10</td>
+                                <td th:text="${detalle.dosis}">1 tableta</td>
+                                <td th:text="${detalle.frecuencia}">Cada 8 horas</td>
+                                <td th:text="${detalle.duracion}">5 días</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <p class="text-muted small mb-0">
+                        La validación de stock se realiza automáticamente contra Kardex antes de despachar.
+                    </p>
+                </div>
+            </div>
+
+            <div class="card card-stat mb-4">
+                <div class="card-body">
+                    <h5 class="mb-3">Stock actual en Kardex</h5>
+
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead>
+                            <tr>
+                                <th>Medicamento</th>
+                                <th>Stock actual</th>
+                                <th>Stock mínimo</th>
+                                <th>Estado</th>
+                            </tr>
+                            </thead>
+
+                            <tbody>
+                            <tr th:each="kardex : ${kardexList}">
+                                <td th:text="${kardex.medicamento.nombreCompleto}">Medicamento</td>
+                                <td th:text="${kardex.stockActual}">100</td>
+                                <td th:text="${kardex.stockMinimo}">20</td>
+                                <td>
+                                    <span th:if="${kardex.stockActual <= kardex.stockMinimo}"
+                                          class="badge bg-danger">
+                                        Stock mínimo
+                                    </span>
+                                    <span th:if="${kardex.stockActual > kardex.stockMinimo}"
+                                          class="badge bg-success">
+                                        Disponible
+                                    </span>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="card card-stat" th:if="${!yaDespachada}">
+                <div class="card-body">
+                    <h5 class="mb-3">Registrar despacho de medicamentos</h5>
+
+                    <div class="alert alert-info" th:if="${receta.estadoReceta == 'VIGENTE' and stockSuficiente}">
+                        La receta está vigente y cuenta con stock suficiente. Puede registrarse el despacho.
+                    </div>
+
+                    <div class="alert alert-warning" th:if="${receta.estadoReceta == 'VIGENTE' and !stockSuficiente}">
+                        La receta está vigente, pero no existe stock suficiente para uno o más medicamentos.
+                    </div>
+
+                    <div class="alert alert-danger" th:if="${receta.estadoReceta != 'VIGENTE'}">
+                        La receta no está vigente. Puede registrarse como rechazada.
+                    </div>
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <form th:if="${receta.estadoReceta == 'VIGENTE' and stockSuficiente}"
+                                  th:action="@{/farmacia/entregas/recetas/{id}/despachar(id=${receta.idReceta})}"
+                                  method="post">
+                                <label class="form-label">Observación de entrega</label>
+                                <textarea name="observacion"
+                                          class="form-control mb-3"
+                                          rows="3"
+                                          placeholder="Ej. Medicamentos entregados e indicaciones brindadas al paciente."></textarea>
+
+                                <button type="submit" class="btn btn-success w-100">
+                                    Despachar medicamentos
+                                </button>
+                            </form>
+                        </div>
+
+                        <div class="col-md-6">
+                            <form th:action="@{/farmacia/entregas/recetas/{id}/rechazar(id=${receta.idReceta})}"
+                                  method="post">
+                                <label class="form-label">Motivo de rechazo / falta de stock</label>
+
+                                <select name="estadoDespacho" class="form-select mb-3" required>
+                                    <option value="RECHAZADO">RECHAZADO - Receta no conforme</option>
+                                    <option value="SIN_STOCK">SIN_STOCK - Falta de stock</option>
+                                </select>
+
+                                <textarea name="observacion"
+                                          class="form-control mb-3"
+                                          rows="3"
+                                          placeholder="Ej. No se entrega por falta de stock o receta no conforme."
+                                          required></textarea>
+
+                                <button type="submit" class="btn btn-danger w-100">
+                                    Registrar rechazo / falta de stock
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card card-stat" th:if="${yaDespachada}">
+                <div class="card-body">
+                    <h5 class="mb-3">Despacho registrado</h5>
+                    <p class="text-muted">
+                        Esta receta ya tiene un despacho asociado. No puede despacharse nuevamente.
+                    </p>
+
+                    <div class="d-flex justify-content-end">
+                        <a th:href="@{/farmacia/entregas/despachos/{id}(id=${despacho.idDespachoMedicamento})}"
+                           class="btn btn-primary">
+                            Ver despacho
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+
+    </div>
+</div>
+
+</body>
+</html>

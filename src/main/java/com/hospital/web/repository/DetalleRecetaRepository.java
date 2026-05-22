@@ -8,6 +8,4 @@ import java.util.List;
 public interface DetalleRecetaRepository extends JpaRepository<DetalleReceta, Integer> {
 
     List<DetalleReceta> findByRecetaIdReceta(Integer idReceta);
-
-    List<DetalleReceta> findByMedicamentoIdMedicamento(Integer idMedicamento);
 }
