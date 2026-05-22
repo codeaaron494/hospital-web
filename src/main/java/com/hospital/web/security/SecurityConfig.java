@@ -16,6 +16,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         http
+            .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
 
                 // Recursos públicos
@@ -42,17 +43,14 @@ public class SecurityConfig {
                 .hasAnyRole("ADMIN", "RECEPCIONISTA")
 
                 // CUS 2 - Gestión de Historia Clínica: Recepción
-                // Recepcionista registra ficha de admisión
                 .requestMatchers("/fichas/**")
                 .hasAnyRole("ADMIN", "RECEPCIONISTA")
 
                 // CUS 2 - Gestión de Historia Clínica: Enfermería
-                // Enfermero consulta fichas y actualiza historia clínica mediante triaje
                 .requestMatchers("/enfermeria/**")
                 .hasAnyRole("ADMIN", "ENFERMERO")
 
                 // CUS 2 - Gestión de Historia Clínica: Médico
-                // Médico consulta y actualiza historia clínica mediante atención médica
                 .requestMatchers("/medico/**")
                 .hasAnyRole("ADMIN", "MEDICO")
 
@@ -77,20 +75,24 @@ public class SecurityConfig {
                 )
                 .hasAnyRole("ADMIN", "COBRANZA")
 
-                // CUS Farmacia - Inventario: Almacenero
+                // CUS 4 - Gestión de Inventario: Químico Farmacéutico
+                .requestMatchers(
+                    "/farmacia/inventario/quimico/**"
+                )
+                .hasAnyRole("ADMIN", "QUIMICO_FARMACEUTICO")
+
+                // CUS 4 - Gestión de Inventario: Almacenero
                 .requestMatchers(
                     "/farmacia/inventario/dashboard",
                     "/farmacia/inventario/medicamentos/**",
-                    "/farmacia/inventario/kardex",
-                    "/farmacia/inventario/balance"
+                    "/farmacia/inventario/kardex/**",
+                    "/farmacia/inventario/conteos/**",
+                    "/farmacia/inventario/balances/**",
+                    "/farmacia/inventario/observaciones/**"
                 )
                 .hasAnyRole("ADMIN", "ALMACENERO")
 
-                // CUS Farmacia - Inventario: Químico Farmacéutico
-                .requestMatchers("/farmacia/inventario/quimico/**")
-                .hasAnyRole("ADMIN", "QUIMICO_FARMACEUTICO")
-
-                // CUS Farmacia - Entrega de Medicamentos
+                // CUS 5 - Entrega de Medicamentos
                 .requestMatchers("/farmacia/entregas/**")
                 .hasAnyRole("ADMIN", "TECNICO_FARMACIA")
 
@@ -136,9 +138,9 @@ public class SecurityConfig {
                     } else if (isMedico) {
                         response.sendRedirect("/medico/dashboard");
                     } else if (isAlmacenero) {
-                        response.sendRedirect("/farmacia/compras/dashboard");
+                        response.sendRedirect("/farmacia/inventario/dashboard");
                     } else if (isQuimico) {
-                        response.sendRedirect("/farmacia/compras/quimico/dashboard");
+                        response.sendRedirect("/farmacia/inventario/quimico/dashboard");
                     } else if (isCobranza) {
                         response.sendRedirect("/farmacia/compras/cobranza/dashboard");
                     } else if (isTecnico) {

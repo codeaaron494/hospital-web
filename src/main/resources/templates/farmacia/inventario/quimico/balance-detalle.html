@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Revisión Balance Mensual | Químico</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+
+<div class="container-fluid">
+    <div class="row">
+
+        <aside class="col-md-3 col-lg-2 sidebar p-3">
+            <h4 class="text-white mb-4">Químico</h4>
+
+            <nav class="nav flex-column">
+                <a class="nav-link" th:href="@{/farmacia/inventario/quimico/dashboard}">Dashboard</a>
+                <a class="nav-link" th:href="@{/farmacia/inventario/quimico/kardex}">Consultar Kardex</a>
+                <a class="nav-link" th:href="@{/farmacia/inventario/quimico/kardex}">Auditar movimientos</a>
+                <a class="nav-link" th:href="@{/farmacia/inventario/quimico/balances}">Consultar balances</a>
+                <a class="nav-link" th:href="@{/farmacia/inventario/quimico/balances?estado=ENVIADO_A_QUIMICO}">
+                    Aprobar / solicitar reconteo
+                </a>
+
+                <hr class="text-white">
+
+                <a class="nav-link" th:href="@{/logout}">Cerrar sesión</a>
+            </nav>
+        </aside>
+
+        <main class="col-md-9 col-lg-10 content-wrapper">
+
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h1 class="page-title">Revisión de Balance Mensual</h1>
+                    <p class="text-muted">
+                        Evaluación del balance mensual, auditoría de Kardex, solicitud de reconteo,
+                        aprobación y exportación a DIGEMID simulado.
+                    </p>
+                </div>
+
+                <a th:href="@{/farmacia/inventario/quimico/balances}" class="btn btn-outline-secondary">
+                    Volver a balances
+                </a>
+            </div>
+
+            <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+            <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+            <!-- DATOS DEL BALANCE -->
+            <div class="card card-stat mb-4">
+                <div class="card-body">
+                    <h5 class="mb-3">Datos del balance</h5>
+
+                    <div class="row g-3">
+                        <div class="col-md-3">
+                            <label class="form-label">Código</label>
+                            <input class="form-control" th:value="${'BM-' + balance.idBalanceMensual}" readonly>
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="form-label">Periodo</label>
+                            <input class="form-control" th:value="${balance.periodo}" readonly>
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="form-label">Estado</label>
+                            <input class="form-control" th:value="${balance.estadoBalance}" readonly>
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="form-label">Fecha generación</label>
+                            <input class="form-control"
+                                   th:value="${#temporals.format(balance.fechaGeneracion, 'dd/MM/yyyy HH:mm')}"
+                                   readonly>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label">Almacenero</label>
+                            <input class="form-control" th:value="${balance.usuarioAlmacenero.username}" readonly>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label">Químico responsable</label>
+                            <input class="form-control"
+                                   th:value="${balance.usuarioQuimico != null ? balance.usuarioQuimico.username : '-'}"
+                                   readonly>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label">Entidad externa simulada</label>
+                            <input class="form-control" value="DIGEMID" readonly>
+                        </div>
+
+                        <div class="col-md-12">
+                            <label class="form-label">Observación general</label>
+                            <textarea class="form-control"
+                                      rows="2"
+                                      readonly
+                                      th:text="${balance.observacion}"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DETALLE DEL BALANCE -->
+            <div class="card card-stat mb-4">
+                <div class="card-body">
+                    <h5 class="mb-3">Detalle del balance</h5>
+
+                    <div th:if="${#lists.isEmpty(detalles)}" class="alert alert-warning">
+                        Este balance no tiene detalle registrado.
+                    </div>
+
+                    <div class="table-responsive" th:if="${!#lists.isEmpty(detalles)}">
+                        <table class="table table-hover align-middle">
+                            <thead>
+                            <tr>
+                                <th>Medicamento</th>
+                                <th>Categoría</th>
+                                <th>Stock inicial</th>
+                                <th>Ingresos</th>
+                                <th>Salidas</th>
+                                <th>Ajustes</th>
+                                <th>Stock final</th>
+                            </tr>
+                            </thead>
+
+                            <tbody>
+                            <tr th:each="detalle : ${detalles}">
+                                <td th:text="${detalle.medicamento.nombreCompleto}">Medicamento</td>
+                                <td th:text="${detalle.medicamento.categoria.nombreCategoria}">Categoría</td>
+                                <td th:text="${detalle.stockInicial}">100</td>
+                                <td th:text="${detalle.ingresos}">0</td>
+                                <td th:text="${detalle.salidas}">0</td>
+                                <td th:text="${detalle.ajustes}">0</td>
+                                <td th:text="${detalle.stockFinal}">100</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <p class="text-muted small mb-0">
+                        El químico debe contrastar este balance con el Kardex y los movimientos auditables
+                        antes de aprobarlo o solicitar reconteo.
+                    </p>
+                </div>
+            </div>
+
+            <!-- DECISIÓN DEL QUÍMICO -->
+            <div class="card card-stat mb-4" th:if="${balance.estadoBalance == 'ENVIADO_A_QUIMICO'}">
+                <div class="card-body">
+                    <h5 class="mb-3">Decisión del químico farmacéutico sobre el balance</h5>
+
+                    <div class="alert alert-info">
+                        Si el balance es correcto, apruébalo. Si encuentras diferencias entre el balance,
+                        Kardex, movimientos o conteo físico, solicita reconteo registrando una observación.
+                    </div>
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <form th:action="@{/farmacia/inventario/quimico/balances/{id}/aprobar(id=${balance.idBalanceMensual})}"
+                                  method="post">
+                                <label class="form-label">Observación de aprobación</label>
+                                <textarea name="observacion"
+                                          class="form-control mb-3"
+                                          rows="3"
+                                          placeholder="Ej. Balance conforme para exportación oficial."></textarea>
+
+                                <button type="submit" class="btn btn-success w-100">
+                                    Aprobar balance oficial
+                                </button>
+                            </form>
+                        </div>
+
+                        <div class="col-md-6">
+                            <form th:action="@{/farmacia/inventario/quimico/balances/{id}/observar(id=${balance.idBalanceMensual})}"
+                                  method="post">
+                                <label class="form-label">Motivo de observación o solicitud de reconteo</label>
+                                <textarea name="descripcion"
+                                          class="form-control mb-3"
+                                          rows="3"
+                                          placeholder="Ej. Se solicita reconteo físico del medicamento por diferencia entre Kardex y balance mensual."
+                                          required></textarea>
+
+                                <button type="submit" class="btn btn-danger w-100">
+                                    Solicitar reconteo / Observar balance
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- BALANCE OBSERVADO -->
+            <div class="card card-stat mb-4" th:if="${balance.estadoBalance == 'OBSERVADO'}">
+                <div class="card-body">
+                    <h5 class="mb-3">Balance observado</h5>
+                    <p class="text-muted mb-0">
+                        Este balance fue observado por el químico farmacéutico. El almacenero debe revisar
+                        la observación, realizar el reconteo o ajuste correspondiente, subsanar la observación
+                        y reenviar el balance para nueva revisión.
+                    </p>
+                </div>
+            </div>
+
+            <!-- EXPORTACIÓN A DIGEMID -->
+            <div class="card card-stat mb-4" th:if="${balance.estadoBalance == 'APROBADO'}">
+                <div class="card-body">
+                    <h5 class="mb-3">Exportación a DIGEMID simulado</h5>
+                    <p class="text-muted">
+                        El balance aprobado puede exportarse oficialmente hacia DIGEMID simulado.
+                    </p>
+
+                    <form th:action="@{/farmacia/inventario/quimico/balances/{id}/exportar-digemid(id=${balance.idBalanceMensual})}"
+                          method="post"
+                          class="d-flex justify-content-end">
+                        <button type="submit" class="btn btn-primary">
+                            Exportar balance a DIGEMID
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- RESPUESTA DIGEMID -->
+            <div class="card card-stat mb-4" th:if="${balance.estadoBalance == 'EXPORTADO_DIGEMID'}">
+                <div class="card-body">
+                    <h5 class="mb-3">Respuesta DIGEMID simulada</h5>
+                    <p class="text-muted">
+                        Registra la respuesta simulada de DIGEMID sobre el balance oficial exportado.
+                    </p>
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <form th:action="@{/farmacia/inventario/quimico/balances/{id}/digemid-conforme(id=${balance.idBalanceMensual})}"
+                                  method="post">
+                                <button type="submit" class="btn btn-success w-100">
+                                    Registrar conformidad DIGEMID
+                                </button>
+                            </form>
+                        </div>
+
+                        <div class="col-md-6">
+                            <form th:action="@{/farmacia/inventario/quimico/balances/{id}/digemid-observar(id=${balance.idBalanceMensual})}"
+                                  method="post">
+                                <label class="form-label">Observación DIGEMID simulada</label>
+                                <textarea name="descripcion"
+                                          class="form-control mb-3"
+                                          rows="3"
+                                          placeholder="Ej. DIGEMID solicita sustento de ajuste registrado en el periodo."
+                                          required></textarea>
+
+                                <button type="submit" class="btn btn-warning w-100">
+                                    Registrar observación DIGEMID
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ESTADO FINAL CONFORME -->
+            <div class="card card-stat mb-4" th:if="${balance.estadoBalance == 'CONFORME_DIGEMID'}">
+                <div class="card-body">
+                    <h5 class="mb-3">Balance conforme por DIGEMID</h5>
+                    <p class="text-muted mb-0">
+                        DIGEMID simulado emitió conformidad. El balance queda cerrado como conforme.
+                    </p>
+                </div>
+            </div>
+
+            <!-- ESTADO OBSERVADO POR DIGEMID -->
+            <div class="card card-stat mb-4" th:if="${balance.estadoBalance == 'OBSERVADO_DIGEMID'}">
+                <div class="card-body">
+                    <h5 class="mb-3">Balance observado por DIGEMID</h5>
+                    <p class="text-muted mb-0">
+                        DIGEMID simulado registró observaciones. El almacenero debe revisar y subsanar
+                        las observaciones correspondientes para continuar el flujo.
+                    </p>
+                </div>
+            </div>
+
+            <!-- OBSERVACIONES -->
+            <div class="card card-stat">
+                <div class="card-body">
+                    <h5 class="mb-3">Observaciones registradas</h5>
+
+                    <div th:if="${#lists.isEmpty(observaciones)}" class="alert alert-info">
+                        No existen observaciones para este balance.
+                    </div>
+
+                    <div class="table-responsive" th:if="${!#lists.isEmpty(observaciones)}">
+                        <table class="table table-hover align-middle">
+                            <thead>
+                            <tr>
+                                <th>Código</th>
+                                <th>Origen</th>
+                                <th>Fecha</th>
+                                <th>Descripción</th>
+                                <th>Estado</th>
+                            </tr>
+                            </thead>
+
+                            <tbody>
+                            <tr th:each="obs : ${observaciones}">
+                                <td th:text="${'OBS-' + obs.idObservacionBalance}">OBS-1</td>
+                                <td th:text="${obs.origenObservacion}">QUIMICO</td>
+                                <td th:text="${#temporals.format(obs.fechaObservacion, 'dd/MM/yyyy HH:mm')}">
+                                    31/05/2026
+                                </td>
+                                <td th:text="${obs.descripcion}">Observación</td>
+                                <td>
+                                    <span th:if="${obs.estadoObservacion == 'PENDIENTE'}"
+                                          class="badge bg-warning text-dark"
+                                          th:text="${obs.estadoObservacion}">
+                                        PENDIENTE
+                                    </span>
+
+                                    <span th:if="${obs.estadoObservacion == 'SUBSANADA'}"
+                                          class="badge bg-success"
+                                          th:text="${obs.estadoObservacion}">
+                                        SUBSANADA
+                                    </span>
+
+                                    <span th:if="${obs.estadoObservacion != 'PENDIENTE' and obs.estadoObservacion != 'SUBSANADA'}"
+                                          class="badge bg-secondary"
+                                          th:text="${obs.estadoObservacion}">
+                                        ESTADO
+                                    </span>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="d-flex justify-content-end mt-3">
+                        <a th:href="@{/farmacia/inventario/quimico/balances}" class="btn btn-outline-secondary">
+                            Volver a balances
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+
+    </div>
+</div>
+
+</body>
+</html>

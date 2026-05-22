@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Balances Mensuales | Inventario</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+
+<div class="container-fluid">
+    <div class="row">
+
+        <aside class="col-md-3 col-lg-2 sidebar p-3">
+            <h4 class="text-white mb-4">Inventario</h4>
+
+            <nav class="nav flex-column">
+                <a class="nav-link" th:href="@{/farmacia/inventario/dashboard}">Dashboard</a>
+                <a class="nav-link" th:href="@{/farmacia/inventario/medicamentos}">Medicamentos</a>
+                <a class="nav-link" th:href="@{/farmacia/inventario/kardex}">Consultar Kardex</a>
+                <a class="nav-link" th:href="@{/farmacia/inventario/conteos}">Conteos físicos</a>
+                <a class="nav-link" th:href="@{/farmacia/inventario/conteos/nuevo}">Registrar conteo físico</a>
+                <a class="nav-link" th:href="@{/farmacia/inventario/balances}">Balances mensuales</a>
+                <a class="nav-link" th:href="@{/farmacia/inventario/balances/nuevo}">Generar balance mensual</a>
+
+                <hr class="text-white">
+
+                <a class="nav-link" th:href="@{/logout}">Cerrar sesión</a>
+            </nav>
+        </aside>
+
+        <main class="col-md-9 col-lg-10 content-wrapper">
+
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h1 class="page-title">Balances Mensuales</h1>
+                    <p class="text-muted">
+                        Reportes mensuales de inventario para revisión del químico farmacéutico.
+                    </p>
+                </div>
+
+                <a th:href="@{/farmacia/inventario/balances/nuevo}" class="btn btn-primary">
+                    Generar balance
+                </a>
+            </div>
+
+            <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+            <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+            <div class="card card-stat mb-4">
+                <div class="card-body">
+                    <h5 class="mb-3">Filtrar balances</h5>
+
+                    <form th:action="@{/farmacia/inventario/balances}" method="get" class="row g-3">
+                        <div class="col-md-8">
+                            <label class="form-label">Estado</label>
+                            <select name="estado" class="form-select">
+                                <option value="">Todos</option>
+                                <option value="GENERADO" th:selected="${estadoBuscado == 'GENERADO'}">GENERADO</option>
+                                <option value="ENVIADO_A_QUIMICO" th:selected="${estadoBuscado == 'ENVIADO_A_QUIMICO'}">ENVIADO_A_QUIMICO</option>
+                                <option value="APROBADO" th:selected="${estadoBuscado == 'APROBADO'}">APROBADO</option>
+                                <option value="OBSERVADO" th:selected="${estadoBuscado == 'OBSERVADO'}">OBSERVADO</option>
+                                <option value="EXPORTADO_DIGEMID" th:selected="${estadoBuscado == 'EXPORTADO_DIGEMID'}">EXPORTADO_DIGEMID</option>
+                                <option value="CONFORME_DIGEMID" th:selected="${estadoBuscado == 'CONFORME_DIGEMID'}">CONFORME_DIGEMID</option>
+                                <option value="OBSERVADO_DIGEMID" th:selected="${estadoBuscado == 'OBSERVADO_DIGEMID'}">OBSERVADO_DIGEMID</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-4 d-flex align-items-end">
+                            <button type="submit" class="btn btn-outline-primary w-100">
+                                Filtrar
+                            </button>
+                        </div>
+                    </form>
+
+                    <div class="mt-3">
+                        <a th:href="@{/farmacia/inventario/balances}" class="btn btn-outline-secondary btn-sm">
+                            Limpiar filtro
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card card-stat">
+                <div class="card-body">
+                    <h5 class="mb-3">Balances registrados</h5>
+
+                    <div th:if="${#lists.isEmpty(balances)}" class="alert alert-warning">
+                        No existen balances mensuales registrados.
+                    </div>
+
+                    <div class="table-responsive" th:if="${!#lists.isEmpty(balances)}">
+                        <table class="table table-hover align-middle">
+                            <thead>
+                            <tr>
+                                <th>Código</th>
+                                <th>Periodo</th>
+                                <th>Fecha generación</th>
+                                <th>Estado</th>
+                                <th>Almacenero</th>
+                                <th>Químico</th>
+                                <th class="text-end">Acción</th>
+                            </tr>
+                            </thead>
+
+                            <tbody>
+                            <tr th:each="balance : ${balances}">
+                                <td th:text="${'BM-' + balance.idBalanceMensual}">BM-1</td>
+                                <td th:text="${balance.periodo}">2026-05</td>
+                                <td th:text="${#temporals.format(balance.fechaGeneracion, 'dd/MM/yyyy HH:mm')}">31/05/2026</td>
+                                <td><span class="badge bg-secondary" th:text="${balance.estadoBalance}">GENERADO</span></td>
+                                <td th:text="${balance.usuarioAlmacenero.username}">almacenero</td>
+                                <td th:text="${balance.usuarioQuimico != null ? balance.usuarioQuimico.username : '-'}">-</td>
+                                <td class="text-end">
+                                    <a th:href="@{/farmacia/inventario/balances/{id}(id=${balance.idBalanceMensual})}"
+                                       class="btn btn-sm btn-primary">
+                                        Ver
+                                    </a>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+            </div>
+
+        </main>
+
+    </div>
+</div>
+
+</body>
+</html>
