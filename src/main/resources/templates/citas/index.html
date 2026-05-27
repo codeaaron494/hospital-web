@@ -1,278 +1,135 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Consultar Citas | Sistema Hospitalario</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" th:href="@{/css/app.css}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Citas - Recepción</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 </head>
+<body class="bg-light">
 
-<body>
-
-<div class="container-fluid">
-    <div class="row">
-
-        <!-- SIDEBAR RECEPCIÓN -->
-        <aside class="col-md-3 col-lg-2 sidebar p-3">
-            <h4 class="text-white mb-4">Recepción</h4>
-
-            <nav class="nav flex-column gap-1">
-                <a class="nav-link" th:href="@{/dashboard}">Dashboard</a>
-                <a class="nav-link" th:href="@{/citas/nueva}">Registrar nueva cita</a>
-                <a class="nav-link" th:href="@{/citas}">Consultar citas</a>
-                <a class="nav-link" th:href="@{/pacientes/nuevo}">Registrar paciente</a>
-                <a class="nav-link" th:href="@{/fichas/nueva}">Registrar ficha de admisión</a>
-                <a class="nav-link" th:href="@{/fichas}">Consultar fichas de admisión</a>
-
-                <hr>
-
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
+    <div class="container">
+        <a class="navbar-brand fw-bold" href="/dashboard"><i class="bi bi-hospital"></i> Sistema Hospitalario</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link active" href="/citas"><i class="bi bi-calendar-check"></i> Directorio de Citas</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/pacientes/nuevo"><i class="bi bi-person-plus"></i> Apertura de Paciente</a>
+                </li>
+            </ul>
+            <div class="d-flex align-items-center">
+                <span class="navbar-text text-white me-3" th:text="${#authentication.name != null ? #authentication.name : 'Usuario'}"><i class="bi bi-person-badge"></i> Usuario</span>
                 <form th:action="@{/logout}" method="post" class="m-0">
-                    <button type="submit" class="nav-link btn btn-link text-start px-0">
-                        Cerrar sesión
-                    </button>
+                    <button class="btn btn-outline-light btn-sm" type="submit">Cerrar Sesión</button>
                 </form>
-            </nav>
-        </aside>
+            </div>
+        </div>
+    </div>
+</nav>
 
-        <!-- CONTENIDO PRINCIPAL -->
-        <main class="col-md-9 col-lg-10 content-wrapper">
+<div class="container mt-5">
+    
+    <div th:if="${success}" class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+        <i class="bi bi-check-circle-fill me-2"></i><span th:text="${success}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    <div th:if="${error}" class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i><span th:text="${error}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
 
-            <div class="d-flex justify-content-between align-items-start mb-4">
-                <div>
-                    <h1 class="page-title">Consultar Citas Médicas</h1>
-                    <p class="text-muted mb-0">
-                        Busca citas por DNI del paciente y accede a las acciones de consulta, reprogramación o anulación.
-                    </p>
+    <div class="row align-items-center mb-4">
+        <div class="col-md-4">
+            <h2 class="h4 text-dark mb-1">Citas Programadas</h2>
+            <p class="text-muted small mb-0">Gestión y administración de la agenda médica</p>
+        </div>
+        
+        <div class="col-md-5">
+            <form th:action="@{/citas}" method="get" class="d-flex gap-2 shadow-sm rounded">
+                <div class="input-group">
+                    <span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-muted"></i></span>
+                    <input type="text" name="dni" class="form-control border-start-0 ps-0" placeholder="Filtrar por DNI del paciente..." th:value="${dniBuscado}" maxlength="8">
+                    <button type="submit" class="btn btn-primary px-3">Buscar</button>
                 </div>
+                <a th:if="${dniBuscado != null}" th:href="@{/citas}" class="btn btn-light border text-muted" title="Limpiar Filtro"><i class="bi bi-x-circle"></i></a>
+            </form>
+        </div>
 
-                <a th:href="@{/citas/nueva}" class="btn btn-primary">
-                    Registrar nueva cita
-                </a>
-            </div>
+        <div class="col-md-3 text-end">
+            <a th:href="@{/citas/nueva}" class="btn btn-success shadow-sm px-4">
+                <i class="bi bi-plus-circle me-1"></i> Agendar Cita
+            </a>
+        </div>
+    </div>
 
-            <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
-            <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
-
-            <!-- GUÍA DEL FLUJO -->
-            <div class="alert alert-info">
-                <strong>Flujo de consulta:</strong>
-                solicitar DNI → buscar citas registradas → revisar detalle →
-                reprogramar o anular si corresponde.
-            </div>
-
-            <!-- BUSCADOR -->
-            <div class="card card-stat mb-4">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-start mb-3">
-                        <div>
-                            <h5 class="mb-1">Buscar citas por DNI</h5>
-                            <p class="text-muted mb-0">
-                                Ingresa el DNI del paciente para consultar sus citas médicas registradas.
-                            </p>
-                        </div>
-
-                        <span class="badge bg-secondary">
-                            CUN 1 — Gestión de Citas
-                        </span>
-                    </div>
-
-                    <form th:action="@{/citas}" method="get" class="row g-3">
-                        <div class="col-md-8">
-                            <label class="form-label">DNI del paciente</label>
-                            <input type="text"
-                                   name="dni"
-                                   maxlength="8"
-                                   class="form-control"
-                                   placeholder="Ej. 76543210"
-                                   th:value="${dniBuscado}">
-                            <div class="form-text">
-                                Usa 8 dígitos. Si dejas el campo vacío, se mostrarán las citas disponibles según la carga actual.
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th class="px-4 py-3 text-secondary">N°</th>
+                        <th class="py-3 text-secondary">Paciente</th>
+                        <th class="py-3 text-secondary">Especialidad / Médico</th>
+                        <th class="py-3 text-secondary">Programación</th>
+                        <th class="py-3 text-secondary">Estado</th>
+                        <th class="px-4 py-3 text-end text-secondary">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:if="${citas == null or citas.empty}">
+                        <td colspan="6" class="text-center py-5 text-muted">
+                            <i class="bi bi-calendar-x display-4 d-block mb-3"></i>
+                            <div th:if="${dniBuscado == null}">No hay citas registradas en el sistema.</div>
+                            
+                            <div th:if="${dniBuscado != null}">
+                                <p class="mb-3 text-dark fw-medium" th:text="${'No se encontraron citas programadas para el DNI: ' + dniBuscado}"></p>
+                                <a href="/pacientes/nuevo" class="btn btn-outline-primary shadow-sm"><i class="bi bi-person-plus me-1"></i> Proceder a Apertura de Paciente</a>
                             </div>
-                        </div>
-
-                        <div class="col-md-4 d-flex align-items-end">
-                            <button type="submit" class="btn btn-outline-primary w-100">
-                                Consultar citas
-                            </button>
-                        </div>
-                    </form>
-
-                    <div class="mt-3">
-                        <a th:href="@{/citas}" class="btn btn-outline-secondary btn-sm">
-                            Limpiar búsqueda
-                        </a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- RESUMEN VISUAL -->
-            <div class="row g-3 mb-4">
-                <div class="col-md-4">
-                    <div class="card card-stat h-100">
-                        <div class="card-body">
-                            <h6 class="text-muted">Consulta</h6>
-                            <p class="mb-0">
-                                Revisa las citas del paciente por DNI.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-md-4">
-                    <div class="card card-stat h-100">
-                        <div class="card-body">
-                            <h6 class="text-muted">Reprogramación</h6>
-                            <p class="mb-0">
-                                Cambia fecha u horario si la cita no está anulada.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-md-4">
-                    <div class="card card-stat h-100">
-                        <div class="card-body">
-                            <h6 class="text-muted">Anulación</h6>
-                            <p class="mb-0">
-                                Cancela una cita cuando el paciente lo solicita.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- TABLA -->
-            <div class="card card-stat">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-start mb-3">
-                        <div>
-                            <h5 class="mb-1">Citas registradas</h5>
-                            <p class="text-muted mb-0">
-                                Lista de citas encontradas según el criterio de búsqueda.
-                            </p>
-                        </div>
-
-                        <a th:href="@{/citas/nueva}" class="btn btn-sm btn-primary">
-                            Nueva cita
-                        </a>
-                    </div>
-
-                    <div th:if="${#lists.isEmpty(citas)}" class="alert alert-warning">
-                        No se encontraron citas registradas. Puedes registrar una nueva cita desde el botón superior.
-                    </div>
-
-                    <div class="table-responsive" th:if="${!#lists.isEmpty(citas)}">
-                        <table class="table table-hover align-middle">
-                            <thead>
-                            <tr>
-                                <th>Código</th>
-                                <th>Paciente</th>
-                                <th>DNI</th>
-                                <th>Especialidad</th>
-                                <th>Médico</th>
-                                <th>Fecha</th>
-                                <th>Hora</th>
-                                <th>Estado</th>
-                                <th class="text-end">Acciones</th>
-                            </tr>
-                            </thead>
-
-                            <tbody>
-                            <tr th:each="cita : ${citas}">
-                                <td th:text="${'CIT-' + cita.idCita}">CIT-1</td>
-
-                                <td th:text="${cita.paciente.nombreCompleto}">
-                                    Juan Pérez Ramos
-                                </td>
-
-                                <td th:text="${cita.paciente.dniPaciente}">
-                                    76543210
-                                </td>
-
-                                <td th:text="${cita.especialidad.nombreEspecialidad}">
-                                    Medicina General
-                                </td>
-
-                                <td th:text="${cita.medico.nombreCompleto}">
-                                    Carlos Mendoza
-                                </td>
-
-                                <td th:text="${#temporals.format(cita.fechaCita, 'dd/MM/yyyy')}">
-                                    21/05/2026
-                                </td>
-
-                                <td th:text="${#temporals.format(cita.horaCita, 'HH:mm')}">
-                                    08:00
-                                </td>
-
-                                <td>
-                                    <span th:if="${cita.estadoCita == 'PROGRAMADA'}"
-                                          class="badge bg-success"
-                                          th:text="${cita.estadoCita}">
-                                        PROGRAMADA
-                                    </span>
-
-                                    <span th:if="${cita.estadoCita == 'REPROGRAMADA'}"
-                                          class="badge bg-warning text-dark"
-                                          th:text="${cita.estadoCita}">
-                                        REPROGRAMADA
-                                    </span>
-
-                                    <span th:if="${cita.estadoCita == 'ANULADA'}"
-                                          class="badge bg-danger"
-                                          th:text="${cita.estadoCita}">
-                                        ANULADA
-                                    </span>
-
-                                    <span th:if="${cita.estadoCita != 'PROGRAMADA'
-                                                and cita.estadoCita != 'REPROGRAMADA'
-                                                and cita.estadoCita != 'ANULADA'}"
-                                          class="badge bg-secondary"
-                                          th:text="${cita.estadoCita}">
-                                        ESTADO
-                                    </span>
-                                </td>
-
-                                <td class="text-end">
-                                    <div class="btn-group btn-group-sm" role="group">
-                                        <a th:href="@{/citas/{id}(id=${cita.idCita})}"
-                                           class="btn btn-outline-primary">
-                                            Ver
-                                        </a>
-
-                                        <a th:if="${cita.estadoCita != 'ANULADA'}"
-                                           th:href="@{/citas/{id}/reprogramar(id=${cita.idCita})}"
-                                           class="btn btn-outline-warning">
-                                            Reprogramar
-                                        </a>
-
-                                        <a th:if="${cita.estadoCita != 'ANULADA'}"
-                                           th:href="@{/citas/{id}/anular(id=${cita.idCita})}"
-                                           class="btn btn-outline-danger">
-                                            Anular
-                                        </a>
-                                    </div>
-                                </td>
-                            </tr>
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <p class="text-muted small mb-0 mt-3">
-                        Esta vista permite consultar citas, acceder al detalle, reprogramar o anular citas según el estado actual.
-                    </p>
-                </div>
-            </div>
-
-        </main>
-
+                        </td>
+                    </tr>
+                    
+                    <tr th:each="cita : ${citas}">
+                        <td class="px-4 fw-bold text-muted" th:text="${cita.idCita}">1</td>
+                        <td>
+                            <div class="fw-semibold text-dark" th:text="${cita.paciente != null ? cita.paciente.nombreCompleto : 'N/A'}">Nombre</div>
+                            <small class="text-muted" th:text="${cita.paciente != null ? 'DNI: ' + cita.paciente.dniPaciente : ''}">DNI</small>
+                        </td>
+                        <td>
+                            <div class="fw-medium" th:text="${cita.especialidad != null ? cita.especialidad.nombreEspecialidad : 'General'}">Especialidad</div>
+                            <small class="text-muted"><i class="bi bi-stethoscope"></i> <span th:text="${cita.medico != null ? 'Dr. ' + cita.medico.nombreCompleto : 'N/A'}">Médico</span></small>
+                        </td>
+                        <td>
+                            <div class="fw-medium text-dark" th:text="${cita.fechaCita != null ? #temporals.format(cita.fechaCita, 'dd/MM/yyyy') : 'Pendiente'}">Fecha</div>
+                            <span class="badge bg-light text-primary border border-primary-subtle" th:text="${cita.horaCita != null ? #temporals.format(cita.horaCita, 'HH:mm') : '--:--'}">Hora</span>
+                        </td>
+                        <td>
+                            <span class="badge rounded-pill" 
+                                  th:classappend="${(cita.estadoCita == 'Pendiente' or cita.estadoCita == 'Programada') ? 'bg-warning text-dark' : (cita.estadoCita == 'Atendido' ? 'bg-success' : 'bg-danger')}"
+                                  th:text="${cita.estadoCita}">
+                                Estado
+                            </span>
+                        </td>
+                        <td class="px-4 text-end">
+                            <div class="btn-group shadow-sm">
+                                <a th:href="@{/citas/{id}(id=${cita.idCita})}" class="btn btn-sm btn-light border" title="Ver Detalle"><i class="bi bi-eye text-primary"></i></a>
+                                <a th:href="@{/citas/{id}/reprogramar(id=${cita.idCita})}" class="btn btn-sm btn-light border" title="Reprogramar" th:if="${cita.estadoCita != 'Anulado' and cita.estadoCita != 'Atendido'}"><i class="bi bi-calendar-event text-warning"></i></a>
+                                <a th:href="@{/citas/{id}/anular(id=${cita.idCita})}" class="btn btn-sm btn-light border" title="Anular" th:if="${cita.estadoCita != 'Anulado' and cita.estadoCita != 'Atendido'}"><i class="bi bi-trash text-danger"></i></a>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script th:src="@{/js/app.js}"></script>
-
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

@@ -1,298 +1,207 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Registrar Cita | Sistema Hospitalario</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" th:href="@{/css/app.css}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agendar Cita - Recepción</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 </head>
+<body class="bg-light">
 
-<body>
-
-<div class="container-fluid">
-    <div class="row">
-
-        <!-- SIDEBAR RECEPCIÓN -->
-        <aside class="col-md-3 col-lg-2 sidebar p-3">
-            <h4 class="text-white mb-4">Recepción</h4>
-
-            <nav class="nav flex-column gap-1">
-                <a class="nav-link" th:href="@{/dashboard}">Dashboard</a>
-                <a class="nav-link" th:href="@{/citas/nueva}">Registrar nueva cita</a>
-                <a class="nav-link" th:href="@{/citas}">Consultar citas</a>
-                <a class="nav-link" th:href="@{/pacientes/nuevo}">Registrar paciente</a>
-                <a class="nav-link" th:href="@{/fichas/nueva}">Registrar ficha de admisión</a>
-                <a class="nav-link" th:href="@{/fichas}">Consultar fichas de admisión</a>
-
-                <hr>
-
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
+    <div class="container">
+        <a class="navbar-brand fw-bold" href="/dashboard"><i class="bi bi-hospital"></i> Sistema Hospitalario</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link active" href="/citas"><i class="bi bi-calendar-check"></i> Directorio de Citas</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/pacientes/nuevo"><i class="bi bi-person-plus"></i> Apertura de Paciente</a>
+                </li>
+            </ul>
+            <div class="d-flex align-items-center">
+                <span class="navbar-text text-white me-3" th:text="${#authentication.name != null ? #authentication.name : 'Usuario'}"><i class="bi bi-person-badge"></i> Usuario</span>
                 <form th:action="@{/logout}" method="post" class="m-0">
-                    <button type="submit" class="nav-link btn btn-link text-start px-0">
-                        Cerrar sesión
-                    </button>
+                    <button class="btn btn-outline-light btn-sm" type="submit">Cerrar Sesión</button>
                 </form>
-            </nav>
-        </aside>
-
-        <!-- CONTENIDO PRINCIPAL -->
-        <main class="col-md-9 col-lg-10 content-wrapper">
-
-            <div class="d-flex justify-content-between align-items-start mb-4">
-                <div>
-                    <h1 class="page-title">Registrar Nueva Cita Médica</h1>
-                    <p class="text-muted mb-0">
-                        Registra una cita validando paciente, especialidad, médico y horario disponible.
-                    </p>
-                </div>
-
-                <a th:href="@{/citas}" class="btn btn-outline-secondary">
-                    Volver a citas
-                </a>
             </div>
+        </div>
+    </div>
+</nav>
 
-            <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
-            <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+<div class="container mt-5">
+    <div th:if="${error}" class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i><span th:text="${error}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
 
-            <!-- GUÍA DEL FLUJO -->
-            <div class="alert alert-info">
-                <strong>Flujo para recepción:</strong>
-                verificar paciente por DNI → registrar paciente si no existe →
-                seleccionar especialidad, médico y horario disponible → confirmar cita médica.
-            </div>
-
-            <!-- ACCIONES PREVIAS -->
-            <div class="card card-stat mb-4">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-start mb-3">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-header bg-white border-bottom-0 pt-4 pb-0 px-4">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="bi bi-calendar-plus text-success fs-3"></i>
                         <div>
-                            <h5 class="mb-1">Validación previa del paciente</h5>
-                            <p class="text-muted mb-0">
-                                Antes de registrar la cita, verifica si el paciente ya tiene citas registradas o si debe ser registrado.
-                            </p>
+                            <h3 class="h5 text-dark fw-bold mb-0">Programar Nueva Cita Médica</h3>
+                            <p class="text-muted small mb-0">Asigne un paciente a una agenda médica disponible.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body p-4">
+                    
+                    <form th:action="@{/citas/guardar}" method="post">
+                        
+                        <div class="bg-light rounded p-3 mb-4 border">
+                            <label class="form-label fw-bold text-primary small"><i class="bi bi-search me-1"></i> Búsqueda Rápida de Paciente</label>
+                            <div class="input-group mb-2">
+                                <input type="text" id="dniSearch" class="form-control" placeholder="Ingrese el DNI a buscar" maxlength="8">
+                                <button class="btn btn-primary" type="button" id="btnSearchDni">Buscar y Seleccionar</button>
+                            </div>
+                            <div id="searchResultMsg" class="small"></div>
                         </div>
 
-                        <span class="badge bg-secondary">
-                            Paso previo
-                        </span>
-                    </div>
+                        <div class="mb-4">
+                            <label for="idPaciente" class="form-label fw-medium text-dark small">Paciente Seleccionado (*)</label>
+                            <select class="form-select bg-light border-secondary" id="idPaciente" name="idPaciente" required>
+                                <option value="" disabled selected>-- Busque o seleccione manualmente un paciente --</option>
+                                <option th:each="p : ${pacientes}" 
+                                        th:value="${p.idPaciente}" 
+                                        th:data-dni="${p.dniPaciente}"
+                                        th:text="${p.nombreCompleto + ' (DNI: ' + p.dniPaciente + ')'}">
+                                    Paciente
+                                </option>
+                            </select>
+                        </div>
 
-                    <form th:action="@{/citas}" method="get" class="row g-3">
-                        <div class="col-md-8">
-                            <label class="form-label">DNI del paciente</label>
-                            <input type="text"
-                                   name="dni"
-                                   maxlength="8"
-                                   class="form-control"
-                                   placeholder="Ej. 76543210">
-                            <div class="form-text">
-                                Usa esta búsqueda para revisar si el paciente ya tiene citas registradas.
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <label for="idEspecialidad" class="form-label fw-medium text-dark small">Especialidad (*)</label>
+                                <select class="form-select bg-light" id="idEspecialidad" name="idEspecialidad" required>
+                                    <option value="" disabled selected>-- Seleccione especialidad --</option>
+                                    <option th:each="e : ${especialidades}" th:value="${e.idEspecialidad}" th:text="${e.nombreEspecialidad}"></option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="idMedico" class="form-label fw-medium text-dark small">Médico Especialista (*)</label>
+                                <select class="form-select bg-light" id="idMedico" name="idMedico" required disabled>
+                                    <option value="" disabled selected>-- Seleccione primera especialidad --</option>
+                                    <option th:each="m : ${medicos}" th:value="${m.idMedico}" th:data-especialidad="${m.especialidad != null ? m.especialidad.idEspecialidad : 'N'}" th:text="${'Dr. ' + m.nombreCompleto}"></option>
+                                </select>
                             </div>
                         </div>
 
-                        <div class="col-md-4 d-flex align-items-end">
-                            <button type="submit" class="btn btn-outline-primary w-100">
-                                Consultar citas del paciente
+                        <div class="mb-4">
+                            <label for="idAgenda" class="form-label fw-medium text-dark small">Horario de Agenda Disponible (*)</label>
+                            <select class="form-select bg-light" id="idAgenda" name="idAgenda" required disabled>
+                                <option value="" disabled selected>-- Seleccione primero un médico --</option>
+                                <option th:each="a : ${agendasDisponibles}" th:value="${a.idAgenda}" th:data-medico="${a.medico != null ? a.medico.idMedico : 'N'}" th:text="${'Fecha: ' + (a.fechaAgenda != null ? #temporals.format(a.fechaAgenda, 'dd/MM/yyyy') : '--') + ' | Inicio: ' + a.horaInicio + ' - Fin: ' + a.horaFin}"></option>
+                            </select>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="motivoConsulta" class="form-label fw-medium text-dark small">Motivo de la Consulta</label>
+                            <textarea class="form-control bg-light" id="motivoConsulta" name="motivoConsulta" rows="3"></textarea>
+                        </div>
+
+                        <div class="d-flex justify-content-end gap-2 mt-4 pt-3 border-top">
+                            <a href="/citas" class="btn btn-light border px-4">Cancelar</a>
+                            <button type="submit" class="btn btn-success px-4 shadow-sm">
+                                <i class="bi bi-calendar-check me-1"></i> Confirmar y Registrar
                             </button>
                         </div>
                     </form>
-
-                    <div class="d-flex flex-wrap gap-2 mt-3">
-                        <a th:href="@{/pacientes/nuevo}" class="btn btn-outline-success">
-                            Registrar paciente nuevo
-                        </a>
-
-                        <a th:href="@{/citas}" class="btn btn-outline-secondary">
-                            Ver todas las citas
-                        </a>
-                    </div>
+                    
                 </div>
             </div>
-
-            <!-- RESUMEN DE PASOS -->
-            <div class="row g-3 mb-4">
-                <div class="col-md-3">
-                    <div class="card card-stat h-100">
-                        <div class="card-body">
-                            <h6 class="text-muted">1. Paciente</h6>
-                            <p class="mb-0">Selecciona el paciente registrado.</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-md-3">
-                    <div class="card card-stat h-100">
-                        <div class="card-body">
-                            <h6 class="text-muted">2. Especialidad</h6>
-                            <p class="mb-0">Elige la especialidad solicitada.</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-md-3">
-                    <div class="card card-stat h-100">
-                        <div class="card-body">
-                            <h6 class="text-muted">3. Médico y horario</h6>
-                            <p class="mb-0">Selecciona médico y agenda disponible.</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-md-3">
-                    <div class="card card-stat h-100">
-                        <div class="card-body">
-                            <h6 class="text-muted">4. Confirmación</h6>
-                            <p class="mb-0">Registra el motivo y confirma la cita.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- FORMULARIO PRINCIPAL -->
-            <form th:action="@{/citas/guardar}" method="post">
-
-                <div class="card card-stat mb-4">
-                    <div class="card-body">
-                        <h5 class="mb-3">1. Datos del paciente</h5>
-
-                        <div class="row g-3">
-                            <div class="col-md-12">
-                                <label class="form-label">Paciente registrado</label>
-                                <select name="idPaciente" class="form-select" required>
-                                    <option value="">Seleccione paciente</option>
-
-                                    <option th:each="paciente : ${pacientes}"
-                                            th:value="${paciente.idPaciente}"
-                                            th:text="${paciente.dniPaciente + ' - ' + paciente.nombreCompleto + ' (' + paciente.estadoPaciente + ')'}">
-                                        76543210 - Juan Pérez Ramos
-                                    </option>
-                                </select>
-
-                                <div class="form-text">
-                                    Si el paciente no aparece en la lista, primero debe registrarse desde la opción “Registrar paciente nuevo”.
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card card-stat mb-4">
-                    <div class="card-body">
-                        <h5 class="mb-3">2. Especialidad y médico</h5>
-
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                <label class="form-label">Especialidad</label>
-                                <select name="idEspecialidad" class="form-select" required>
-                                    <option value="">Seleccione especialidad</option>
-
-                                    <option th:each="especialidad : ${especialidades}"
-                                            th:value="${especialidad.idEspecialidad}"
-                                            th:text="${especialidad.nombreEspecialidad}">
-                                        Medicina General
-                                    </option>
-                                </select>
-
-                                <div class="form-text">
-                                    Selecciona la especialidad requerida para la atención.
-                                </div>
-                            </div>
-
-                            <div class="col-md-6">
-                                <label class="form-label">Médico</label>
-                                <select name="idMedico" class="form-select" required>
-                                    <option value="">Seleccione médico</option>
-
-                                    <option th:each="medico : ${medicos}"
-                                            th:value="${medico.idMedico}"
-                                            th:text="${medico.nombreCompleto + ' - ' + medico.especialidad.nombreEspecialidad}">
-                                        Carlos Mendoza - Medicina General
-                                    </option>
-                                </select>
-
-                                <div class="form-text">
-                                    El sistema validará que el médico pertenezca a la especialidad seleccionada.
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card card-stat mb-4">
-                    <div class="card-body">
-                        <h5 class="mb-3">3. Horario disponible</h5>
-
-                        <div class="row g-3">
-                            <div class="col-md-12">
-                                <label class="form-label">Agenda médica disponible</label>
-                                <select name="idAgenda" class="form-select" required>
-                                    <option value="">Seleccione horario disponible</option>
-
-                                    <option th:each="agenda : ${agendasDisponibles}"
-                                            th:value="${agenda.idAgenda}"
-                                            th:text="${agenda.medico.nombreCompleto + ' | ' + agenda.medico.especialidad.nombreEspecialidad + ' | ' + #temporals.format(agenda.fechaAgenda, 'dd/MM/yyyy') + ' ' + #temporals.format(agenda.horaInicio, 'HH:mm') + ' - ' + #temporals.format(agenda.horaFin, 'HH:mm')}">
-                                        Médico | Especialidad | Fecha y hora
-                                    </option>
-                                </select>
-
-                                <div class="form-text">
-                                    Solo se muestran horarios con estado disponible para asignación de cita.
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card card-stat mb-4">
-                    <div class="card-body">
-                        <h5 class="mb-3">4. Motivo de consulta</h5>
-
-                        <div class="row g-3">
-                            <div class="col-md-12">
-                                <label class="form-label">Motivo de consulta</label>
-                                <textarea name="motivoConsulta"
-                                          class="form-control"
-                                          rows="4"
-                                          placeholder="Ej. Dolor abdominal, control médico, fiebre, consulta general..."></textarea>
-
-                                <div class="form-text">
-                                    Describe brevemente el motivo informado por el paciente.
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- CONFIRMACIÓN -->
-                <div class="card card-stat">
-                    <div class="card-body">
-                        <div class="alert alert-warning">
-                            Revisa los datos antes de registrar. Una vez guardada la cita, quedará asociada al paciente,
-                            médico, especialidad y horario seleccionado.
-                        </div>
-
-                        <div class="d-flex justify-content-end gap-2">
-                            <a th:href="@{/citas}" class="btn btn-outline-secondary">
-                                Cancelar
-                            </a>
-
-                            <button type="submit" class="btn btn-primary">
-                                Registrar cita médica
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-            </form>
-
-        </main>
-
+        </div>
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script th:src="@{/js/app.js}"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    // Lógica para filtrar Médico y Agenda (Mantengo la misma de la versión anterior)
+    const especialidadSelect = document.getElementById("idEspecialidad");
+    const medicoSelect = document.getElementById("idMedico");
+    const agendaSelect = document.getElementById("idAgenda");
+    
+    const medicosOptions = Array.from(medicoSelect.options).filter(opt => opt.value !== "");
+    const agendasOptions = Array.from(agendaSelect.options).filter(opt => opt.value !== "");
 
+    especialidadSelect.addEventListener("change", function() {
+        const selectedEsp = this.value;
+        medicoSelect.innerHTML = '<option value="" disabled selected>-- Seleccione médico --</option>';
+        agendaSelect.innerHTML = '<option value="" disabled selected>-- Seleccione primero un médico --</option>';
+        medicoSelect.disabled = false;
+        agendaSelect.disabled = true;
+
+        medicosOptions.forEach(opt => {
+            if (opt.getAttribute("data-especialidad") === selectedEsp) medicoSelect.appendChild(opt.cloneNode(true));
+        });
+    });
+
+    medicoSelect.addEventListener("change", function() {
+        const selectedMedico = this.value;
+        agendaSelect.innerHTML = '<option value="" disabled selected>-- Seleccione un horario disponible --</option>';
+        agendaSelect.disabled = false;
+
+        let found = false;
+        agendasOptions.forEach(opt => {
+            if (opt.getAttribute("data-medico") === selectedMedico) {
+                agendaSelect.appendChild(opt.cloneNode(true));
+                found = true;
+            }
+        });
+        if(!found) agendaSelect.innerHTML = '<option value="" disabled selected>-- No hay horarios --</option>';
+    });
+
+    // NUEVA LÓGICA: Búsqueda de DNI en Select
+    const btnSearchDni = document.getElementById('btnSearchDni');
+    const dniSearch = document.getElementById('dniSearch');
+    const pacienteSelect = document.getElementById('idPaciente');
+    const searchResultMsg = document.getElementById('searchResultMsg');
+
+    btnSearchDni.addEventListener('click', function() {
+        const searchValue = dniSearch.value.trim();
+        if(searchValue === '') return;
+        
+        let found = false;
+        const options = pacienteSelect.options;
+        
+        for(let i=0; i < options.length; i++) {
+            if(options[i].getAttribute('data-dni') === searchValue) {
+                pacienteSelect.selectedIndex = i;
+                found = true;
+                
+                // Efecto visual de encontrado
+                pacienteSelect.classList.add('is-valid');
+                setTimeout(() => pacienteSelect.classList.remove('is-valid'), 2000);
+                
+                searchResultMsg.innerHTML = '<span class="text-success fw-medium"><i class="bi bi-check-circle me-1"></i> Paciente encontrado y autoseleccionado.</span>';
+                break;
+            }
+        }
+        
+        if(!found) {
+            pacienteSelect.selectedIndex = 0; // Resetear
+            searchResultMsg.innerHTML = '<div class="alert alert-warning mt-2 mb-0 py-2"><i class="bi bi-exclamation-triangle me-1"></i> El paciente no existe. <a href="/pacientes/nuevo" class="fw-bold alert-link text-decoration-underline">Haga clic aquí para registrarlo</a>.</div>';
+        }
+    });
+
+    // Buscar con la tecla ENTER
+    dniSearch.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault(); // Evitar submit del form
+            btnSearchDni.click();
+        }
+    });
+});
+</script>
 </body>
 </html>

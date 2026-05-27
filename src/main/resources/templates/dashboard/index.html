@@ -1,204 +1,72 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Dashboard Recepción | Sistema Hospitalario</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" th:href="@{/css/app.css}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Recepción</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 </head>
-<body>
+<body class="bg-light">
 
-<div class="container-fluid">
-    <div class="row">
-
-        <!-- SIDEBAR RECEPCIÓN -->
-        <aside class="col-md-3 col-lg-2 sidebar p-3">
-            <h4 class="text-white mb-4">Recepción</h4>
-
-            <nav class="nav flex-column gap-1">
-                <a class="nav-link" th:href="@{/dashboard}">
-                    Dashboard
-                </a>
-
-                <a class="nav-link" th:href="@{/citas/nueva}">
-                    Registrar nueva cita
-                </a>
-
-                <a class="nav-link" th:href="@{/citas}">
-                    Consultar citas
-                </a>
-
-                <a class="nav-link" th:href="@{/pacientes/nuevo}">
-                    Registrar paciente
-                </a>
-
-                <a class="nav-link" th:href="@{/fichas/nueva}">
-                    Registrar ficha de admisión
-                </a>
-
-                <a class="nav-link" th:href="@{/fichas}">
-                    Consultar fichas de admisión
-                </a>
-
-                <hr class="text-white">
-
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
+    <div class="container">
+        <a class="navbar-brand fw-bold" href="/dashboard"><i class="bi bi-hospital"></i> Sistema Hospitalario</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="/citas"><i class="bi bi-calendar-check"></i> Directorio de Citas</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/pacientes/nuevo"><i class="bi bi-person-plus"></i> Apertura de Paciente</a>
+                </li>
+            </ul>
+            <div class="d-flex align-items-center">
+                <span class="navbar-text text-white me-3" th:text="${#authentication.name}"><i class="bi bi-person-badge"></i> Usuario</span>
                 <form th:action="@{/logout}" method="post" class="m-0">
-    <button type="submit" class="nav-link btn btn-link text-start px-0">
-        Cerrar sesión
-    </button>
-</form>
-            </nav>
-        </aside>
-
-        <!-- CONTENIDO PRINCIPAL -->
-        <main class="col-md-9 col-lg-10 content-wrapper">
-
-            <div class="d-flex justify-content-between align-items-start mb-4">
-                <div>
-                    <h1 class="page-title">Dashboard de Recepción</h1>
-                    <p class="text-muted mb-0">
-                        Gestión de citas médicas, pacientes y fichas de admisión.
-                    </p>
-                </div>
-
-                <span class="badge bg-primary fs-6 px-3 py-2">
-                    AS Recepcionista
-                </span>
+                    <button class="btn btn-outline-light btn-sm" type="submit">Cerrar Sesión</button>
+                </form>
             </div>
+        </div>
+    </div>
+</nav>
 
-            <!-- FLUJO GENERAL -->
-            <div class="alert alert-info">
-                <strong>Flujo de atención:</strong>
-                validar paciente por DNI → registrar o consultar paciente → gestionar cita médica →
-                registrar ficha de admisión si el paciente acude a su cita.
-            </div>
-
-            <!-- BLOQUE CUN 1 -->
-            <h4 class="mt-4 mb-3">CUN 1 — Gestión de Citas</h4>
-
-            <div class="row g-4">
-
-                <div class="col-md-4">
-                    <div class="card card-stat h-100">
-                        <div class="card-body">
-                            <h5>Registrar nueva cita médica</h5>
-                            <p class="text-muted">
-                                Registra una cita para un paciente existente o previamente registrado.
-                            </p>
-
-                            <a th:href="@{/citas/nueva}" class="btn btn-primary btn-sm">
-                                Registrar cita
-                            </a>
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 text-center">
+            <i class="bi bi-heart-pulse text-primary" style="font-size: 4rem;"></i>
+            <h2 class="mt-3 text-dark fw-bold" th:text="${titulo}">Dashboard Principal</h2>
+            <p class="text-muted lead">Bienvenido al panel de control. Selecciona una acción en el menú superior para comenzar.</p>
+            
+            <div class="row mt-5">
+                <div class="col-md-6 mb-3">
+                    <div class="card border-0 shadow-sm rounded-4 h-100">
+                        <div class="card-body p-4">
+                            <i class="bi bi-calendar-plus text-success fs-1 mb-3 d-block"></i>
+                            <h5 class="card-title fw-bold">Gestión de Citas</h5>
+                            <p class="card-text text-muted small">Visualiza la agenda médica, programa o reprograma citas de pacientes.</p>
+                            <a href="/citas" class="btn btn-outline-success mt-2">Ir a Citas</a>
                         </div>
                     </div>
                 </div>
-
-                <div class="col-md-4">
-                    <div class="card card-stat h-100">
-                        <div class="card-body">
-                            <h5>Consultar cita médica</h5>
-                            <p class="text-muted">
-                                Busca citas registradas para revisar estado, fecha, médico y especialidad.
-                            </p>
-
-                            <a th:href="@{/citas}" class="btn btn-outline-primary btn-sm">
-                                Consultar citas
-                            </a>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-md-4">
-                    <div class="card card-stat h-100">
-                        <div class="card-body">
-                            <h5>Registrar paciente</h5>
-                            <p class="text-muted">
-                                Crea el registro del paciente cuando no existe en el sistema.
-                            </p>
-
-                            <a th:href="@{/pacientes/nuevo}" class="btn btn-outline-primary btn-sm">
-                                Registrar paciente
-                            </a>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-
-            <!-- BLOQUE CUN 2 -->
-            <h4 class="mt-5 mb-3">CUN 2 — Gestión de Historia Clínica</h4>
-
-            <div class="row g-4">
-
-                <div class="col-md-6">
-                    <div class="card card-stat h-100">
-                        <div class="card-body">
-                            <h5>Registrar ficha de admisión</h5>
-                            <p class="text-muted">
-                                Genera la ficha de admisión del paciente cuando acude al hospital para su cita.
-                            </p>
-
-                            <a th:href="@{/fichas/nueva}" class="btn btn-primary btn-sm">
-                                Registrar ficha
-                            </a>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-md-6">
-                    <div class="card card-stat h-100">
-                        <div class="card-body">
-                            <h5>Consultar fichas de admisión</h5>
-                            <p class="text-muted">
-                                Revisa las fichas registradas por recepción para el flujo de enfermería.
-                            </p>
-
-                            <a th:href="@{/fichas}" class="btn btn-outline-primary btn-sm">
-                                Consultar fichas
-                            </a>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-
-            <!-- GUÍA OPERATIVA -->
-            <div class="card card-stat mt-5">
-                <div class="card-body">
-                    <h5>Guía rápida para recepción</h5>
-
-                    <div class="row g-3 mt-2">
-                        <div class="col-md-6">
-                            <h6>Para registrar una nueva cita</h6>
-                            <ol class="text-muted mb-0">
-                                <li>Solicitar DNI al paciente.</li>
-                                <li>Validar si el paciente existe.</li>
-                                <li>Registrar paciente si no existe.</li>
-                                <li>Elegir especialidad, médico y horario disponible.</li>
-                                <li>Confirmar la cita médica.</li>
-                            </ol>
-                        </div>
-
-                        <div class="col-md-6">
-                            <h6>Para registrar ficha de admisión</h6>
-                            <ol class="text-muted mb-0">
-                                <li>Solicitar DNI al paciente.</li>
-                                <li>Consultar la cita médica registrada.</li>
-                                <li>Validar que la cita corresponda.</li>
-                                <li>Crear la ficha de admisión.</li>
-                                <li>Derivar el flujo a enfermería.</li>
-                            </ol>
+                <div class="col-md-6 mb-3">
+                    <div class="card border-0 shadow-sm rounded-4 h-100">
+                        <div class="card-body p-4">
+                            <i class="bi bi-person-vcard text-primary fs-1 mb-3 d-block"></i>
+                            <h5 class="card-title fw-bold">Historias Clínicas</h5>
+                            <p class="card-text text-muted small">Registra nuevos pacientes y genera fichas de admisión para atención médica.</p>
+                            <a href="/pacientes/nuevo" class="btn btn-outline-primary mt-2">Registrar Paciente</a>
                         </div>
                     </div>
                 </div>
             </div>
-
-        </main>
-
+        </div>
     </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
