@@ -23,28 +23,41 @@ public class FichaAdmisionController {
     }
 
     @GetMapping
-public String listarFichas(
-        @RequestParam(required = false) String dni,
-        Model model
-) {
-    if (dni != null && !dni.isBlank()) {
-        model.addAttribute("fichas", fichaAdmisionService.buscarPorDniPaciente(dni.trim()));
-        model.addAttribute("dniBuscado", dni.trim());
-    } else {
-        model.addAttribute("fichas", fichaAdmisionService.listarTodas());
+    public String listarFichas(
+            @RequestParam(required = false) String dni,
+            Model model
+    ) {
+        if (dni != null && !dni.isBlank()) {
+            model.addAttribute("fichas", fichaAdmisionService.buscarPorDniPaciente(dni.trim()));
+            model.addAttribute("dniBuscado", dni.trim());
+        } else {
+            model.addAttribute("fichas", fichaAdmisionService.listarTodas());
+        }
+        return "fichas/index";
     }
 
-    return "fichas/index";
-}
-
     @GetMapping("/nueva")
-    public String nuevaFicha(Model model) {
-        model.addAttribute("citas", citaService.listarTodas());
+    public String nuevaFicha(
+            @RequestParam(required = false) String dni,
+            Model model
+    ) {
+        if (dni != null && !dni.isBlank()) {
+            // Buscamos el historial de citas del paciente
+            var citas = citaService.buscarPorDniPaciente(dni.trim());
+            
+            // Filtramos arquitectónicamente para obtener la cita válida para admisión
+            var citaValida = citas.stream()
+                    .filter(c -> "Programada".equalsIgnoreCase(c.getEstadoCita()) || "Pendiente".equalsIgnoreCase(c.getEstadoCita()))
+                    .findFirst();
+
+            // Si encontramos una cita lista para atender, la enviamos a la vista
+            citaValida.ifPresent(cita -> model.addAttribute("cita", cita));
+        }
         return "fichas/form";
     }
 
     @PostMapping("/guardar")
-    public String guardarFicha(
+    public String guardar(
             @RequestParam Integer idCita,
             @RequestParam String tipoAdmision,
             @RequestParam String prioridad,
@@ -59,7 +72,7 @@ public String listarFichas(
 
             redirectAttributes.addFlashAttribute(
                     "success",
-                    "Ficha de admisión registrada correctamente."
+                    "Ficha de admisión generada e ingresada a Triaje correctamente."
             );
 
             return "redirect:/fichas/" + ficha.getIdFichaAdmision();
@@ -84,7 +97,7 @@ public String listarFichas(
                 .orElseGet(() -> {
                     redirectAttributes.addFlashAttribute(
                             "error",
-                            "La ficha de admisión no existe."
+                            "La ficha de admisión no existe o fue eliminada."
                     );
                     return "redirect:/fichas/nueva";
                 });

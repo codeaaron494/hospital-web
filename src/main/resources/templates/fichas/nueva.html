@@ -56,7 +56,7 @@
                     <form th:action="@{/fichas/nueva}" method="get" class="d-flex gap-2">
                         <div class="input-group input-group-lg">
                             <span class="input-group-text bg-light border-end-0"><i class="bi bi-person-vcard text-muted"></i></span>
-                            <input type="text" name="dni" class="form-control border-start-0 bg-light" placeholder="Escriba el número de DNI..." th:value="${param.dni}" required maxlength="8">
+                            <input type="text" name="dni" class="form-control border-start-0 bg-light" placeholder="Escriba el número de DNI..." th:value="${dniBuscado}" required maxlength="8">
                             <button type="submit" class="btn btn-primary px-4 fw-medium">Buscar Cita</button>
                         </div>
                     </form>
@@ -65,20 +65,20 @@
         </div>
     </div>
 
-    <div class="row justify-content-center" th:if="${param.dni != null and cita == null}">
+    <div class="row justify-content-center" th:if="${dniBuscado != null and citaPendiente == null}">
         <div class="col-lg-8">
             <div class="alert alert-warning border-warning shadow-sm rounded-4 p-4 d-flex align-items-center gap-3">
                 <i class="bi bi-exclamation-triangle-fill display-5 text-warning"></i>
                 <div>
                     <h5 class="fw-bold text-dark mb-1">No se encontraron citas programadas</h5>
-                    <p class="mb-2 text-dark">El DNI <strong th:text="${param.dni}"></strong> no tiene una cita pendiente para derivar a Admisión.</p>
-                    <a href="/citas/nueva" class="btn btn-sm btn-dark mt-1"><i class="bi bi-calendar-plus me-1"></i> Agendar Nueva Cita Primero</a>
+                    <p class="mb-2 text-dark">El DNI <strong th:text="${dniBuscado}"></strong> no tiene una cita pendiente registrada para este turno.</p>
+                    <a href="/citas/nueva" class="btn btn-sm btn-dark mt-1"><i class="bi bi-calendar-plus me-1"></i> Agendar Nueva Cita</a>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="row justify-content-center" th:if="${cita != null}">
+    <div class="row justify-content-center" th:if="${citaPendiente != null}">
         <div class="col-lg-8">
             <div class="card border-0 shadow-sm rounded-4 border-start border-success border-4 overflow-hidden">
                 <div class="card-header bg-white border-bottom pt-4 pb-3 px-4">
@@ -90,19 +90,19 @@
                         <div class="row g-3">
                             <div class="col-md-6">
                                 <span class="text-muted small text-uppercase fw-bold d-block">Paciente</span>
-                                <span class="text-dark fw-bold fs-6" th:text="${cita.paciente != null ? cita.paciente.nombreCompleto : 'N/A'}">Paciente</span>
-                                <div class="small text-muted" th:text="${'DNI: ' + (cita.paciente != null ? cita.paciente.dniPaciente : '--')}"></div>
+                                <span class="text-dark fw-bold fs-6" th:text="${citaPendiente.paciente != null ? citaPendiente.paciente.nombreCompleto : 'N/A'}">Paciente</span>
+                                <div class="small text-muted" th:text="${'DNI: ' + (citaPendiente.paciente != null ? citaPendiente.paciente.dniPaciente : '--')}"></div>
                             </div>
                             <div class="col-md-6">
                                 <span class="text-muted small text-uppercase fw-bold d-block">Especialidad y Médico</span>
-                                <span class="text-dark fw-medium d-block" th:text="${cita.especialidad != null ? cita.especialidad.nombreEspecialidad : 'General'}">Especialidad</span>
-                                <span class="text-muted small"><i class="bi bi-stethoscope"></i> <span th:text="${cita.medico != null ? 'Dr. ' + cita.medico.nombreCompleto : 'N/A'}">Médico</span></span>
+                                <span class="text-dark fw-medium d-block" th:text="${citaPendiente.especialidad != null ? citaPendiente.especialidad.nombreEspecialidad : 'General'}">Especialidad</span>
+                                <span class="text-muted small"><i class="bi bi-stethoscope"></i> <span th:text="${citaPendiente.medico != null ? 'Dr. ' + citaPendiente.medico.nombreCompleto : 'N/A'}">Médico</span></span>
                             </div>
                         </div>
                     </div>
 
                     <form th:action="@{/fichas/guardar}" method="post">
-                        <input type="hidden" name="idCita" th:value="${cita.idCita}">
+                        <input type="hidden" name="idCita" th:value="${citaPendiente.idCita}">
                         
                         <div class="row g-3 mb-4">
                             <div class="col-md-6">
@@ -136,6 +136,7 @@
             </div>
         </div>
     </div>
+
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>

@@ -21,11 +21,11 @@
                     <a class="nav-link" href="/citas"><i class="bi bi-calendar-check"></i> Directorio de Citas</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/pacientes/nuevo"><i class="bi bi-person-plus"></i> Apertura de Paciente</a>
+                    <a class="nav-link" href="/fichas/nueva"><i class="bi bi-file-medical"></i> Ficha de Admisión</a>
                 </li>
             </ul>
             <div class="d-flex align-items-center">
-                <span class="navbar-text text-white me-3" th:text="${#authentication.name}"><i class="bi bi-person-badge"></i> Usuario</span>
+                <span class="navbar-text text-white me-3" th:text="${#authentication.name != null ? #authentication.name : 'Usuario'}"><i class="bi bi-person-badge"></i> Usuario</span>
                 <form th:action="@{/logout}" method="post" class="m-0">
                     <button class="btn btn-outline-light btn-sm" type="submit">Cerrar Sesión</button>
                 </form>
@@ -38,8 +38,8 @@
     <div class="row justify-content-center">
         <div class="col-md-8 text-center">
             <i class="bi bi-heart-pulse text-primary" style="font-size: 4rem;"></i>
-            <h2 class="mt-3 text-dark fw-bold" th:text="${titulo}">Dashboard Principal</h2>
-            <p class="text-muted lead">Bienvenido al panel de control. Selecciona una acción en el menú superior para comenzar.</p>
+            <h2 class="mt-3 text-dark fw-bold" th:text="${titulo != null ? titulo : 'Panel de Recepción'}">Dashboard Principal</h2>
+            <p class="text-muted lead">Bienvenido al panel de control. Selecciona una acción en el menú para comenzar.</p>
             
             <div class="row mt-5">
                 <div class="col-md-6 mb-3">
@@ -48,17 +48,17 @@
                             <i class="bi bi-calendar-plus text-success fs-1 mb-3 d-block"></i>
                             <h5 class="card-title fw-bold">Gestión de Citas</h5>
                             <p class="card-text text-muted small">Visualiza la agenda médica, programa o reprograma citas de pacientes.</p>
-                            <a href="/citas" class="btn btn-outline-success mt-2">Ir a Citas</a>
+                            <a href="/citas" class="btn btn-outline-success mt-2">Consultar Cita Médica</a>
                         </div>
                     </div>
                 </div>
                 <div class="col-md-6 mb-3">
                     <div class="card border-0 shadow-sm rounded-4 h-100">
                         <div class="card-body p-4">
-                            <i class="bi bi-person-vcard text-primary fs-1 mb-3 d-block"></i>
-                            <h5 class="card-title fw-bold">Historias Clínicas</h5>
-                            <p class="card-text text-muted small">Registra nuevos pacientes y genera fichas de admisión para atención médica.</p>
-                            <a href="/pacientes/nuevo" class="btn btn-outline-primary mt-2">Registrar Paciente</a>
+                            <i class="bi bi-file-earmark-medical text-primary fs-1 mb-3 d-block"></i>
+                            <h5 class="card-title fw-bold">Historia Clínica / Admisión</h5>
+                            <p class="card-text text-muted small">Valide citas vigentes y genere la ficha de admisión (triaje) del paciente.</p>
+                            <a href="/fichas/nueva" class="btn btn-outline-primary mt-2">Registrar Ficha de Admisión</a>
                         </div>
                     </div>
                 </div>
