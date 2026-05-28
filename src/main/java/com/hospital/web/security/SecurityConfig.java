@@ -138,7 +138,7 @@ public class SecurityConfig {
                     } else if (isMedico) {
                         response.sendRedirect("/medico/dashboard");
                     } else if (isAlmacenero) {
-                        response.sendRedirect("/farmacia/inventario/dashboard");
+                        response.sendRedirect("/farmacia/compras/dashboard");
                     } else if (isQuimico) {
                         response.sendRedirect("/farmacia/inventario/quimico/dashboard");
                     } else if (isCobranza) {

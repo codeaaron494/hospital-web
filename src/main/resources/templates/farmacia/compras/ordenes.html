@@ -2,137 +2,138 @@
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Órdenes de Compra | Compras</title>
+    <title>Historial de Órdenes de Compra | Área de Almacén</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" th:href="@{/css/app.css}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 </head>
-<body>
+<body class="bg-light">
 
-<div class="container-fluid">
-    <div class="row">
-
-        <aside class="col-md-3 col-lg-2 sidebar p-3">
-            <h4 class="text-white mb-4">Compras</h4>
-
-            <nav class="nav flex-column">
-                <a class="nav-link" th:href="@{/farmacia/compras/dashboard}">Dashboard</a>
-                <a class="nav-link" th:href="@{/farmacia/compras/kardex}">Consultar Kardex</a>
-                <a class="nav-link" th:href="@{/farmacia/compras/ordenes}">Órdenes de compra</a>
-                <a class="nav-link" th:href="@{/farmacia/compras/ordenes/nueva}">Generar orden de compra</a>
-                <a class="nav-link" th:href="@{/farmacia/compras/guias}">Guías de remisión</a>
-                <a class="nav-link" th:href="@{/farmacia/compras/guias/nueva}">Registrar guía de remisión</a>
-
-                <hr class="text-white">
-
-                <a class="nav-link" th:href="@{/logout}">Cerrar sesión</a>
-            </nav>
-        </aside>
-
-        <main class="col-md-9 col-lg-10 content-wrapper">
-
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <div>
-                    <h1 class="page-title">Órdenes de Compra</h1>
-                    <p class="text-muted">
-                        Consulta y seguimiento de órdenes generadas por almacén.
-                    </p>
-                </div>
-
-                <a th:href="@{/farmacia/compras/ordenes/nueva}" class="btn btn-primary">
-                    Generar orden
-                </a>
+<nav class="navbar navbar-expand-lg navbar-dark bg-success shadow-sm mb-4">
+    <div class="container">
+        <a class="navbar-brand fw-bold" href="/farmacia/compras/dashboard">
+            <i class="bi bi-box-seam me-1"></i> Área de Almacén
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="/farmacia/compras/dashboard"><i class="bi bi-speedometer2"></i> Panel</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="/farmacia/compras/ordenes"><i class="bi bi-file-earmark-text"></i> Historial de Órdenes</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/farmacia/compras/guias"><i class="bi bi-truck"></i> Historial de Guías</a>
+                </li>
+            </ul>
+            <div class="d-flex align-items-center">
+                <span class="navbar-text text-white me-3">
+                    <i class="bi bi-person-badge"></i> Almacenero: <span th:text="${#authentication.name}">Usuario</span>
+                </span>
+                <form th:action="@{/logout}" method="post" class="m-0">
+                    <button class="btn btn-outline-light btn-sm border-white" type="submit">
+                        <i class="bi bi-box-arrow-right me-1"></i>Cerrar Sesión
+                    </button>
+                </form>
             </div>
-
-            <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
-            <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
-
-            <div class="card card-stat mb-4">
-                <div class="card-body">
-                    <h5 class="mb-3">Filtrar órdenes</h5>
-
-                    <form th:action="@{/farmacia/compras/ordenes}" method="get" class="row g-3">
-                        <div class="col-md-8">
-                            <label class="form-label">Estado</label>
-                            <select name="estado" class="form-select">
-                                <option value="">Todos</option>
-                                <option value="GENERADA" th:selected="${estadoBuscado == 'GENERADA'}">GENERADA</option>
-                                <option value="PENDIENTE_REVISION" th:selected="${estadoBuscado == 'PENDIENTE_REVISION'}">PENDIENTE_REVISION</option>
-                                <option value="AUTORIZADA" th:selected="${estadoBuscado == 'AUTORIZADA'}">AUTORIZADA</option>
-                                <option value="RECHAZADA" th:selected="${estadoBuscado == 'RECHAZADA'}">RECHAZADA</option>
-                                <option value="CON_GUIA" th:selected="${estadoBuscado == 'CON_GUIA'}">CON_GUIA</option>
-                            </select>
-                        </div>
-
-                        <div class="col-md-4 d-flex align-items-end">
-                            <button type="submit" class="btn btn-outline-primary w-100">
-                                Filtrar
-                            </button>
-                        </div>
-                    </form>
-
-                    <div class="mt-3">
-                        <a th:href="@{/farmacia/compras/ordenes}" class="btn btn-outline-secondary btn-sm">
-                            Limpiar filtro
-                        </a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="card card-stat">
-                <div class="card-body">
-                    <h5 class="mb-3">Órdenes registradas</h5>
-
-                    <div th:if="${#lists.isEmpty(ordenes)}" class="alert alert-warning">
-                        No se encontraron órdenes de compra.
-                    </div>
-
-                    <div class="table-responsive" th:if="${!#lists.isEmpty(ordenes)}">
-                        <table class="table table-hover align-middle">
-                            <thead>
-                            <tr>
-                                <th>Código</th>
-                                <th>Fecha</th>
-                                <th>Proveedor</th>
-                                <th>Estado</th>
-                                <th>Almacenero</th>
-                                <th>Químico</th>
-                                <th class="text-end">Acción</th>
-                            </tr>
-                            </thead>
-
-                            <tbody>
-                            <tr th:each="orden : ${ordenes}">
-                                <td th:text="${'OC-' + orden.idOrdenCompra}">OC-1</td>
-                                <td th:text="${#temporals.format(orden.fechaEmision, 'dd/MM/yyyy HH:mm')}">24/05/2026</td>
-                                <td th:text="${orden.proveedor.razonSocial}">Proveedor</td>
-
-                                <td>
-                                    <span class="badge bg-secondary" th:text="${orden.estadoOrden}">GENERADA</span>
-                                </td>
-
-                                <td th:text="${orden.usuarioAlmacenero.username}">almacenero</td>
-
-                                <td th:text="${orden.usuarioQuimico != null ? orden.usuarioQuimico.username : '-'}">-</td>
-
-                                <td class="text-end">
-                                    <a th:href="@{/farmacia/compras/ordenes/{id}(id=${orden.idOrdenCompra})}"
-                                       class="btn btn-sm btn-outline-primary">
-                                        Ver
-                                    </a>
-                                </td>
-                            </tr>
-                            </tbody>
-                        </table>
-                    </div>
-
-                </div>
-            </div>
-
-        </main>
+        </div>
     </div>
+</nav>
+
+<div class="container mt-4 mb-5">
+    
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h4 class="fw-bold text-dark mb-0">
+                <i class="bi bi-file-earmark-text text-success me-2"></i>Historial de Órdenes de Compra
+            </h4>
+            <p class="text-muted mb-0 mt-1">Directorio de requerimientos emitidos a proveedores.</p>
+        </div>
+        <div>
+            <a th:href="@{/farmacia/compras/kardex}" class="btn btn-success shadow-sm fw-bold">
+                <i class="bi bi-plus-circle me-1"></i> Nueva Orden (Kardex)
+            </a>
+        </div>
+    </div>
+
+    <div th:if="${success}" class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+        <i class="bi bi-check-circle-fill me-2"></i><span th:text="${success}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    <div th:if="${error}" class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i><span th:text="${error}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-5">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="px-4 py-3">Código</th>
+                            <th>Proveedor</th>
+                            <th>RUC</th>
+                            <th>Fecha Emisión</th>
+                            <th class="text-center">Estado</th>
+                            <th class="text-end px-4">Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="orden : ${ordenes}">
+                            <td class="px-4 fw-bold text-success" th:text="${'OC-' + orden.idOrdenCompra}">OC-000</td>
+                            
+                            <td class="fw-semibold text-dark" th:text="${orden.proveedor.razonSocial}">Nombre Proveedor</td>
+                            <td th:text="${orden.proveedor.rucProveedor}">12345678901</td>
+                            
+                            <td th:text="${#temporals.format(orden.fechaEmision, 'dd/MM/yyyy HH:mm')}">01/01/2026</td>
+                            
+                            <td class="text-center">
+                                <span class="badge rounded-pill shadow-sm px-3 py-2"
+                                      th:classappend="${
+                                          orden.estadoOrden == 'GENERADA' ? 'bg-secondary' : 
+                                          (orden.estadoOrden == 'EN_REVISION' ? 'bg-warning text-dark' : 
+                                          (orden.estadoOrden == 'AUTORIZADA' ? 'bg-success' : 
+                                          (orden.estadoOrden == 'RECHAZADA' ? 'bg-danger' : 'bg-primary')))
+                                      }">
+                                    <i class="bi me-1"
+                                       th:classappend="${
+                                           orden.estadoOrden == 'GENERADA' ? 'bi-file-earmark' : 
+                                           (orden.estadoOrden == 'EN_REVISION' ? 'bi-hourglass-split' : 
+                                           (orden.estadoOrden == 'AUTORIZADA' ? 'bi-check2-all' : 
+                                           (orden.estadoOrden == 'RECHAZADA' ? 'bi-x-circle' : 'bi-info-circle')))
+                                       }"></i>
+                                    [[${orden.estadoOrden}]]
+                                </span>
+                            </td>
+                            
+                            <td class="text-end px-4">
+                                <a th:href="@{/farmacia/compras/ordenes/{id}(id=${orden.idOrdenCompra})}" 
+                                   class="btn btn-sm shadow-sm"
+                                   th:classappend="${orden.estadoOrden == 'GENERADA' ? 'btn-success text-white' : 'btn-outline-success'}">
+                                    <i class="bi bi-eye me-1"></i>
+                                    [[${orden.estadoOrden == 'GENERADA' ? 'Continuar Editando' : 'Ver Detalle'}]]
+                                </a>
+                            </td>
+                        </tr>
+                        
+                        <tr th:if="${#lists.isEmpty(ordenes)}">
+                            <td colspan="6" class="text-center text-muted py-5">
+                                <i class="bi bi-inbox fs-1 d-block mb-3 text-light"></i>
+                                Aún no se han registrado órdenes de compra en el sistema.
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
