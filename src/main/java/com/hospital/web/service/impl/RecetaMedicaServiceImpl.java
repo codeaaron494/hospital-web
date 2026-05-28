@@ -110,4 +110,14 @@ public class RecetaMedicaServiceImpl implements RecetaMedicaService {
 
         return detalleRecetaRepository.save(detalle);
     }
+
+    // Agrégalo al final de tu clase
+    @Override
+    @Transactional
+    public void eliminarDetalle(Integer idDetalle) {
+        if (!detalleRecetaRepository.existsById(idDetalle)) {
+            throw new IllegalArgumentException("El medicamento no se encuentra en la receta.");
+        }
+        detalleRecetaRepository.deleteById(idDetalle);
+    }
 }

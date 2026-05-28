@@ -26,4 +26,5 @@ public interface RecetaMedicaService {
             String duracion,
             Integer cantidadIndicada
     );
+    void eliminarDetalle(Integer idDetalle);
 }

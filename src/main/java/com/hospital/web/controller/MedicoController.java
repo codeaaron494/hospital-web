@@ -230,4 +230,23 @@ public class MedicoController {
 
         return "redirect:/medico/receta/" + idReceta;
     }
+
+    // MÉTODO NUEVO AGREGADO PARA ELIMINAR MEDICAMENTOS DE LA RECETA
+    @PostMapping("/receta/{idReceta}/eliminar/{idDetalle}")
+    public String eliminarDetalleReceta(
+            @PathVariable Integer idReceta,
+            @PathVariable Integer idDetalle,
+            RedirectAttributes redirectAttributes
+    ) {
+        try {
+            recetaMedicaService.eliminarDetalle(idDetalle);
+            redirectAttributes.addFlashAttribute(
+                    "success",
+                    "Medicamento eliminado de la receta correctamente."
+            );
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Error al eliminar: " + e.getMessage());
+        }
+        return "redirect:/medico/receta/" + idReceta;
+    }
 }
