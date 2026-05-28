@@ -23,6 +23,7 @@ public class EnfermeriaController {
         this.fichaAdmisionService = fichaAdmisionService;
         this.triajeService = triajeService;
     }
+    
 
     @GetMapping("/fichas")
     public String listarFichas(
@@ -87,15 +88,13 @@ public class EnfermeriaController {
                     frecuenciaCardiaca
             );
 
-            redirectAttributes.addFlashAttribute(
-                    "success",
-                    "Triaje registrado correctamente. Historia clínica actualizada."
-            );
-
+            redirectAttributes.addFlashAttribute("success", "Triaje registrado correctamente.");
             return "redirect:/enfermeria/fichas";
 
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", e.getMessage());
+            // AQUÍ LA MEJORA: Imprimimos el error real en la consola y lo enviamos a la vista
+            e.printStackTrace(); 
+            redirectAttributes.addFlashAttribute("error", "Error al guardar: " + e.toString());
             return "redirect:/enfermeria/triaje/" + idFicha;
         }
     }

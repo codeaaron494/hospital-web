@@ -104,7 +104,10 @@ public class CitaServiceImpl implements CitaService {
             throw new IllegalStateException("El horario no pertenece al médico seleccionado.");
         }
 
-        if (citaMedicaRepository.existsByAgendaIdAgenda(idAgenda)) {
+        if (citaMedicaRepository.existsByAgendaIdAgendaAndEstadoCitaNot(
+                idAgenda,
+                ANULADA
+        )) {
             throw new IllegalStateException("Ya existe una cita registrada para este horario.");
         }
 

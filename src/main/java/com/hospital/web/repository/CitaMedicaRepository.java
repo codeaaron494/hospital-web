@@ -13,5 +13,8 @@ public interface CitaMedicaRepository extends JpaRepository<CitaMedica, Integer>
 
     List<CitaMedica> findByPacienteIdPaciente(Integer idPaciente);
 
-    boolean existsByAgendaIdAgenda(Integer idAgenda);
+    boolean existsByAgendaIdAgendaAndEstadoCitaNot(
+        Integer idAgenda,
+        String estadoCita
+    );
 }

@@ -1,90 +1,124 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Dashboard Enfermería | Sistema Hospitalario</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Enfermería</title>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" th:href="@{/css/app.css}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 </head>
-<body>
 
-<div class="container-fluid">
-    <div class="row">
+<body class="bg-light">
 
-        <aside class="col-md-3 col-lg-2 sidebar p-3">
-            <h4 class="text-white mb-4">Enfermería</h4>
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
 
-            <nav class="nav flex-column">
-                <a class="nav-link" th:href="@{/enfermeria/dashboard}">Dashboard</a>
-                <a class="nav-link" th:href="@{/enfermeria/fichas}">Consultar ficha de admisión</a>
-                <a class="nav-link" th:href="@{/enfermeria/fichas}">Actualizar historia clínica</a>
+    <div class="container">
 
-                <hr class="text-white">
+        <!-- Logo -->
+        <a class="navbar-brand fw-bold" href="/enfermeria/dashboard">
+            <i class="bi bi-hospital"></i>
+            Sistema Hospitalario
+        </a>
 
-                <a class="nav-link" th:href="@{/logout}">Cerrar sesión</a>
-            </nav>
-        </aside>
+        <!-- Botón responsive -->
+        <button class="navbar-toggler"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#navbarNav">
 
-        <main class="col-md-9 col-lg-10 content-wrapper">
+            <span class="navbar-toggler-icon"></span>
 
-            <h1 class="page-title">Dashboard de Enfermería</h1>
-            <p class="text-muted">
-                Consulta de fichas de admisión y actualización inicial de la historia clínica mediante triaje.
-            </p>
+        </button>
 
-            <div class="row g-4 mt-2">
+        <!-- Contenido -->
+        <div class="collapse navbar-collapse" id="navbarNav">
 
-                <div class="col-md-4">
-                    <div class="card card-stat">
-                        <div class="card-body">
-                            <h6 class="text-muted">Fichas pendientes</h6>
-                            <h2>--</h2>
-                            <p class="text-muted mb-0">Pacientes pendientes de triaje</p>
-                        </div>
-                    </div>
-                </div>
+            <!-- Menú -->
+            <ul class="navbar-nav me-auto">
 
-                <div class="col-md-4">
-                    <div class="card card-stat">
-                        <div class="card-body">
-                            <h6 class="text-muted">Triajes registrados</h6>
-                            <h2>--</h2>
-                            <p class="text-muted mb-0">Actualizaciones iniciales</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-md-4">
-                    <div class="card card-stat">
-                        <div class="card-body">
-                            <h6 class="text-muted">Historias actualizadas</h6>
-                            <h2>--</h2>
-                            <p class="text-muted mb-0">Por datos de enfermería</p>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-
-            <div class="card mt-4 card-stat">
-                <div class="card-body">
-                    <h5>Flujo de Enfermería</h5>
-                    <p class="text-muted mb-3">
-                        Consultar ficha de admisión → seleccionar paciente → registrar signos vitales → actualizar historia clínica.
-                    </p>
-
-                    <a th:href="@{/enfermeria/fichas}" class="btn btn-primary">
-                        Consultar fichas de admisión
+                <li class="nav-item">
+                    <a class="nav-link active" href="/enfermeria/dashboard">
+                        <i class="bi bi-speedometer2"></i>
+                        Panel
                     </a>
-                </div>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="/enfermeria/fichas">
+                        <i class="bi bi-file-medical"></i>
+                        Fichas de Triaje
+                    </a>
+                </li>
+
+            </ul>
+
+            <!-- Usuario -->
+            <div class="d-flex align-items-center">
+
+                <span class="navbar-text text-white me-3">
+                    <i class="bi bi-person-badge"></i>
+
+                    <span th:text="${#authentication.name}">
+                        Usuario
+                    </span>
+                </span>
+
+                <form th:action="@{/logout}" method="post" class="m-0">
+
+                    <button class="btn btn-outline-light btn-sm" type="submit">
+                        Cerrar Sesión
+                    </button>
+
+                </form>
+
             </div>
 
-        </main>
+        </div>
 
     </div>
+
+</nav>
+
+<!-- CONTENIDO -->
+<div class="container mt-5">
+
+    <div class="row justify-content-center">
+
+        <div class="col-md-6">
+
+            <div class="card border-0 shadow-sm rounded-4 text-center p-4">
+
+                <i class="bi bi-clipboard-pulse text-info fs-1 mb-3"></i>
+
+                <h4 class="fw-bold">
+                    Gestión de Triaje
+                </h4>
+
+                <p class="text-muted">
+                    Consulte las fichas de admisión pendientes para realizar el registro de signos vitales.
+                </p>
+
+                <a href="/enfermeria/fichas"
+                   class="btn btn-info text-white fw-bold mt-2">
+
+                    Consultar Fichas de Admisión
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
 </div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
 </html>
