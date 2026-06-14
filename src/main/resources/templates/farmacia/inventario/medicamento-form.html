@@ -2,147 +2,246 @@
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Registrar Medicamento | Inventario</title>
+    <title>Registrar Medicamento | Área de Almacén</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" th:href="@{/css/app.css}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 </head>
-<body>
 
-<div class="container-fluid">
-    <div class="row">
+<body class="bg-light">
 
-        <aside class="col-md-3 col-lg-2 sidebar p-3">
-            <h4 class="text-white mb-4">Inventario</h4>
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm mb-4">
+    <div class="container">
 
-            <nav class="nav flex-column">
-                <a class="nav-link" th:href="@{/farmacia/inventario/dashboard}">Dashboard</a>
-                <a class="nav-link" th:href="@{/farmacia/inventario/medicamentos}">Medicamentos</a>
-                <a class="nav-link" th:href="@{/farmacia/inventario/medicamentos/nuevo}">Registrar medicamento</a>
-                <a class="nav-link" th:href="@{/farmacia/inventario/kardex}">Consultar Kardex</a>
-                <a class="nav-link" th:href="@{/farmacia/inventario/conteos}">Conteos físicos</a>
-                <a class="nav-link" th:href="@{/farmacia/inventario/conteos/nuevo}">Registrar conteo físico</a>
-                <a class="nav-link" th:href="@{/farmacia/inventario/balances}">Balances mensuales</a>
-                <a class="nav-link" th:href="@{/farmacia/inventario/balances/nuevo}">Generar balance mensual</a>
+        <a class="navbar-brand fw-bold" href="/farmacia/inventario/dashboard">
+            <i class="bi bi-boxes me-1"></i>
+            Control de Inventario
+        </a>
 
-                <hr class="text-white">
+        <div class="collapse navbar-collapse" id="navbarNav">
 
-                <a class="nav-link" th:href="@{/logout}">Cerrar sesión</a>
-            </nav>
-        </aside>
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="/farmacia/inventario/dashboard">
+                        Panel
+                    </a>
+                </li>
 
-        <main class="col-md-9 col-lg-10 content-wrapper">
+                <li class="nav-item">
+                    <a class="nav-link active" href="/farmacia/inventario/medicamentos">
+                        Medicamentos
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="/farmacia/inventario/conteos">
+                        Conteos Físicos
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="/farmacia/inventario/kardex">
+                        Kardex
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="/farmacia/inventario/balances">
+                        Balances
+                    </a>
+                </li>
+            </ul>
+
+            <form th:action="@{/logout}" method="post" class="m-0">
+                <button class="btn btn-outline-light btn-sm border-white" type="submit">
+                    Cerrar Sesión
+                </button>
+            </form>
+
+        </div>
+    </div>
+</nav>
+
+<div class="container mt-4">
+
+    <div class="row justify-content-center">
+
+        <div class="col-lg-8">
 
             <div class="d-flex justify-content-between align-items-center mb-4">
+
                 <div>
-                    <h1 class="page-title">Registrar Medicamento</h1>
-                    <p class="text-muted">
-                        Registro de medicamento y creación automática de Kardex inicial.
+                    <h4 class="fw-bold text-dark mb-0">
+                        <i class="bi bi-capsule-pill text-primary me-2"></i>
+                        Nuevo Medicamento
+                    </h4>
+
+                    <p class="text-muted mb-0 mt-1">
+                        Incorpore un nuevo producto al catálogo. 
+                        Su Kardex se creará automáticamente.
                     </p>
                 </div>
 
-                <a th:href="@{/farmacia/inventario/medicamentos}" class="btn btn-outline-secondary">
-                    Volver a medicamentos
+                <a th:href="@{/farmacia/inventario/medicamentos}"
+                   class="btn btn-outline-secondary shadow-sm">
+
+                    <i class="bi bi-arrow-left me-1"></i>
+                    Cancelar
                 </a>
+
             </div>
 
-            <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-5 border-top border-primary border-4">
 
-            <form th:action="@{/farmacia/inventario/medicamentos/guardar}" method="post">
+                <div class="card-body p-5">
 
-                <div class="card card-stat mb-4">
-                    <div class="card-body">
-                        <h5 class="mb-3">Datos del medicamento</h5>
+                    <form th:action="@{/farmacia/inventario/medicamentos/guardar}"
+                          method="post">
 
-                        <div class="row g-3">
+                        <div class="row g-4 mb-4">
 
-                            <div class="col-md-6">
-                                <label class="form-label">Nombre del medicamento</label>
+                            <!-- Nombre -->
+                            <div class="col-md-12">
+
+                                <label class="form-label fw-bold text-dark">
+                                    Nombre del Medicamento
+                                    <span class="text-danger">*</span>
+                                </label>
+
                                 <input type="text"
                                        name="nombreMedicamento"
-                                       class="form-control"
-                                       placeholder="Ej. Paracetamol"
+                                       class="form-control bg-light"
+                                       placeholder="Ej. Amoxicilina, Paracetamol..."
                                        required>
+
                             </div>
 
-                            <div class="col-md-3">
-                                <label class="form-label">Concentración</label>
+                            <!-- Concentración -->
+                            <div class="col-md-6">
+
+                                <label class="form-label fw-bold text-dark">
+                                    Concentración
+                                    <span class="text-danger">*</span>
+                                </label>
+
                                 <input type="text"
                                        name="concentracion"
-                                       class="form-control"
-                                       placeholder="Ej. 500 mg"
+                                       class="form-control bg-light"
+                                       placeholder="Ej. 500 mg, 1g, 5ml..."
                                        required>
+
                             </div>
 
-                            <div class="col-md-3">
-                                <label class="form-label">Presentación</label>
+                            <!-- Presentación -->
+                            <div class="col-md-6">
+
+                                <label class="form-label fw-bold text-dark">
+                                    Presentación Física
+                                    <span class="text-danger">*</span>
+                                </label>
+
                                 <input type="text"
                                        name="presentacion"
-                                       class="form-control"
-                                       placeholder="Ej. Tabletas"
+                                       class="form-control bg-light"
+                                       placeholder="Ej. Tableta, Jarabe, Ampolla..."
                                        required>
+
                             </div>
 
+                            <!-- Categoría -->
                             <div class="col-md-6">
-                                <label class="form-label">Categoría</label>
-                                <select name="idCategoria" class="form-select" required>
-                                    <option value="">Seleccione categoría</option>
-                                    <option th:each="categoria : ${categorias}"
-                                            th:value="${categoria.idCategoria}"
-                                            th:text="${categoria.nombreCategoria}">
-                                        Categoría
+
+                                <label class="form-label fw-bold text-dark">
+                                    Categoría Terapéutica
+                                    <span class="text-danger">*</span>
+                                </label>
+
+                                <select name="idCategoria"
+                                        class="form-select bg-light"
+                                        required>
+
+                                    <option value="" disabled selected>
+                                        Seleccione la categoría...
                                     </option>
+
+                                    <option th:each="cat : ${categorias}"
+                                            th:value="${cat.idCategoria}"
+                                            th:text="${cat.nombreCategoria}">
+                                    </option>
+
                                 </select>
+
                             </div>
 
-                            <div class="col-md-3">
-                                <label class="form-label">Stock actual inicial</label>
-                                <input type="number"
-                                       name="stockActual"
-                                       min="0"
-                                       class="form-control"
-                                       required>
-                            </div>
+                            <!-- Stock mínimo -->
+                            <div class="col-md-6">
 
-                            <div class="col-md-3">
-                                <label class="form-label">Stock mínimo</label>
+                                <label class="form-label fw-bold text-dark">
+                                    Límite de Stock Mínimo
+                                    <span class="text-danger">*</span>
+                                </label>
+
                                 <input type="number"
                                        name="stockMinimo"
-                                       min="0"
-                                       class="form-control"
+                                       class="form-control bg-light"
+                                       min="1"
+                                       placeholder="Ej. 20"
                                        required>
+
+                                <div class="form-text">
+                                    <i class="bi bi-info-circle"></i>
+                                    Disparará alertas de reposición al llegar a este nivel.
+                                </div>
+
                             </div>
 
-                            <div class="col-md-12">
-                                <div class="alert alert-info mb-0">
-                                    Al guardar el medicamento, el sistema creará automáticamente su Kardex inicial.
-                                    Si el stock inicial es mayor a cero, también registrará un movimiento de ingreso inicial.
+                            <!-- Stock actual -->
+                            <div class="col-md-6">
+
+                                <label class="form-label fw-bold text-dark">
+                                    Stock Inicial
+                                    <span class="text-danger">*</span>
+                                </label>
+
+                                <input type="number"
+                                       name="stockActual"
+                                       class="form-control bg-light"
+                                       min="0"
+                                       placeholder="Ej. 100"
+                                       required>
+
+                                <div class="form-text">
+                                    <i class="bi bi-info-circle"></i>
+                                    Cantidad inicial disponible en almacén.
                                 </div>
+
                             </div>
 
                         </div>
-                    </div>
+
+                        <div class="d-flex justify-content-end pt-3 border-top">
+
+                            <button type="submit"
+                                    class="btn btn-primary text-white px-5 shadow-sm fw-bold">
+
+                                <i class="bi bi-save me-2"></i>
+                                Guardar Medicamento
+
+                            </button>
+
+                        </div>
+
+                    </form>
+
                 </div>
+            </div>
 
-                <div class="card card-stat">
-                    <div class="card-body d-flex justify-content-end gap-2">
-                        <a th:href="@{/farmacia/inventario/medicamentos}" class="btn btn-outline-secondary">
-                            Cancelar
-                        </a>
-
-                        <button type="submit" class="btn btn-primary">
-                            Registrar medicamento
-                        </button>
-                    </div>
-                </div>
-
-            </form>
-
-        </main>
-
+        </div>
     </div>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
 </html>
