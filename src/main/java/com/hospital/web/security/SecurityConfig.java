@@ -54,8 +54,9 @@ public class SecurityConfig {
                 .requestMatchers("/medico/**")
                 .hasAnyRole("ADMIN", "MEDICO")
 
-                // CUS 3 - Gestión de Compras: Almacenero
+                // CUS 3 y 4 - Panel Unificado Almacén y Compras: Almacenero
                 .requestMatchers(
+                    "/farmacia/almacen/dashboard",
                     "/farmacia/compras/dashboard",
                     "/farmacia/compras/kardex",
                     "/farmacia/compras/ordenes/**",
@@ -138,7 +139,7 @@ public class SecurityConfig {
                     } else if (isMedico) {
                         response.sendRedirect("/medico/dashboard");
                     } else if (isAlmacenero) {
-                        response.sendRedirect("/farmacia/compras/dashboard");
+                        response.sendRedirect("/farmacia/almacen/dashboard");
                     } else if (isQuimico) {
                         response.sendRedirect("/farmacia/inventario/quimico/dashboard");
                     } else if (isCobranza) {

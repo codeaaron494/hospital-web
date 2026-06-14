@@ -30,4 +30,10 @@ public class DashboardController {
         model.addAttribute("titulo", "Dashboard Administrador");
         return "dashboard/admin";
     }
+
+    @GetMapping("/farmacia/almacen/dashboard")
+    public String dashboardAlmacenero(Model model) {
+        model.addAttribute("titulo", "Dashboard de Almacén e Inventario");
+        return "farmacia/almacen/dashboard";
+    }
 }
