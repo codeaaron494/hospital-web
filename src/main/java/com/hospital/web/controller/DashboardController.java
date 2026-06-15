@@ -34,6 +34,6 @@ public class DashboardController {
     @GetMapping("/farmacia/almacen/dashboard")
     public String dashboardAlmacenero(Model model) {
         model.addAttribute("titulo", "Dashboard de Almacén e Inventario");
-        return "farmacia/almacen/dashboard";
+        return "farmacia/almacen/dashboard"; // Este será nuestro único dashboard unificado
     }
 }

@@ -48,10 +48,7 @@ public class InventarioAlmaceneroController {
         this.categoriaMedicamentoRepository = categoriaMedicamentoRepository;
     }
 
-    @GetMapping("/dashboard")
-    public String dashboard() {
-        return "farmacia/inventario/dashboard";
-    }
+    // ELIMINADO: @GetMapping("/dashboard") - Ahora se usa DashboardController
 
     @GetMapping("/medicamentos")
     public String listarMedicamentos(Model model) {
@@ -60,47 +57,47 @@ public class InventarioAlmaceneroController {
     }
 
     @GetMapping("/medicamentos/nuevo")
-public String nuevoMedicamento(Model model) {
-    model.addAttribute("categorias", categoriaMedicamentoRepository.findAll());
-    return "farmacia/inventario/medicamento-form";
-}
-
-@PostMapping("/medicamentos/guardar")
-public String guardarMedicamento(
-        @RequestParam String nombreMedicamento,
-        @RequestParam String concentracion,
-        @RequestParam String presentacion,
-        @RequestParam Integer idCategoria,
-        @RequestParam Integer stockActual,
-        @RequestParam Integer stockMinimo,
-        Principal principal,
-        RedirectAttributes redirectAttributes
-) {
-    try {
-        Integer idAlmacenero = obtenerIdUsuario(principal, "almacenero");
-
-        var medicamento = inventarioMedicamentoService.registrarMedicamentoConKardex(
-                nombreMedicamento,
-                concentracion,
-                presentacion,
-                idCategoria,
-                stockActual,
-                stockMinimo,
-                idAlmacenero
-        );
-
-        redirectAttributes.addFlashAttribute(
-                "success",
-                "Medicamento registrado correctamente y Kardex inicial creado."
-        );
-
-        return "redirect:/farmacia/inventario/medicamentos";
-
-    } catch (Exception e) {
-        redirectAttributes.addFlashAttribute("error", e.getMessage());
-        return "redirect:/farmacia/inventario/medicamentos/nuevo";
+    public String nuevoMedicamento(Model model) {
+        model.addAttribute("categorias", categoriaMedicamentoRepository.findAll());
+        return "farmacia/inventario/medicamento-form";
     }
-}
+
+    @PostMapping("/medicamentos/guardar")
+    public String guardarMedicamento(
+            @RequestParam String nombreMedicamento,
+            @RequestParam String concentracion,
+            @RequestParam String presentacion,
+            @RequestParam Integer idCategoria,
+            @RequestParam Integer stockActual,
+            @RequestParam Integer stockMinimo,
+            Principal principal,
+            RedirectAttributes redirectAttributes
+    ) {
+        try {
+            Integer idAlmacenero = obtenerIdUsuario(principal, "almacenero");
+
+            var medicamento = inventarioMedicamentoService.registrarMedicamentoConKardex(
+                    nombreMedicamento,
+                    concentracion,
+                    presentacion,
+                    idCategoria,
+                    stockActual,
+                    stockMinimo,
+                    idAlmacenero
+            );
+
+            redirectAttributes.addFlashAttribute(
+                    "success",
+                    "Medicamento registrado correctamente y Kardex inicial creado."
+            );
+
+            return "redirect:/farmacia/inventario/medicamentos";
+
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+            return "redirect:/farmacia/inventario/medicamentos/nuevo";
+        }
+    }
 
     @GetMapping("/kardex")
     public String listarKardex(Model model) {

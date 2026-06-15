@@ -38,10 +38,7 @@ public class ComprasAlmaceneroController {
         this.usuarioRepository = usuarioRepository;
     }
 
-    @GetMapping("/dashboard")
-    public String dashboardAlmacenero() {
-        return "farmacia/compras/dashboard";
-    }
+    // ELIMINADO: @GetMapping("/dashboard") - Ahora se usa DashboardController
 
     @GetMapping("/kardex")
     public String consultarKardex(Model model) {
