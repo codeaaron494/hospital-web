@@ -1,136 +1,149 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Balances Mensuales | Inventario</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" th:href="@{/css/app.css}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Balances Mensuales | Almacén</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 </head>
-<body>
+<body class="bg-light">
 
-<div class="container-fluid">
-    <div class="row">
-
-        <aside class="col-md-3 col-lg-2 sidebar p-3">
-            <h4 class="text-white mb-4">Inventario</h4>
-
-            <nav class="nav flex-column">
-                <a class="nav-link" th:href="@{/farmacia/inventario/dashboard}">Dashboard</a>
-                <a class="nav-link" th:href="@{/farmacia/inventario/medicamentos}">Medicamentos</a>
-                <a class="nav-link" th:href="@{/farmacia/inventario/kardex}">Consultar Kardex</a>
-                <a class="nav-link" th:href="@{/farmacia/inventario/conteos}">Conteos físicos</a>
-                <a class="nav-link" th:href="@{/farmacia/inventario/conteos/nuevo}">Registrar conteo físico</a>
-                <a class="nav-link" th:href="@{/farmacia/inventario/balances}">Balances mensuales</a>
-                <a class="nav-link" th:href="@{/farmacia/inventario/balances/nuevo}">Generar balance mensual</a>
-
-                <hr class="text-white">
-
-                <a class="nav-link" th:href="@{/logout}">Cerrar sesión</a>
-            </nav>
-        </aside>
-
-        <main class="col-md-9 col-lg-10 content-wrapper">
-
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <div>
-                    <h1 class="page-title">Balances Mensuales</h1>
-                    <p class="text-muted">
-                        Reportes mensuales de inventario para revisión del químico farmacéutico.
-                    </p>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-success shadow-sm mb-4">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="/farmacia/almacen/dashboard">
+                <i class="bi bi-box-seam me-1"></i> Área de Almacén
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item"><a class="nav-link" href="/farmacia/almacen/dashboard"><i class="bi bi-speedometer2"></i> Panel</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/farmacia/compras/ordenes"><i class="bi bi-file-earmark-text"></i> Órdenes</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/farmacia/compras/guias"><i class="bi bi-truck"></i> Guías</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/farmacia/inventario/kardex"><i class="bi bi-journal-text"></i> Kardex</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="/farmacia/inventario/medicamentos"><i class="bi bi-capsule"></i> Inventario</a></li>
+                </ul>
+                <div class="d-flex align-items-center">
+                    <span class="navbar-text text-white me-3"><i class="bi bi-person-badge"></i> Almacenero: <span th:text="${#authentication.name}">Usuario</span></span>
+                    <form th:action="@{/logout}" method="post" class="m-0">
+                        <button class="btn btn-outline-light btn-sm border-white" type="submit"><i class="bi bi-box-arrow-right me-1"></i>Cerrar Sesión</button>
+                    </form>
                 </div>
+            </div>
+        </div>
+    </nav>
 
-                <a th:href="@{/farmacia/inventario/balances/nuevo}" class="btn btn-primary">
-                    Generar balance
+    <div class="container mt-4 mb-5">
+        
+        <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
+            <div>
+                <h1 class="h3 mb-0 text-success fw-bold">
+                    <i class="bi bi-file-earmark-bar-graph me-2"></i>Balances Mensuales
+                </h1>
+                <p class="text-muted mb-0 mt-1">Reportes de inventario consolidados para revisión del químico farmacéutico y DIGEMID.</p>
+            </div>
+            <div>
+                <a th:href="@{/farmacia/almacen/dashboard}" class="btn btn-outline-secondary shadow-sm me-2">
+                    <i class="bi bi-arrow-left me-1"></i> Volver al Dashboard
+                </a>
+                <a th:href="@{/farmacia/inventario/balances/nuevo}" class="btn btn-success shadow-sm fw-bold">
+                    <i class="bi bi-plus-circle me-1"></i> Generar Balance
                 </a>
             </div>
+        </div>
 
-            <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
-            <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+        <div th:if="${success}" class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i><span th:text="${success}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i><span th:text="${error}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
 
-            <div class="card card-stat mb-4">
-                <div class="card-body">
-                    <h5 class="mb-3">Filtrar balances</h5>
-
-                    <form th:action="@{/farmacia/inventario/balances}" method="get" class="row g-3">
-                        <div class="col-md-8">
-                            <label class="form-label">Estado</label>
-                            <select name="estado" class="form-select">
-                                <option value="">Todos</option>
-                                <option value="GENERADO" th:selected="${estadoBuscado == 'GENERADO'}">GENERADO</option>
-                                <option value="ENVIADO_A_QUIMICO" th:selected="${estadoBuscado == 'ENVIADO_A_QUIMICO'}">ENVIADO_A_QUIMICO</option>
-                                <option value="APROBADO" th:selected="${estadoBuscado == 'APROBADO'}">APROBADO</option>
-                                <option value="OBSERVADO" th:selected="${estadoBuscado == 'OBSERVADO'}">OBSERVADO</option>
-                                <option value="EXPORTADO_DIGEMID" th:selected="${estadoBuscado == 'EXPORTADO_DIGEMID'}">EXPORTADO_DIGEMID</option>
-                                <option value="CONFORME_DIGEMID" th:selected="${estadoBuscado == 'CONFORME_DIGEMID'}">CONFORME_DIGEMID</option>
-                                <option value="OBSERVADO_DIGEMID" th:selected="${estadoBuscado == 'OBSERVADO_DIGEMID'}">OBSERVADO_DIGEMID</option>
-                            </select>
-                        </div>
-
-                        <div class="col-md-4 d-flex align-items-end">
-                            <button type="submit" class="btn btn-outline-primary w-100">
-                                Filtrar
-                            </button>
-                        </div>
-                    </form>
-
-                    <div class="mt-3">
-                        <a th:href="@{/farmacia/inventario/balances}" class="btn btn-outline-secondary btn-sm">
-                            Limpiar filtro
-                        </a>
+        <div class="card border-0 shadow-sm rounded-4 mb-4 border-top border-success border-4">
+            <div class="card-body p-4">
+                <form th:action="@{/farmacia/inventario/balances}" method="get" class="row g-3 align-items-end">
+                    <div class="col-md-5">
+                        <label class="form-label fw-bold text-muted small"><i class="bi bi-funnel me-1"></i>Filtrar por Estado</label>
+                        <select name="estado" class="form-select bg-light">
+                            <option value="">Todos los balances</option>
+                            <option value="GENERADO" th:selected="${estadoBuscado == 'GENERADO'}">GENERADO</option>
+                            <option value="ENVIADO_A_QUIMICO" th:selected="${estadoBuscado == 'ENVIADO_A_QUIMICO'}">ENVIADO A QUIMICO</option>
+                            <option value="APROBADO" th:selected="${estadoBuscado == 'APROBADO'}">APROBADO</option>
+                            <option value="OBSERVADO" th:selected="${estadoBuscado == 'OBSERVADO'}">OBSERVADO</option>
+                            <option value="EXPORTADO_DIGEMID" th:selected="${estadoBuscado == 'EXPORTADO_DIGEMID'}">EXPORTADO A DIGEMID</option>
+                            <option value="CONFORME_DIGEMID" th:selected="${estadoBuscado == 'CONFORME_DIGEMID'}">CONFORME POR DIGEMID</option>
+                            <option value="OBSERVADO_DIGEMID" th:selected="${estadoBuscado == 'OBSERVADO_DIGEMID'}">OBSERVADO POR DIGEMID</option>
+                        </select>
                     </div>
-                </div>
+                    <div class="col-md-3">
+                        <button type="submit" class="btn btn-outline-success w-100 shadow-sm"><i class="bi bi-search me-1"></i> Aplicar Filtro</button>
+                    </div>
+                    <div class="col-md-2" th:if="${estadoBuscado != null}">
+                        <a th:href="@{/farmacia/inventario/balances}" class="btn btn-light w-100 text-muted shadow-sm border"><i class="bi bi-x-circle me-1"></i> Limpiar</a>
+                    </div>
+                </form>
             </div>
+        </div>
 
-            <div class="card card-stat">
-                <div class="card-body">
-                    <h5 class="mb-3">Balances registrados</h5>
+        <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-5">
+            <div class="card-body p-0">
+                <div th:if="${#lists.isEmpty(balances)}" class="alert alert-light border m-4 text-center text-muted">
+                    <i class="bi bi-inbox fa-2x d-block fs-1 mb-2 text-secondary opacity-50"></i>
+                    No existen balances mensuales registrados con estos criterios.
+                </div>
 
-                    <div th:if="${#lists.isEmpty(balances)}" class="alert alert-warning">
-                        No existen balances mensuales registrados.
-                    </div>
-
-                    <div class="table-responsive" th:if="${!#lists.isEmpty(balances)}">
-                        <table class="table table-hover align-middle">
-                            <thead>
+                <div class="table-responsive" th:if="${!#lists.isEmpty(balances)}">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
                             <tr>
-                                <th>Código</th>
-                                <th>Periodo</th>
-                                <th>Fecha generación</th>
-                                <th>Estado</th>
-                                <th>Almacenero</th>
-                                <th>Químico</th>
-                                <th class="text-end">Acción</th>
+                                <th class="px-4 py-3 border-0 text-secondary">Código</th>
+                                <th class="border-0 text-secondary">Periodo</th>
+                                <th class="border-0 text-secondary">Fecha Generación</th>
+                                <th class="text-center border-0 text-secondary">Estado</th>
+                                <th class="border-0 text-secondary">Revisor (Químico)</th>
+                                <th class="text-end px-4 border-0 text-secondary">Acción</th>
                             </tr>
-                            </thead>
-
-                            <tbody>
+                        </thead>
+                        <tbody>
                             <tr th:each="balance : ${balances}">
-                                <td th:text="${'BM-' + balance.idBalanceMensual}">BM-1</td>
-                                <td th:text="${balance.periodo}">2026-05</td>
+                                <td class="px-4 fw-bold text-success" th:text="${'BM-' + balance.idBalanceMensual}">BM-1</td>
+                                <td class="fw-semibold text-dark" th:text="${balance.periodo}">2026-05</td>
                                 <td th:text="${#temporals.format(balance.fechaGeneracion, 'dd/MM/yyyy HH:mm')}">31/05/2026</td>
-                                <td><span class="badge bg-secondary" th:text="${balance.estadoBalance}">GENERADO</span></td>
-                                <td th:text="${balance.usuarioAlmacenero.username}">almacenero</td>
-                                <td th:text="${balance.usuarioQuimico != null ? balance.usuarioQuimico.username : '-'}">-</td>
-                                <td class="text-end">
+                                
+                                <td class="text-center">
+                                    <span class="badge rounded-pill shadow-sm px-3 py-2"
+                                          th:classappend="${
+                                              balance.estadoBalance == 'GENERADO' ? 'bg-secondary' : 
+                                              (balance.estadoBalance == 'OBSERVADO' or balance.estadoBalance == 'OBSERVADO_DIGEMID' ? 'bg-danger' : 
+                                              (balance.estadoBalance == 'APROBADO' or balance.estadoBalance == 'CONFORME_DIGEMID' ? 'bg-success' : 'bg-primary'))
+                                          }">
+                                        [[${balance.estadoBalance}]]
+                                    </span>
+                                </td>
+                                
+                                <td th:text="${balance.usuarioQuimico != null ? balance.usuarioQuimico.username : 'Pendiente'}">-</td>
+                                
+                                <td class="text-end px-4">
                                     <a th:href="@{/farmacia/inventario/balances/{id}(id=${balance.idBalanceMensual})}"
-                                       class="btn btn-sm btn-primary">
-                                        Ver
+                                       class="btn btn-sm shadow-sm"
+                                       th:classappend="${balance.estadoBalance == 'GENERADO' or balance.estadoBalance == 'OBSERVADO' ? 'btn-success text-white' : 'btn-outline-success'}">
+                                        <i class="bi" th:classappend="${balance.estadoBalance == 'GENERADO' or balance.estadoBalance == 'OBSERVADO' ? 'bi-pencil-square' : 'bi-eye'}"></i>
+                                        <span class="ms-1">Ver Detalle</span>
                                     </a>
                                 </td>
                             </tr>
-                            </tbody>
-                        </table>
-                    </div>
-
+                        </tbody>
+                    </table>
                 </div>
             </div>
-
-        </main>
+        </div>
 
     </div>
-</div>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

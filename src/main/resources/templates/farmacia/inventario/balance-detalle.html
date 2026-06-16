@@ -1,199 +1,197 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Detalle Balance Mensual | Inventario</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" th:href="@{/css/app.css}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalle Balance Mensual | Almacén</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 </head>
-<body>
+<body class="bg-light">
 
-<div class="container-fluid">
-    <div class="row">
-
-        <aside class="col-md-3 col-lg-2 sidebar p-3">
-            <h4 class="text-white mb-4">Inventario</h4>
-
-            <nav class="nav flex-column">
-                <a class="nav-link" th:href="@{/farmacia/inventario/dashboard}">Dashboard</a>
-                <a class="nav-link" th:href="@{/farmacia/inventario/medicamentos}">Medicamentos</a>
-                <a class="nav-link" th:href="@{/farmacia/inventario/kardex}">Consultar Kardex</a>
-                <a class="nav-link" th:href="@{/farmacia/inventario/conteos}">Conteos físicos</a>
-                <a class="nav-link" th:href="@{/farmacia/inventario/conteos/nuevo}">Registrar conteo físico</a>
-                <a class="nav-link" th:href="@{/farmacia/inventario/balances}">Balances mensuales</a>
-                <a class="nav-link" th:href="@{/farmacia/inventario/balances/nuevo}">Generar balance mensual</a>
-
-                <hr class="text-white">
-
-                <a class="nav-link" th:href="@{/logout}">Cerrar sesión</a>
-            </nav>
-        </aside>
-
-        <main class="col-md-9 col-lg-10 content-wrapper">
-
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <div>
-                    <h1 class="page-title">Detalle de Balance Mensual</h1>
-                    <p class="text-muted">
-                        Balance mensual generado por almacén para revisión del químico farmacéutico.
-                    </p>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-success shadow-sm mb-4">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="/farmacia/almacen/dashboard">
+                <i class="bi bi-box-seam me-1"></i> Área de Almacén
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item"><a class="nav-link" href="/farmacia/almacen/dashboard"><i class="bi bi-speedometer2"></i> Panel</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/farmacia/compras/ordenes"><i class="bi bi-file-earmark-text"></i> Órdenes</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/farmacia/compras/guias"><i class="bi bi-truck"></i> Guías</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/farmacia/inventario/kardex"><i class="bi bi-journal-text"></i> Kardex</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="/farmacia/inventario/medicamentos"><i class="bi bi-capsule"></i> Inventario</a></li>
+                </ul>
+                <div class="d-flex align-items-center">
+                    <span class="navbar-text text-white me-3"><i class="bi bi-person-badge"></i> Almacenero: <span th:text="${#authentication.name}">Usuario</span></span>
+                    <form th:action="@{/logout}" method="post" class="m-0">
+                        <button class="btn btn-outline-light btn-sm border-white" type="submit"><i class="bi bi-box-arrow-right me-1"></i>Cerrar Sesión</button>
+                    </form>
                 </div>
-
-                <a th:href="@{/farmacia/inventario/balances}" class="btn btn-outline-secondary">
-                    Volver a balances
-                </a>
             </div>
+        </div>
+    </nav>
 
-            <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
-            <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+    <div class="container mt-4 mb-5">
+        
+        <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
+            <div>
+                <h1 class="h3 mb-0 text-success fw-bold">
+                    <i class="bi bi-file-earmark-bar-graph me-2"></i>Balance: <span th:text="${'BM-' + balance.idBalanceMensual}">BM-0</span>
+                </h1>
+                <p class="text-muted mb-0 mt-1">Auditoría detallada del periodo <span class="fw-bold" th:text="${balance.periodo}"></span>.</p>
+            </div>
+            <a th:href="@{/farmacia/inventario/balances}" class="btn btn-outline-secondary shadow-sm">
+                <i class="bi bi-arrow-left me-1"></i> Volver a Balances
+            </a>
+        </div>
 
-            <div class="card card-stat mb-4">
-                <div class="card-body">
-                    <h5 class="mb-3">Datos del balance</h5>
+        <div th:if="${success}" class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i><span th:text="${success}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i><span th:text="${error}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
 
-                    <div class="row g-3">
-                        <div class="col-md-3">
-                            <label class="form-label">Código</label>
-                            <input class="form-control" th:value="${'BM-' + balance.idBalanceMensual}" readonly>
-                        </div>
-
-                        <div class="col-md-3">
-                            <label class="form-label">Periodo</label>
-                            <input class="form-control" th:value="${balance.periodo}" readonly>
-                        </div>
-
-                        <div class="col-md-3">
-                            <label class="form-label">Estado</label>
-                            <input class="form-control" th:value="${balance.estadoBalance}" readonly>
-                        </div>
-
-                        <div class="col-md-3">
-                            <label class="form-label">Fecha generación</label>
-                            <input class="form-control" th:value="${#temporals.format(balance.fechaGeneracion, 'dd/MM/yyyy HH:mm')}" readonly>
-                        </div>
-
-                        <div class="col-md-4">
-                            <label class="form-label">Almacenero</label>
-                            <input class="form-control" th:value="${balance.usuarioAlmacenero.username}" readonly>
-                        </div>
-
-                        <div class="col-md-4">
-                            <label class="form-label">Químico</label>
-                            <input class="form-control" th:value="${balance.usuarioQuimico != null ? balance.usuarioQuimico.username : '-'}" readonly>
-                        </div>
-
-                        <div class="col-md-4">
-                            <label class="form-label">Destino externo</label>
-                            <input class="form-control" value="DIGEMID simulado" readonly>
-                        </div>
-
-                        <div class="col-md-12">
-                            <label class="form-label">Observación</label>
-                            <textarea class="form-control" rows="2" readonly th:text="${balance.observacion}"></textarea>
-                        </div>
+        <div class="card border-0 shadow-sm rounded-4 mb-4 border-top border-success border-4">
+            <div class="card-header bg-white border-bottom-0 pt-4 pb-2 px-4 d-flex justify-content-between align-items-center">
+                <h6 class="fw-bold text-success mb-0"><i class="bi bi-info-circle me-2"></i>Resumen del Documento</h6>
+                <span class="badge rounded-pill px-3 py-2 fs-6 shadow-sm"
+                      th:classappend="${
+                          balance.estadoBalance == 'GENERADO' ? 'bg-secondary' : 
+                          (balance.estadoBalance == 'OBSERVADO' or balance.estadoBalance == 'OBSERVADO_DIGEMID' ? 'bg-danger' : 
+                          (balance.estadoBalance == 'APROBADO' or balance.estadoBalance == 'CONFORME_DIGEMID' ? 'bg-success' : 'bg-primary'))
+                      }">
+                    [[${balance.estadoBalance}]]
+                </span>
+            </div>
+            <div class="card-body p-4">
+                <div class="row g-4">
+                    <div class="col-md-4 border-end">
+                        <p class="text-muted small fw-bold text-uppercase mb-2">Tiempos</p>
+                        <p class="mb-1"><span class="fw-bold">Periodo:</span> <span class="text-dark" th:text="${balance.periodo}"></span></p>
+                        <p class="mb-1"><span class="fw-bold">Emisión:</span> <span th:text="${#temporals.format(balance.fechaGeneracion, 'dd/MM/yyyy HH:mm')}"></span></p>
+                    </div>
+                    <div class="col-md-4 border-end ps-md-4">
+                        <p class="text-muted small fw-bold text-uppercase mb-2">Responsables</p>
+                        <p class="mb-1"><span class="fw-bold">Generado por:</span> <span th:text="${balance.usuarioAlmacenero.username}"></span></p>
+                        <p class="mb-1"><span class="fw-bold">Revisor Q.F.:</span> <span th:text="${balance.usuarioQuimico != null ? balance.usuarioQuimico.username : 'No asignado'}"></span></p>
+                    </div>
+                    <div class="col-md-4 ps-md-4">
+                        <p class="text-muted small fw-bold text-uppercase mb-2">Regulatorio</p>
+                        <p class="mb-1"><span class="fw-bold">Destino Externo:</span> <i class="bi bi-building"></i> DIGEMID</p>
+                    </div>
+                    <div class="col-12 mt-3 pt-3 border-top" th:if="${balance.observacion != null and !balance.observacion.isEmpty()}">
+                        <p class="text-muted small fw-bold text-uppercase mb-2">Notas Adjuntas</p>
+                        <p class="bg-light p-3 rounded-3 mb-0 text-muted" th:text="${balance.observacion}"></p>
                     </div>
                 </div>
             </div>
+        </div>
 
-            <div class="card card-stat mb-4">
-                <div class="card-body">
-                    <h5 class="mb-3">Detalle del balance</h5>
+        <div class="card border-0 shadow-sm rounded-4 mb-4">
+            <div class="card-header bg-white border-bottom-0 pt-4 pb-2 px-4">
+                <h6 class="fw-bold text-success"><i class="bi bi-table me-2"></i>Consolidado de Movimientos</h6>
+            </div>
+            <div class="card-body p-0">
+                <div th:if="${#lists.isEmpty(detalles)}" class="alert alert-light border m-4 text-center text-muted">
+                    <i class="bi bi-inbox fa-2x d-block fs-1 mb-2 text-secondary opacity-50"></i> Este balance fue generado sin detalles o el Kardex estaba vacío.
+                </div>
 
-                    <div th:if="${#lists.isEmpty(detalles)}" class="alert alert-warning">
-                        Este balance no tiene detalle registrado.
-                    </div>
-
-                    <div class="table-responsive" th:if="${!#lists.isEmpty(detalles)}">
-                        <table class="table table-hover align-middle">
-                            <thead>
+                <div class="table-responsive" th:if="${!#lists.isEmpty(detalles)}">
+                    <table class="table table-hover align-middle mb-0 text-center">
+                        <thead class="table-light">
                             <tr>
-                                <th>Medicamento</th>
-                                <th>Stock inicial</th>
-                                <th>Ingresos</th>
-                                <th>Salidas</th>
-                                <th>Ajustes</th>
-                                <th>Stock final</th>
+                                <th class="text-start px-4 py-3 border-0 text-secondary">Medicamento</th>
+                                <th class="border-0 text-secondary">Stock Inicial</th>
+                                <th class="border-0 text-success">Ingresos (+)</th>
+                                <th class="border-0 text-danger">Salidas (-)</th>
+                                <th class="border-0 text-warning text-dark">Ajustes (+/-)</th>
+                                <th class="border-0 fw-bold text-dark">Stock Final</th>
                             </tr>
-                            </thead>
-
-                            <tbody>
+                        </thead>
+                        <tbody>
                             <tr th:each="detalle : ${detalles}">
-                                <td th:text="${detalle.medicamento.nombreCompleto}">Medicamento</td>
-                                <td th:text="${detalle.stockInicial}">100</td>
-                                <td th:text="${detalle.ingresos}">0</td>
-                                <td th:text="${detalle.salidas}">0</td>
-                                <td th:text="${detalle.ajustes}">0</td>
-                                <td th:text="${detalle.stockFinal}">100</td>
+                                <td class="text-start px-4 fw-bold text-dark" th:text="${detalle.medicamento.nombreCompleto}">Paracetamol</td>
+                                <td class="text-muted" th:text="${detalle.stockInicial}">100</td>
+                                <td class="text-success fw-semibold" th:text="${detalle.ingresos}">50</td>
+                                <td class="text-danger fw-semibold" th:text="${detalle.salidas}">20</td>
+                                <td class="text-warning text-dark fw-semibold" th:text="${detalle.ajustes}">0</td>
+                                <td class="fw-bold fs-6 border-start bg-light" th:text="${detalle.stockFinal}">130</td>
                             </tr>
-                            </tbody>
-                        </table>
-                    </div>
+                        </tbody>
+                    </table>
+                </div>
 
-                    <form th:if="${balance.estadoBalance == 'GENERADO' or balance.estadoBalance == 'OBSERVADO'}"
-                          th:action="@{/farmacia/inventario/balances/{id}/enviar-quimico(id=${balance.idBalanceMensual})}"
-                          method="post"
-                          class="d-flex justify-content-end mt-3">
-                        <button type="submit" class="btn btn-primary">
-                            Enviar al químico
+                <div class="p-4 bg-light text-end border-top" th:if="${balance.estadoBalance == 'GENERADO' or balance.estadoBalance == 'OBSERVADO'}">
+                    <form th:action="@{/farmacia/inventario/balances/{id}/enviar-quimico(id=${balance.idBalanceMensual})}" method="post" class="m-0">
+                        <button type="submit" class="btn btn-warning shadow-sm fw-bold px-4 text-dark">
+                            <i class="bi bi-send-check me-2"></i> Enviar a Revisión del Químico
                         </button>
                     </form>
                 </div>
             </div>
+        </div>
 
-            <div class="card card-stat">
-                <div class="card-body">
-                    <h5 class="mb-3">Observaciones</h5>
-
-                    <div th:if="${#lists.isEmpty(observaciones)}" class="alert alert-info">
-                        No existen observaciones para este balance.
-                    </div>
-
-                    <div class="table-responsive" th:if="${!#lists.isEmpty(observaciones)}">
-                        <table class="table table-hover align-middle">
-                            <thead>
+        <div class="card border-0 shadow-sm rounded-4 mb-4" th:if="${!#lists.isEmpty(observaciones) or balance.estadoBalance == 'OBSERVADO' or balance.estadoBalance == 'OBSERVADO_DIGEMID'}">
+            <div class="card-header bg-white border-bottom-0 pt-4 pb-2 px-4">
+                <h6 class="fw-bold text-danger"><i class="bi bi-exclamation-octagon me-2"></i>Historial de Observaciones</h6>
+            </div>
+            <div class="card-body p-0">
+                <div th:if="${#lists.isEmpty(observaciones)}" class="alert alert-light border m-4 text-center text-muted">
+                    No existen observaciones registradas para este documento.
+                </div>
+                
+                <div class="table-responsive" th:if="${!#lists.isEmpty(observaciones)}">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
                             <tr>
-                                <th>Origen</th>
-                                <th>Fecha</th>
-                                <th>Descripción</th>
-                                <th>Estado</th>
-                                <th class="text-end">Acción</th>
+                                <th class="px-4 py-3 border-0 text-secondary">Origen</th>
+                                <th class="border-0 text-secondary">Fecha</th>
+                                <th class="border-0 text-secondary w-50">Descripción de Observación</th>
+                                <th class="border-0 text-secondary">Estado</th>
+                                <th class="text-end px-4 border-0 text-secondary">Acción Requerida</th>
                             </tr>
-                            </thead>
-
-                            <tbody>
-                            <tr th:each="obs : ${observaciones}">
-                                <td th:text="${obs.origenObservacion}">QUIMICO</td>
-                                <td th:text="${#temporals.format(obs.fechaObservacion, 'dd/MM/yyyy HH:mm')}">31/05/2026</td>
-                                <td th:text="${obs.descripcion}">Observación</td>
-                                <td><span class="badge bg-secondary" th:text="${obs.estadoObservacion}">PENDIENTE</span></td>
-                                <td class="text-end">
+                        </thead>
+                        <tbody>
+                            <tr th:each="obs : ${observaciones}" th:classappend="${obs.estadoObservacion == 'PENDIENTE' ? 'table-warning' : ''}">
+                                <td class="px-4 fw-bold text-dark">
+                                    <i class="bi bi-person-fill-exclamation text-danger me-1"></i> [[${obs.origenObservacion}]]
+                                </td>
+                                <td class="text-muted small" th:text="${#temporals.format(obs.fechaObservacion, 'dd/MM/yyyy HH:mm')}">31/05/2026</td>
+                                <td class="text-dark">[[${obs.descripcion}]]</td>
+                                <td>
+                                    <span class="badge" th:classappend="${obs.estadoObservacion == 'PENDIENTE' ? 'bg-danger' : 'bg-success'}">
+                                        [[${obs.estadoObservacion}]]
+                                    </span>
+                                </td>
+                                <td class="text-end px-4">
                                     <form th:if="${obs.estadoObservacion == 'PENDIENTE'}"
                                           th:action="@{/farmacia/inventario/observaciones/{id}/subsanar(id=${obs.idObservacionBalance})}"
-                                          method="post">
+                                          method="post" class="m-0">
                                         <input type="hidden" name="idBalanceMensual" th:value="${balance.idBalanceMensual}">
-                                        <button type="submit" class="btn btn-sm btn-warning">
-                                            Subsanar
+                                        <button type="submit" class="btn btn-sm btn-success shadow-sm fw-bold">
+                                            <i class="bi bi-check-circle me-1"></i> Marcar como Subsanada
                                         </button>
                                     </form>
-
-                                    <span th:if="${obs.estadoObservacion != 'PENDIENTE'}" class="text-muted">
-                                        Subsanada
+                                    <span th:if="${obs.estadoObservacion != 'PENDIENTE'}" class="text-success small fw-semibold">
+                                        <i class="bi bi-check-all me-1"></i>Resuelta
                                     </span>
                                 </td>
                             </tr>
-                            </tbody>
-                        </table>
-                    </div>
-
+                        </tbody>
+                    </table>
                 </div>
             </div>
-
-        </main>
+        </div>
 
     </div>
-</div>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

@@ -9,6 +9,7 @@
 </head>
 <body class="bg-light">
 
+    <!-- Barra de Navegación Unificada Corregida -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-success shadow-sm mb-4">
         <div class="container">
             <a class="navbar-brand fw-bold" href="/farmacia/almacen/dashboard">
@@ -23,6 +24,8 @@
                     <li class="nav-item"><a class="nav-link" href="/farmacia/compras/ordenes"><i class="bi bi-file-earmark-text"></i> Órdenes</a></li>
                     <li class="nav-item"><a class="nav-link" href="/farmacia/compras/guias"><i class="bi bi-truck"></i> Guías</a></li>
                     <li class="nav-item"><a class="nav-link" href="/farmacia/inventario/kardex"><i class="bi bi-journal-text"></i> Kardex</a></li>
+                    <!-- Accesos directo a Medicamentos con clase active -->
+                    <li class="nav-item"><a class="nav-link active" href="/farmacia/inventario/medicamentos"><i class="bi bi-capsule"></i> Inventario</a></li>
                 </ul>
                 <div class="d-flex align-items-center">
                     <span class="navbar-text text-white me-3"><i class="bi bi-person-badge"></i> Almacenero: <span th:text="${#authentication.name}">Usuario</span></span>
@@ -34,6 +37,7 @@
         </div>
     </nav>
 
+    <!-- Contenido Principal -->
     <div class="container mt-4 mb-5">
         
         <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
