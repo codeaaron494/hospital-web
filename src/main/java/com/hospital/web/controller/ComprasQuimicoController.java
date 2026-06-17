@@ -24,10 +24,7 @@ public class ComprasQuimicoController {
         this.usuarioRepository = usuarioRepository;
     }
 
-    @GetMapping("/dashboard")
-    public String dashboardQuimico() {
-        return "farmacia/compras/quimico/dashboard";
-    }
+    // ELIMINADO: @GetMapping("/dashboard") para usar el Dashboard Unificado
 
     @GetMapping("/ordenes")
     public String listarOrdenes(

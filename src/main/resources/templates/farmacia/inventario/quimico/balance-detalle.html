@@ -1,353 +1,273 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Revisión Balance Mensual | Químico</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" th:href="@{/css/app.css}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auditoría de Balance | Químico Farmacéutico</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 </head>
-<body>
+<body class="bg-light">
 
-<div class="container-fluid">
-    <div class="row">
-
-        <aside class="col-md-3 col-lg-2 sidebar p-3">
-            <h4 class="text-white mb-4">Químico</h4>
-
-            <nav class="nav flex-column">
-                <a class="nav-link" th:href="@{/farmacia/inventario/quimico/dashboard}">Dashboard</a>
-                <a class="nav-link" th:href="@{/farmacia/inventario/quimico/kardex}">Consultar Kardex</a>
-                <a class="nav-link" th:href="@{/farmacia/inventario/quimico/kardex}">Auditar movimientos</a>
-                <a class="nav-link" th:href="@{/farmacia/inventario/quimico/balances}">Consultar balances</a>
-                <a class="nav-link" th:href="@{/farmacia/inventario/quimico/balances?estado=ENVIADO_A_QUIMICO}">
-                    Aprobar / solicitar reconteo
-                </a>
-
-                <hr class="text-white">
-
-                <a class="nav-link" th:href="@{/logout}">Cerrar sesión</a>
-            </nav>
-        </aside>
-
-        <main class="col-md-9 col-lg-10 content-wrapper">
-
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <div>
-                    <h1 class="page-title">Revisión de Balance Mensual</h1>
-                    <p class="text-muted">
-                        Evaluación del balance mensual, auditoría de Kardex, solicitud de reconteo,
-                        aprobación y exportación a DIGEMID simulado.
-                    </p>
-                </div>
-
-                <a th:href="@{/farmacia/inventario/quimico/balances}" class="btn btn-outline-secondary">
-                    Volver a balances
-                </a>
-            </div>
-
-            <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
-            <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
-
-            <!-- DATOS DEL BALANCE -->
-            <div class="card card-stat mb-4">
-                <div class="card-body">
-                    <h5 class="mb-3">Datos del balance</h5>
-
-                    <div class="row g-3">
-                        <div class="col-md-3">
-                            <label class="form-label">Código</label>
-                            <input class="form-control" th:value="${'BM-' + balance.idBalanceMensual}" readonly>
-                        </div>
-
-                        <div class="col-md-3">
-                            <label class="form-label">Periodo</label>
-                            <input class="form-control" th:value="${balance.periodo}" readonly>
-                        </div>
-
-                        <div class="col-md-3">
-                            <label class="form-label">Estado</label>
-                            <input class="form-control" th:value="${balance.estadoBalance}" readonly>
-                        </div>
-
-                        <div class="col-md-3">
-                            <label class="form-label">Fecha generación</label>
-                            <input class="form-control"
-                                   th:value="${#temporals.format(balance.fechaGeneracion, 'dd/MM/yyyy HH:mm')}"
-                                   readonly>
-                        </div>
-
-                        <div class="col-md-4">
-                            <label class="form-label">Almacenero</label>
-                            <input class="form-control" th:value="${balance.usuarioAlmacenero.username}" readonly>
-                        </div>
-
-                        <div class="col-md-4">
-                            <label class="form-label">Químico responsable</label>
-                            <input class="form-control"
-                                   th:value="${balance.usuarioQuimico != null ? balance.usuarioQuimico.username : '-'}"
-                                   readonly>
-                        </div>
-
-                        <div class="col-md-4">
-                            <label class="form-label">Entidad externa simulada</label>
-                            <input class="form-control" value="DIGEMID" readonly>
-                        </div>
-
-                        <div class="col-md-12">
-                            <label class="form-label">Observación general</label>
-                            <textarea class="form-control"
-                                      rows="2"
-                                      readonly
-                                      th:text="${balance.observacion}"></textarea>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- DETALLE DEL BALANCE -->
-            <div class="card card-stat mb-4">
-                <div class="card-body">
-                    <h5 class="mb-3">Detalle del balance</h5>
-
-                    <div th:if="${#lists.isEmpty(detalles)}" class="alert alert-warning">
-                        Este balance no tiene detalle registrado.
-                    </div>
-
-                    <div class="table-responsive" th:if="${!#lists.isEmpty(detalles)}">
-                        <table class="table table-hover align-middle">
-                            <thead>
-                            <tr>
-                                <th>Medicamento</th>
-                                <th>Categoría</th>
-                                <th>Stock inicial</th>
-                                <th>Ingresos</th>
-                                <th>Salidas</th>
-                                <th>Ajustes</th>
-                                <th>Stock final</th>
-                            </tr>
-                            </thead>
-
-                            <tbody>
-                            <tr th:each="detalle : ${detalles}">
-                                <td th:text="${detalle.medicamento.nombreCompleto}">Medicamento</td>
-                                <td th:text="${detalle.medicamento.categoria.nombreCategoria}">Categoría</td>
-                                <td th:text="${detalle.stockInicial}">100</td>
-                                <td th:text="${detalle.ingresos}">0</td>
-                                <td th:text="${detalle.salidas}">0</td>
-                                <td th:text="${detalle.ajustes}">0</td>
-                                <td th:text="${detalle.stockFinal}">100</td>
-                            </tr>
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <p class="text-muted small mb-0">
-                        El químico debe contrastar este balance con el Kardex y los movimientos auditables
-                        antes de aprobarlo o solicitar reconteo.
-                    </p>
-                </div>
-            </div>
-
-            <!-- DECISIÓN DEL QUÍMICO -->
-            <div class="card card-stat mb-4" th:if="${balance.estadoBalance == 'ENVIADO_A_QUIMICO'}">
-                <div class="card-body">
-                    <h5 class="mb-3">Decisión del químico farmacéutico sobre el balance</h5>
-
-                    <div class="alert alert-info">
-                        Si el balance es correcto, apruébalo. Si encuentras diferencias entre el balance,
-                        Kardex, movimientos o conteo físico, solicita reconteo registrando una observación.
-                    </div>
-
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <form th:action="@{/farmacia/inventario/quimico/balances/{id}/aprobar(id=${balance.idBalanceMensual})}"
-                                  method="post">
-                                <label class="form-label">Observación de aprobación</label>
-                                <textarea name="observacion"
-                                          class="form-control mb-3"
-                                          rows="3"
-                                          placeholder="Ej. Balance conforme para exportación oficial."></textarea>
-
-                                <button type="submit" class="btn btn-success w-100">
-                                    Aprobar balance oficial
-                                </button>
-                            </form>
-                        </div>
-
-                        <div class="col-md-6">
-                            <form th:action="@{/farmacia/inventario/quimico/balances/{id}/observar(id=${balance.idBalanceMensual})}"
-                                  method="post">
-                                <label class="form-label">Motivo de observación o solicitud de reconteo</label>
-                                <textarea name="descripcion"
-                                          class="form-control mb-3"
-                                          rows="3"
-                                          placeholder="Ej. Se solicita reconteo físico del medicamento por diferencia entre Kardex y balance mensual."
-                                          required></textarea>
-
-                                <button type="submit" class="btn btn-danger w-100">
-                                    Solicitar reconteo / Observar balance
-                                </button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- BALANCE OBSERVADO -->
-            <div class="card card-stat mb-4" th:if="${balance.estadoBalance == 'OBSERVADO'}">
-                <div class="card-body">
-                    <h5 class="mb-3">Balance observado</h5>
-                    <p class="text-muted mb-0">
-                        Este balance fue observado por el químico farmacéutico. El almacenero debe revisar
-                        la observación, realizar el reconteo o ajuste correspondiente, subsanar la observación
-                        y reenviar el balance para nueva revisión.
-                    </p>
-                </div>
-            </div>
-
-            <!-- EXPORTACIÓN A DIGEMID -->
-            <div class="card card-stat mb-4" th:if="${balance.estadoBalance == 'APROBADO'}">
-                <div class="card-body">
-                    <h5 class="mb-3">Exportación a DIGEMID simulado</h5>
-                    <p class="text-muted">
-                        El balance aprobado puede exportarse oficialmente hacia DIGEMID simulado.
-                    </p>
-
-                    <form th:action="@{/farmacia/inventario/quimico/balances/{id}/exportar-digemid(id=${balance.idBalanceMensual})}"
-                          method="post"
-                          class="d-flex justify-content-end">
-                        <button type="submit" class="btn btn-primary">
-                            Exportar balance a DIGEMID
-                        </button>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm mb-4">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="/farmacia/quimico/dashboard">
+                <i class="bi bi-prescription2 me-1"></i> Área de Autorización y Control
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item"><a class="nav-link" href="/farmacia/quimico/dashboard"><i class="bi bi-speedometer2"></i> Panel</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/farmacia/compras/quimico/ordenes"><i class="bi bi-ui-checks"></i> Revisión de Órdenes</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="/farmacia/inventario/quimico/balances"><i class="bi bi-file-earmark-medical"></i> Auditoría de Balances</a></li>
+                </ul>
+                <div class="d-flex align-items-center">
+                    <span class="navbar-text text-white me-3"><i class="bi bi-person-check-fill"></i> Químico Farmacéutico: <span th:text="${#authentication.name}">Usuario</span></span>
+                    <form th:action="@{/logout}" method="post" class="m-0">
+                        <button class="btn btn-outline-light btn-sm border-white" type="submit"><i class="bi bi-box-arrow-right me-1"></i>Cerrar Sesión</button>
                     </form>
                 </div>
             </div>
+        </div>
+    </nav>
 
-            <!-- RESPUESTA DIGEMID -->
-            <div class="card card-stat mb-4" th:if="${balance.estadoBalance == 'EXPORTADO_DIGEMID'}">
-                <div class="card-body">
-                    <h5 class="mb-3">Respuesta DIGEMID simulada</h5>
-                    <p class="text-muted">
-                        Registra la respuesta simulada de DIGEMID sobre el balance oficial exportado.
-                    </p>
+    <div class="container mt-4 mb-5">
+        
+        <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
+            <div>
+                <h1 class="h3 mb-0 text-primary fw-bold">
+                    <i class="bi bi-file-earmark-medical me-2"></i>Auditoría de Balance: <span th:text="${'BM-' + balance.idBalanceMensual}">BM-0</span>
+                </h1>
+                <p class="text-muted mb-0 mt-1">Revisión de saldos de inventario y flujo de DIGEMID.</p>
+            </div>
+            <a th:href="@{/farmacia/inventario/quimico/balances}" class="btn btn-outline-secondary shadow-sm">
+                <i class="bi bi-arrow-left me-1"></i> Volver a Bandeja
+            </a>
+        </div>
 
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <form th:action="@{/farmacia/inventario/quimico/balances/{id}/digemid-conforme(id=${balance.idBalanceMensual})}"
-                                  method="post">
-                                <button type="submit" class="btn btn-success w-100">
-                                    Registrar conformidad DIGEMID
-                                </button>
-                            </form>
-                        </div>
+        <div th:if="${success}" class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i><span th:text="${success}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i><span th:text="${error}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
 
-                        <div class="col-md-6">
-                            <form th:action="@{/farmacia/inventario/quimico/balances/{id}/digemid-observar(id=${balance.idBalanceMensual})}"
-                                  method="post">
-                                <label class="form-label">Observación DIGEMID simulada</label>
-                                <textarea name="descripcion"
-                                          class="form-control mb-3"
-                                          rows="3"
-                                          placeholder="Ej. DIGEMID solicita sustento de ajuste registrado en el periodo."
-                                          required></textarea>
-
-                                <button type="submit" class="btn btn-warning w-100">
-                                    Registrar observación DIGEMID
-                                </button>
-                            </form>
-                        </div>
+        <div class="card border-0 shadow-sm rounded-4 mb-4 border-top border-primary border-4">
+            <div class="card-header bg-white border-bottom-0 pt-4 pb-2 px-4 d-flex justify-content-between align-items-center">
+                <h6 class="fw-bold text-primary mb-0"><i class="bi bi-info-circle me-2"></i>Resumen del Documento</h6>
+                <span class="badge rounded-pill px-3 py-2 fs-6 shadow-sm"
+                      th:classappend="${
+                          balance.estadoBalance == 'ENVIADO_A_QUIMICO' ? 'bg-warning text-dark' : 
+                          (balance.estadoBalance == 'OBSERVADO' or balance.estadoBalance == 'OBSERVADO_DIGEMID' ? 'bg-danger' : 
+                          (balance.estadoBalance == 'APROBADO' ? 'bg-info text-dark' : 
+                          (balance.estadoBalance == 'EXPORTADO_DIGEMID' ? 'bg-secondary' : 'bg-success')))
+                      }">
+                    [[${balance.estadoBalance}]]
+                </span>
+            </div>
+            <div class="card-body p-4">
+                <div class="row g-4">
+                    <div class="col-md-6 border-end">
+                        <p class="text-muted small fw-bold text-uppercase mb-2">Tiempos y Origen</p>
+                        <p class="mb-1"><span class="fw-bold">Periodo a Evaluar:</span> <span class="text-dark fs-5 fw-bold" th:text="${balance.periodo}"></span></p>
+                        <p class="mb-1"><span class="fw-bold">Generado por:</span> <span th:text="${balance.usuarioAlmacenero.username}"></span> <span class="text-muted">el</span> <span th:text="${#temporals.format(balance.fechaGeneracion, 'dd/MM/yyyy HH:mm')}"></span></p>
+                    </div>
+                    <div class="col-md-6 ps-md-4">
+                        <p class="text-muted small fw-bold text-uppercase mb-2">Notas del Almacén / Estado</p>
+                        <p class="bg-light p-3 rounded-3 mb-0 text-dark" th:text="${balance.observacion != null and !balance.observacion.isEmpty() ? balance.observacion : 'Sin notas adicionales.'}"></p>
                     </div>
                 </div>
             </div>
+        </div>
 
-            <!-- ESTADO FINAL CONFORME -->
-            <div class="card card-stat mb-4" th:if="${balance.estadoBalance == 'CONFORME_DIGEMID'}">
-                <div class="card-body">
-                    <h5 class="mb-3">Balance conforme por DIGEMID</h5>
-                    <p class="text-muted mb-0">
-                        DIGEMID simulado emitió conformidad. El balance queda cerrado como conforme.
-                    </p>
-                </div>
+        <div class="card border-0 shadow-sm rounded-4 mb-4">
+            <div class="card-header bg-white border-bottom-0 pt-4 pb-2 px-4">
+                <h6 class="fw-bold text-primary"><i class="bi bi-table me-2"></i>Consolidado de Movimientos del Mes</h6>
             </div>
-
-            <!-- ESTADO OBSERVADO POR DIGEMID -->
-            <div class="card card-stat mb-4" th:if="${balance.estadoBalance == 'OBSERVADO_DIGEMID'}">
-                <div class="card-body">
-                    <h5 class="mb-3">Balance observado por DIGEMID</h5>
-                    <p class="text-muted mb-0">
-                        DIGEMID simulado registró observaciones. El almacenero debe revisar y subsanar
-                        las observaciones correspondientes para continuar el flujo.
-                    </p>
-                </div>
-            </div>
-
-            <!-- OBSERVACIONES -->
-            <div class="card card-stat">
-                <div class="card-body">
-                    <h5 class="mb-3">Observaciones registradas</h5>
-
-                    <div th:if="${#lists.isEmpty(observaciones)}" class="alert alert-info">
-                        No existen observaciones para este balance.
-                    </div>
-
-                    <div class="table-responsive" th:if="${!#lists.isEmpty(observaciones)}">
-                        <table class="table table-hover align-middle">
-                            <thead>
+            <div class="card-body p-0">
+                <div class="table-responsive" th:if="${!#lists.isEmpty(detalles)}">
+                    <table class="table table-hover align-middle mb-0 text-center">
+                        <thead class="table-light">
                             <tr>
-                                <th>Código</th>
-                                <th>Origen</th>
-                                <th>Fecha</th>
-                                <th>Descripción</th>
-                                <th>Estado</th>
+                                <th class="text-start px-4 py-3 border-0 text-secondary">Medicamento</th>
+                                <th class="border-0 text-secondary">Stock Inicial</th>
+                                <th class="border-0 text-success">Ingresos (+)</th>
+                                <th class="border-0 text-danger">Salidas (-)</th>
+                                <th class="border-0 text-warning text-dark">Ajustes (+/-)</th>
+                                <th class="border-0 fw-bold text-dark">Stock Final Auditado</th>
                             </tr>
-                            </thead>
+                        </thead>
+                        <tbody>
+                            <tr th:each="detalle : ${detalles}">
+                                <td class="text-start px-4 fw-bold text-dark" th:text="${detalle.medicamento.nombreCompleto}">Paracetamol</td>
+                                <td class="text-muted" th:text="${detalle.stockInicial}">100</td>
+                                <td class="text-success fw-semibold" th:text="${detalle.ingresos}">50</td>
+                                <td class="text-danger fw-semibold" th:text="${detalle.salidas}">20</td>
+                                <td class="text-warning text-dark fw-semibold" th:text="${detalle.ajustes}">0</td>
+                                <td class="fw-bold fs-6 border-start bg-light" th:text="${detalle.stockFinal}">130</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
 
-                            <tbody>
+                <div class="p-4 bg-light text-end border-top" th:if="${balance.estadoBalance == 'ENVIADO_A_QUIMICO'}">
+                    <button type="button" class="btn btn-outline-danger shadow-sm fw-bold px-4 me-2" data-bs-toggle="modal" data-bs-target="#modalObservar">
+                        <i class="bi bi-x-octagon me-2"></i> Observar Balance Mensual
+                    </button>
+                    <button type="button" class="btn btn-primary shadow-sm fw-bold px-4" data-bs-toggle="modal" data-bs-target="#modalAprobar">
+                        <i class="bi bi-check-circle me-2"></i> Aprobar y Exportar Balance Mensual
+                    </button>
+                </div>
+
+                <div class="p-4 bg-light text-end border-top" th:if="${balance.estadoBalance == 'APROBADO'}">
+                    <form th:action="@{/farmacia/inventario/quimico/balances/{id}/exportar-digemid(id=${balance.idBalanceMensual})}" method="post" class="m-0 d-inline-block">
+                        <button type="submit" class="btn btn-info text-dark shadow-sm fw-bold px-4">
+                            <i class="bi bi-cloud-upload me-2"></i> Exportar Oficialmente a DIGEMID
+                        </button>
+                    </form>
+                </div>
+
+                <div class="p-4 bg-light text-end border-top" th:if="${balance.estadoBalance == 'EXPORTADO_DIGEMID'}">
+                    <button type="button" class="btn btn-outline-danger shadow-sm fw-bold px-4 me-2" data-bs-toggle="modal" data-bs-target="#modalObservarDigemid">
+                        <i class="bi bi-building-exclamation me-2"></i> Registrar Observación de DIGEMID
+                    </button>
+                    <form th:action="@{/farmacia/inventario/quimico/balances/{id}/digemid-conforme(id=${balance.idBalanceMensual})}" method="post" class="m-0 d-inline-block">
+                        <button type="submit" class="btn btn-success shadow-sm fw-bold px-4">
+                            <i class="bi bi-building-check me-2"></i> Registrar Conformidad DIGEMID
+                        </button>
+                    </form>
+                </div>
+
+                <div class="p-4 bg-warning bg-opacity-10 text-end border-top" th:if="${balance.estadoBalance == 'OBSERVADO_DIGEMID'}">
+                    <span class="text-danger fw-bold me-3"><i class="bi bi-exclamation-triangle"></i> El balance fue observado por DIGEMID.</span>
+                    <form th:action="@{/farmacia/inventario/quimico/balances/{id}/exportar-digemid(id=${balance.idBalanceMensual})}" method="post" class="m-0 d-inline-block">
+                        <button type="submit" class="btn btn-primary shadow-sm fw-bold px-4">
+                            <i class="bi bi-arrow-repeat me-2"></i> Subsanar y Volver a Exportar
+                        </button>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="card border-0 shadow-sm rounded-4 mb-4" th:if="${!#lists.isEmpty(observaciones)}">
+            <div class="card-header bg-white border-bottom-0 pt-4 pb-2 px-4">
+                <h6 class="fw-bold text-danger"><i class="bi bi-exclamation-octagon me-2"></i>Historial de Observaciones Previas</h6>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="px-4 py-3 border-0 text-secondary">Origen</th>
+                                <th class="border-0 text-secondary">Fecha</th>
+                                <th class="border-0 text-secondary w-50">Descripción</th>
+                                <th class="border-0 text-secondary">Estado</th>
+                                <th class="text-end px-4 border-0 text-secondary">Subsanación</th>
+                            </tr>
+                        </thead>
+                        <tbody>
                             <tr th:each="obs : ${observaciones}">
-                                <td th:text="${'OBS-' + obs.idObservacionBalance}">OBS-1</td>
-                                <td th:text="${obs.origenObservacion}">QUIMICO</td>
-                                <td th:text="${#temporals.format(obs.fechaObservacion, 'dd/MM/yyyy HH:mm')}">
-                                    31/05/2026
-                                </td>
-                                <td th:text="${obs.descripcion}">Observación</td>
+                                <td class="px-4 fw-bold text-dark">[[${obs.origenObservacion}]]</td>
+                                <td class="text-muted small" th:text="${#temporals.format(obs.fechaObservacion, 'dd/MM/yyyy HH:mm')}"></td>
+                                <td class="text-dark">[[${obs.descripcion}]]</td>
                                 <td>
-                                    <span th:if="${obs.estadoObservacion == 'PENDIENTE'}"
-                                          class="badge bg-warning text-dark"
-                                          th:text="${obs.estadoObservacion}">
-                                        PENDIENTE
+                                    <span class="badge" th:classappend="${obs.estadoObservacion == 'PENDIENTE' ? 'bg-danger' : 'bg-success'}">
+                                        [[${obs.estadoObservacion}]]
                                     </span>
-
-                                    <span th:if="${obs.estadoObservacion == 'SUBSANADA'}"
-                                          class="badge bg-success"
-                                          th:text="${obs.estadoObservacion}">
-                                        SUBSANADA
+                                </td>
+                                <td class="text-end px-4">
+                                    <span th:if="${obs.estadoObservacion != 'PENDIENTE'}" class="text-success small fw-semibold">
+                                        <i class="bi bi-check-all me-1"></i>Subsanada
                                     </span>
-
-                                    <span th:if="${obs.estadoObservacion != 'PENDIENTE' and obs.estadoObservacion != 'SUBSANADA'}"
-                                          class="badge bg-secondary"
-                                          th:text="${obs.estadoObservacion}">
-                                        ESTADO
-                                    </span>
+                                    
+                                    <form th:if="${obs.estadoObservacion == 'PENDIENTE'}" 
+                                          th:action="@{/farmacia/inventario/quimico/balances/observaciones/{id}/subsanar(id=${obs.idObservacionBalance})}" 
+                                          method="post" class="m-0">
+                                        <input type="hidden" name="idBalanceMensual" th:value="${balance.idBalanceMensual}">
+                                        <button type="submit" class="btn btn-sm btn-outline-success shadow-sm fw-bold">Marcar Subsanada</button>
+                                    </form>
+                                    
                                 </td>
                             </tr>
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <div class="d-flex justify-content-end mt-3">
-                        <a th:href="@{/farmacia/inventario/quimico/balances}" class="btn btn-outline-secondary">
-                            Volver a balances
-                        </a>
-                    </div>
+                        </tbody>
+                    </table>
                 </div>
             </div>
-
-        </main>
+        </div>
 
     </div>
-</div>
 
+    <div class="modal fade" id="modalAprobar" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content rounded-4 border-0 shadow">
+                <form th:action="@{/farmacia/inventario/quimico/balances/{id}/aprobar(id=${balance.idBalanceMensual})}" method="post">
+                    <div class="modal-header border-bottom-0 bg-primary bg-opacity-10 text-primary pt-4 px-4">
+                        <h5 class="modal-title fw-bold"><i class="bi bi-check-circle-fill me-2"></i>Aprobar Balance Oficial</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body px-4 py-4">
+                        <p class="mb-4">Al aprobar el balance, confirma que los saldos auditados son correctos y se habilitará su exportación a DIGEMID.</p>
+                        <label class="form-label fw-bold text-dark small">Comentarios Finales (Opcional)</label>
+                        <textarea name="observacion" class="form-control bg-light" rows="3" placeholder="Ej. Revisión conforme, listo para reporte..."></textarea>
+                    </div>
+                    <div class="modal-footer border-top-0 px-4 pb-4">
+                        <button type="button" class="btn btn-light border shadow-sm px-4" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary shadow-sm px-4 fw-bold">Proceder a Aprobar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalObservar" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content rounded-4 border-0 shadow">
+                <form th:action="@{/farmacia/inventario/quimico/balances/{id}/observar(id=${balance.idBalanceMensual})}" method="post">
+                    <div class="modal-header border-bottom-0 bg-danger bg-opacity-10 text-danger pt-4 px-4">
+                        <h5 class="modal-title fw-bold"><i class="bi bi-x-octagon-fill me-2"></i>Observar Balance Mensual</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body px-4 py-4">
+                        <p class="mb-4">Esta acción devolverá el balance al almacenero indicando que hay inconsistencias que debe corregir obligatoriamente.</p>
+                        <label class="form-label fw-bold text-dark small">Detalle de la Observación <span class="text-danger">*</span></label>
+                        <textarea name="descripcion" class="form-control bg-light" rows="3" placeholder="Indique qué saldos no cuadran o qué ajuste falta..." required></textarea>
+                    </div>
+                    <div class="modal-footer border-top-0 px-4 pb-4">
+                        <button type="button" class="btn btn-light border shadow-sm px-4" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-danger shadow-sm px-4 fw-bold">Registrar Observación</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalObservarDigemid" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content rounded-4 border-0 shadow">
+                <form th:action="@{/farmacia/inventario/quimico/balances/{id}/digemid-observar(id=${balance.idBalanceMensual})}" method="post">
+                    <div class="modal-header border-bottom-0 bg-danger bg-opacity-10 text-danger pt-4 px-4">
+                        <h5 class="modal-title fw-bold"><i class="bi bi-building-exclamation me-2"></i>Registrar Observación (DIGEMID)</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body px-4 py-4">
+                        <p class="mb-4">Simule la notificación de DIGEMID reportando una inconformidad externa sobre el documento enviado.</p>
+                        <label class="form-label fw-bold text-dark small">Documento / Nota de Observación (DIGEMID) <span class="text-danger">*</span></label>
+                        <textarea name="descripcion" class="form-control bg-light" rows="3" placeholder="Ej. Observado por falta de sustento en ajuste de Lote L100..." required></textarea>
+                    </div>
+                    <div class="modal-footer border-top-0 px-4 pb-4">
+                        <button type="button" class="btn btn-light border shadow-sm px-4" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-danger shadow-sm px-4 fw-bold">Registrar Observación Oficial</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

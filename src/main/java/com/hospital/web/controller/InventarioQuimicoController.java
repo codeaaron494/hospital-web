@@ -28,11 +28,6 @@ public class InventarioQuimicoController {
         this.usuarioRepository = usuarioRepository;
     }
 
-    @GetMapping("/dashboard")
-    public String dashboard() {
-        return "farmacia/inventario/quimico/dashboard";
-    }
-
     @GetMapping("/kardex")
     public String listarKardex(Model model) {
         model.addAttribute("kardexList", kardexService.listarTodos());
@@ -100,7 +95,6 @@ public class InventarioQuimicoController {
     ) {
         try {
             Integer idQuimico = obtenerIdUsuario(principal, "quimico");
-
             balanceMensualService.aprobarBalance(
                     id,
                     idQuimico,
@@ -108,13 +102,10 @@ public class InventarioQuimicoController {
                             ? observacion
                             : "Balance aprobado por químico farmacéutico."
             );
-
             redirectAttributes.addFlashAttribute("success", "Balance aprobado correctamente.");
-
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
         }
-
         return "redirect:/farmacia/inventario/quimico/balances/" + id;
     }
 
@@ -127,19 +118,11 @@ public class InventarioQuimicoController {
     ) {
         try {
             Integer idQuimico = obtenerIdUsuario(principal, "quimico");
-
-            balanceMensualService.observarBalance(
-                    id,
-                    idQuimico,
-                    descripcion
-            );
-
+            balanceMensualService.observarBalance(id, idQuimico, descripcion);
             redirectAttributes.addFlashAttribute("success", "Balance observado correctamente.");
-
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
         }
-
         return "redirect:/farmacia/inventario/quimico/balances/" + id;
     }
 
@@ -151,11 +134,9 @@ public class InventarioQuimicoController {
         try {
             balanceMensualService.exportarDigemid(id);
             redirectAttributes.addFlashAttribute("success", "Balance exportado a DIGEMID simulado.");
-
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
         }
-
         return "redirect:/farmacia/inventario/quimico/balances/" + id;
     }
 
@@ -167,11 +148,9 @@ public class InventarioQuimicoController {
         try {
             balanceMensualService.registrarConformidadDigemid(id);
             redirectAttributes.addFlashAttribute("success", "Conformidad DIGEMID registrada correctamente.");
-
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
         }
-
         return "redirect:/farmacia/inventario/quimico/balances/" + id;
     }
 
@@ -182,23 +161,33 @@ public class InventarioQuimicoController {
             RedirectAttributes redirectAttributes
     ) {
         try {
-            balanceMensualService.registrarObservacionDigemid(
-                    id,
-                    descripcion
-            );
-
+            balanceMensualService.registrarObservacionDigemid(id, descripcion);
             redirectAttributes.addFlashAttribute("success", "Observación DIGEMID simulada registrada.");
-
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
         }
-
         return "redirect:/farmacia/inventario/quimico/balances/" + id;
+    }
+
+    // --- NUEVO: RUTA ESPECÍFICA PARA QUE EL QUÍMICO SUBSANE ---
+    @PostMapping("/balances/observaciones/{id}/subsanar")
+    public String subsanarObservacion(
+            @PathVariable Integer id,
+            @RequestParam Integer idBalanceMensual,
+            RedirectAttributes redirectAttributes
+    ) {
+        try {
+            balanceMensualService.subsanarObservacion(id);
+            redirectAttributes.addFlashAttribute("success", "Observación marcada como subsanada exitosamente.");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+        }
+        // Redirige a la vista del Químico (evitando el 403)
+        return "redirect:/farmacia/inventario/quimico/balances/" + idBalanceMensual;
     }
 
     private Integer obtenerIdUsuario(Principal principal, String usernameFallback) {
         String username = principal != null ? principal.getName() : usernameFallback;
-
         return usuarioRepository.findByUsername(username)
                 .orElseGet(() -> usuarioRepository.findByUsername(usernameFallback)
                         .orElseThrow(() -> new IllegalStateException("Usuario no encontrado.")))

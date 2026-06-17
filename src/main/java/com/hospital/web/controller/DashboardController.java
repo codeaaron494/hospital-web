@@ -34,6 +34,13 @@ public class DashboardController {
     @GetMapping("/farmacia/almacen/dashboard")
     public String dashboardAlmacenero(Model model) {
         model.addAttribute("titulo", "Dashboard de Almacén e Inventario");
-        return "farmacia/almacen/dashboard"; // Este será nuestro único dashboard unificado
+        return "farmacia/almacen/dashboard";
+    }
+
+    // NUEVO: Dashboard Unificado del Químico Farmacéutico
+    @GetMapping("/farmacia/quimico/dashboard")
+    public String dashboardQuimico(Model model) {
+        model.addAttribute("titulo", "Panel de Control - Químico Farmacéutico");
+        return "farmacia/quimico/dashboard";
     }
 }

@@ -206,8 +206,9 @@ public class BalanceMensualServiceImpl implements BalanceMensualService {
         BalanceMensual balance = balanceMensualRepository.findById(idBalanceMensual)
                 .orElseThrow(() -> new IllegalArgumentException("El balance mensual no existe."));
 
-        if (!APROBADO.equals(balance.getEstadoBalance())) {
-            throw new IllegalStateException("Solo se puede exportar a DIGEMID un balance aprobado.");
+        // MODIFICACIÓN APLICADA AQUÍ: Permite exportar si está APROBADO o si regresó OBSERVADO_DIGEMID
+        if (!APROBADO.equals(balance.getEstadoBalance()) && !OBSERVADO_DIGEMID.equals(balance.getEstadoBalance())) {
+            throw new IllegalStateException("Solo se puede exportar a DIGEMID un balance aprobado o subsanado.");
         }
 
         balance.setEstadoBalance(EXPORTADO_DIGEMID);

@@ -64,9 +64,12 @@ public class SecurityConfig {
                 )
                 .hasAnyRole("ADMIN", "ALMACENERO")
 
-                // CUS 3 - Gestión de Compras: Químico Farmacéutico
+                // CUS 3 y 4 - Panel Unificado Químico Farmacéutico
                 .requestMatchers(
-                    "/farmacia/compras/quimico/**"
+                    "/farmacia/quimico/dashboard",
+                    "/farmacia/compras/quimico/**",
+                    "/farmacia/inventario/quimico/**",
+                    "/farmacia/inventario/observaciones/**"
                 )
                 .hasAnyRole("ADMIN", "QUIMICO_FARMACEUTICO")
 
@@ -75,12 +78,6 @@ public class SecurityConfig {
                     "/farmacia/compras/cobranza/**"
                 )
                 .hasAnyRole("ADMIN", "COBRANZA")
-
-                // CUS 4 - Gestión de Inventario: Químico Farmacéutico
-                .requestMatchers(
-                    "/farmacia/inventario/quimico/**"
-                )
-                .hasAnyRole("ADMIN", "QUIMICO_FARMACEUTICO")
 
                 // CUS 4 - Gestión de Inventario: Almacenero
                 .requestMatchers(
@@ -141,7 +138,7 @@ public class SecurityConfig {
                     } else if (isAlmacenero) {
                         response.sendRedirect("/farmacia/almacen/dashboard");
                     } else if (isQuimico) {
-                        response.sendRedirect("/farmacia/inventario/quimico/dashboard");
+                        response.sendRedirect("/farmacia/quimico/dashboard"); // <- MODIFICADO AQUÍ
                     } else if (isCobranza) {
                         response.sendRedirect("/farmacia/compras/cobranza/dashboard");
                     } else if (isTecnico) {

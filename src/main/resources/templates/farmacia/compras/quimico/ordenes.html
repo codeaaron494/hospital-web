@@ -1,121 +1,193 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Órdenes de Compra | Químico</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Revisión de Órdenes | Químico Farmacéutico</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 </head>
 <body class="bg-light">
 
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm mb-4">
-    <div class="container">
-        <a class="navbar-brand fw-bold" href="/farmacia/compras/quimico/dashboard"><i class="bi bi-shield-check me-1"></i> Área del Químico Farmacéutico</a>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav me-auto">
-                <li class="nav-item"><a class="nav-link" href="/farmacia/compras/quimico/dashboard">Panel</a></li>
-                <li class="nav-item"><a class="nav-link active" href="/farmacia/compras/quimico/ordenes">Órdenes de Compra</a></li>
-            </ul>
-            <form th:action="@{/logout}" method="post" class="m-0">
-                <button class="btn btn-outline-light btn-sm border-white" type="submit">Cerrar Sesión</button>
-            </form>
-        </div>
-    </div>
-</nav>
-
-<div class="container mt-4 mb-5">
-    
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h4 class="fw-bold text-dark mb-0"><i class="bi bi-card-checklist text-dark me-2"></i>Órdenes de Compra Pendientes y Evaluadas</h4>
-            <p class="text-muted mb-0 mt-1">Consulte el listado para emitir su evaluación técnica.</p>
-        </div>
-        <a th:href="@{/farmacia/compras/quimico/dashboard}" class="btn btn-outline-secondary shadow-sm">
-            <i class="bi bi-arrow-left me-1"></i> Volver al Panel
-        </a>
-    </div>
-
-    <div th:if="${success}" class="alert alert-success shadow-sm"><i class="bi bi-check-circle-fill me-2"></i><span th:text="${success}"></span></div>
-    <div th:if="${error}" class="alert alert-danger shadow-sm"><i class="bi bi-exclamation-triangle-fill me-2"></i><span th:text="${error}"></span></div>
-
-    <div class="card border-0 shadow-sm rounded-4 mb-4">
-        <div class="card-body p-4">
-            <form th:action="@{/farmacia/compras/quimico/ordenes}" method="get" class="row g-3 align-items-end">
-                <div class="col-md-8">
-                    <label class="form-label fw-bold text-dark"><i class="bi bi-funnel me-1"></i> Filtrar por Estado</label>
-                    <select name="estado" class="form-select bg-light">
-                        <option value="">-- Todas las órdenes --</option>
-                        <option value="PENDIENTE_REVISION" th:selected="${estadoBuscado == 'PENDIENTE_REVISION'}">PENDIENTE_REVISION (Requiere Acción)</option>
-                        <option value="AUTORIZADA" th:selected="${estadoBuscado == 'AUTORIZADA'}">AUTORIZADA</option>
-                        <option value="RECHAZADA" th:selected="${estadoBuscado == 'RECHAZADA'}">RECHAZADA</option>
-                        <option value="CON_GUIA" th:selected="${estadoBuscado == 'CON_GUIA'}">CON_GUIA</option>
-                    </select>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm mb-4">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="/farmacia/quimico/dashboard">
+                <i class="bi bi-prescription2 me-1"></i> Área de Autorización y Control
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item"><a class="nav-link" href="/farmacia/quimico/dashboard"><i class="bi bi-speedometer2"></i> Panel</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="/farmacia/compras/quimico/ordenes"><i class="bi bi-ui-checks"></i> Revisión de Órdenes</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/farmacia/inventario/quimico/balances"><i class="bi bi-file-earmark-medical"></i> Auditoría de Balances</a></li>
+                </ul>
+                <div class="d-flex align-items-center">
+                    <span class="navbar-text text-white me-3"><i class="bi bi-person-check-fill"></i> Químico Farmacéutico: <span th:text="${#authentication.name}">Usuario</span></span>
+                    <form th:action="@{/logout}" method="post" class="m-0">
+                        <button class="btn btn-outline-light btn-sm border-white" type="submit"><i class="bi bi-box-arrow-right me-1"></i>Cerrar Sesión</button>
+                    </form>
                 </div>
-                <div class="col-md-4 d-flex gap-2">
-                    <button type="submit" class="btn btn-dark w-100 shadow-sm"><i class="bi bi-search me-1"></i> Buscar</button>
-                    <a th:href="@{/farmacia/compras/quimico/ordenes}" class="btn btn-outline-secondary w-100 shadow-sm">Limpiar</a>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-5">
-        <div class="card-body p-0">
-            <div th:if="${#lists.isEmpty(ordenes)}" class="alert alert-light border m-4 text-center text-muted">
-                <i class="bi bi-inbox fs-3 d-block mb-2"></i> No se encontraron órdenes bajo este filtro.
-            </div>
-
-            <div class="table-responsive" th:if="${!#lists.isEmpty(ordenes)}">
-                <table class="table table-hover align-middle mb-0">
-                    <thead class="table-light">
-                        <tr>
-                            <th class="px-4 py-3">Código</th>
-                            <th>Fecha de Emisión</th>
-                            <th>Proveedor</th>
-                            <th>Almacenero</th>
-                            <th class="text-center">Estado</th>
-                            <th class="text-end px-4">Acción</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr th:each="orden : ${ordenes}">
-                            <td class="px-4 fw-bold text-dark" th:text="${'OC-' + orden.idOrdenCompra}">OC-1</td>
-                            <td th:text="${#temporals.format(orden.fechaEmision, 'dd/MM/yyyy HH:mm')}">24/05/2026</td>
-                            <td class="fw-semibold" th:text="${orden.proveedor.razonSocial}">Proveedor</td>
-                            <td th:text="${orden.usuarioAlmacenero.username}">almacenero</td>
-                            <td class="text-center">
-                                <span class="badge rounded-pill px-3 py-2 shadow-sm"
-                                      th:classappend="${
-                                          orden.estadoOrden == 'PENDIENTE_REVISION' ? 'bg-warning text-dark' : 
-                                          (orden.estadoOrden == 'AUTORIZADA' ? 'bg-success' : 
-                                          (orden.estadoOrden == 'RECHAZADA' ? 'bg-danger' : 'bg-info text-dark'))
-                                      }">
-                                      <i class="bi me-1"
-                                         th:classappend="${
-                                             orden.estadoOrden == 'PENDIENTE_REVISION' ? 'bi-hourglass-split' : 
-                                             (orden.estadoOrden == 'AUTORIZADA' ? 'bi-check-circle' : 
-                                             (orden.estadoOrden == 'RECHAZADA' ? 'bi-x-circle' : 'bi-info-circle'))
-                                         }"></i>
-                                    [[${orden.estadoOrden}]]
-                                </span>
-                            </td>
-                            <td class="text-end px-4">
-                                <a th:href="@{/farmacia/compras/quimico/ordenes/{id}(id=${orden.idOrdenCompra})}"
-                                   class="btn btn-sm shadow-sm"
-                                   th:classappend="${orden.estadoOrden == 'PENDIENTE_REVISION' ? 'btn-dark' : 'btn-outline-dark'}">
-                                    <i class="bi me-1" th:classappend="${orden.estadoOrden == 'PENDIENTE_REVISION' ? 'bi-pencil-square' : 'bi-eye'}"></i>
-                                    [[${orden.estadoOrden == 'PENDIENTE_REVISION' ? 'Evaluar' : 'Ver Detalle'}]]
-                                </a>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
             </div>
         </div>
-    </div>
-</div>
+    </nav>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <div class="container mt-4 mb-5">
+        
+        <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
+            <div>
+                <h1 class="h3 mb-0 text-primary fw-bold">
+                    <i class="bi bi-ui-checks me-2"></i>Bandeja de Revisión de Órdenes
+                </h1>
+                <p class="text-muted mb-0 mt-1">Supervise y decida sobre los requerimientos de compras enviados por almacén.</p>
+            </div>
+            <div>
+                <a th:href="@{/farmacia/quimico/dashboard}" class="btn btn-outline-secondary shadow-sm">
+                    <i class="bi bi-arrow-left me-1"></i> Volver al Panel
+                </a>
+            </div>
+        </div>
+
+        <div th:if="${success}" class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i><span th:text="${success}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i><span th:text="${error}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+        <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-5 border-top border-primary border-4">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="px-4 py-3 border-0 text-secondary">Código</th>
+                                <th class="border-0 text-secondary">Proveedor</th>
+                                <th class="border-0 text-secondary">Fecha Emisión</th>
+                                <th class="text-center border-0 text-secondary">Estado</th>
+                                <th class="text-end px-4 border-0 text-secondary">Auditoría / Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="orden : ${ordenes}">
+                                <td class="px-4 fw-bold text-primary" th:text="${'OC-' + orden.idOrdenCompra}">OC-000</td>
+                                <td class="fw-semibold text-dark" th:text="${orden.proveedor.razonSocial}">Proveedor</td>
+                                <td th:text="${#temporals.format(orden.fechaEmision, 'dd/MM/yyyy HH:mm')}">01/01/2026</td>
+                                
+                                <td class="text-center">
+                                    <span class="badge rounded-pill shadow-sm px-3 py-2"
+                                          th:classappend="${
+                                              orden.estadoOrden == 'GENERADA' ? 'bg-secondary' : 
+                                              (orden.estadoOrden == 'PENDIENTE_REVISION' ? 'bg-warning text-dark' : 
+                                              (orden.estadoOrden == 'AUTORIZADA' ? 'bg-success' : 
+                                              (orden.estadoOrden == 'RECHAZADA' ? 'bg-danger' : 'bg-primary')))
+                                          }">
+                                        <i class="me-1 bi"
+                                           th:classappend="${
+                                               orden.estadoOrden == 'GENERADA' ? 'bi-file-earmark' : 
+                                               (orden.estadoOrden == 'PENDIENTE_REVISION' ? 'bi-hourglass-split' : 
+                                               (orden.estadoOrden == 'AUTORIZADA' ? 'bi-check2-all' : 
+                                               (orden.estadoOrden == 'RECHAZADA' ? 'bi-x-circle' : 'bi-info-circle')))
+                                           }"></i>
+                                        [[${orden.estadoOrden}]]
+                                    </span>
+                                </td>
+                                
+                                <td class="text-end px-4">
+                                    
+                                    <div class="d-flex justify-content-end gap-1" th:if="${orden.estadoOrden == 'PENDIENTE_REVISION'}">
+                                        <button type="button" class="btn btn-sm btn-primary shadow-sm" title="Autorizar Orden" 
+                                                data-bs-toggle="modal" th:attr="data-bs-target='#modalAutorizar' + ${orden.idOrdenCompra}">
+                                            <i class="bi bi-check-circle"></i> Autorizar
+                                        </button>
+                                        
+                                        <button type="button" class="btn btn-sm btn-danger shadow-sm" title="Rechazar Orden" 
+                                                data-bs-toggle="modal" th:attr="data-bs-target='#modalRechazar' + ${orden.idOrdenCompra}">
+                                            <i class="bi bi-x-circle"></i> Rechazar
+                                        </button>
+
+                                        <a th:href="@{/farmacia/compras/quimico/ordenes/{id}(id=${orden.idOrdenCompra})}" 
+                                           class="btn btn-sm btn-outline-primary shadow-sm" title="Ver Detalle de Medicamentos">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                    </div>
+
+                                    <div th:if="${orden.estadoOrden != 'PENDIENTE_REVISION'}">
+                                        <a th:href="@{/farmacia/compras/quimico/ordenes/{id}(id=${orden.idOrdenCompra})}" 
+                                           class="btn btn-sm btn-outline-primary shadow-sm">
+                                            <i class="bi bi-eye"></i> <span class="ms-1">Ver Detalle</span>
+                                        </a>
+                                    </div>
+                                    
+                                </td>
+                            </tr>
+                            <tr th:if="${#lists.isEmpty(ordenes)}">
+                                <td colspan="5" class="text-center text-muted py-5">
+                                    <i class="bi bi-inbox fs-1 d-block mb-3 text-secondary opacity-50"></i>
+                                    No hay órdenes de compra registradas en el sistema.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <th:block th:each="orden : ${ordenes}">
+        <th:block th:if="${orden.estadoOrden == 'PENDIENTE_REVISION'}">
+            
+            <div class="modal fade" th:id="'modalAutorizar' + ${orden.idOrdenCompra}" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content rounded-4 border-0 shadow">
+                        <form th:action="@{/farmacia/compras/quimico/ordenes/{id}/autorizar(id=${orden.idOrdenCompra})}" method="post">
+                            <div class="modal-header border-bottom-0 bg-primary bg-opacity-10 text-primary pt-4 px-4">
+                                <h5 class="modal-title fw-bold"><i class="bi bi-check-circle-fill me-2"></i>Autorizar OC-[[${orden.idOrdenCompra}]]</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body px-4 py-4 text-start">
+                                <p class="mb-4">¿Está seguro que desea <strong>AUTORIZAR</strong> esta orden de compra del proveedor <strong>[[${orden.proveedor.razonSocial}]]</strong>?</p>
+                                <label class="form-label fw-bold text-dark small">Notas de Autorización (Opcional)</label>
+                                <textarea name="observacion" class="form-control bg-light" rows="3" placeholder="Ej. Aprobado conforme a presupuesto..."></textarea>
+                            </div>
+                            <div class="modal-footer border-top-0 px-4 pb-4">
+                                <button type="button" class="btn btn-light border shadow-sm px-4" data-bs-dismiss="modal">Cancelar</button>
+                                <button type="submit" class="btn btn-primary shadow-sm px-4 fw-bold">Sí, Autorizar Orden</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal fade" th:id="'modalRechazar' + ${orden.idOrdenCompra}" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content rounded-4 border-0 shadow">
+                        <form th:action="@{/farmacia/compras/quimico/ordenes/{id}/rechazar(id=${orden.idOrdenCompra})}" method="post">
+                            <div class="modal-header border-bottom-0 bg-danger bg-opacity-10 text-danger pt-4 px-4">
+                                <h5 class="modal-title fw-bold"><i class="bi bi-x-circle-fill me-2"></i>Rechazar OC-[[${orden.idOrdenCompra}]]</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body px-4 py-4 text-start">
+                                <p class="mb-4">Si rechaza esta orden, el flujo volverá al almacenero y no se podrá procesar la compra a <strong>[[${orden.proveedor.razonSocial}]]</strong>.</p>
+                                <label class="form-label fw-bold text-dark small">Motivo del Rechazo <span class="text-danger">*</span></label>
+                                <textarea name="observacion" class="form-control bg-light border-danger" rows="3" placeholder="Indique claramente por qué se rechaza la compra..." required></textarea>
+                            </div>
+                            <div class="modal-footer border-top-0 px-4 pb-4">
+                                <button type="button" class="btn btn-light border shadow-sm px-4" data-bs-dismiss="modal">Cancelar</button>
+                                <button type="submit" class="btn btn-danger shadow-sm px-4 fw-bold">Sí, Rechazar Orden</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+        </th:block>
+    </th:block>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
