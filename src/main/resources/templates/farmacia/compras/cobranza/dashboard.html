@@ -1,96 +1,75 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Compras Farmacia | Cobranza</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" th:href="@{/css/app.css}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Cobranza | Finanzas</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <style>
+        .dashboard-btn { transition: all 0.2s ease; }
+        .dashboard-btn:hover { transform: translateY(-3px); }
+    </style>
 </head>
-<body>
+<body class="bg-light">
 
-<div class="container-fluid">
-    <div class="row">
-
-        <aside class="col-md-3 col-lg-2 sidebar p-3">
-            <h4 class="text-white mb-4">Cobranza</h4>
-
-            <nav class="nav flex-column">
-                <a class="nav-link" th:href="@{/farmacia/compras/cobranza/dashboard}">Dashboard</a>
-                <a class="nav-link" th:href="@{/farmacia/compras/cobranza/comprobantes/nuevo}">Registrar comprobante de pago</a>
-                <a class="nav-link" th:href="@{/farmacia/compras/cobranza/comprobantes}">Consultar comprobante de pago</a>
-                <a class="nav-link" th:href="@{/farmacia/compras/cobranza/comprobantes?estado=REGISTRADO}">Pagar comprobante</a>
-                <a class="nav-link" th:href="@{/farmacia/compras/cobranza/comprobantes?estado=REGISTRADO}">Anular comprobante</a>
-
-                <hr class="text-white">
-
-                <a class="nav-link" th:href="@{/logout}">Cerrar sesión</a>
-            </nav>
-        </aside>
-
-        <main class="col-md-9 col-lg-10 content-wrapper">
-
-            <h1 class="page-title">Dashboard de Cobranza</h1>
-            <p class="text-muted">
-                Registro, consulta, pago y anulación de comprobantes asociados a órdenes de compra.
-            </p>
-
-            <div class="row g-4 mt-2">
-
-                <div class="col-md-4">
-                    <div class="card card-stat">
-                        <div class="card-body">
-                            <h6 class="text-muted">Registrar comprobante</h6>
-                            <h2>CP</h2>
-                            <p class="text-muted mb-3">Comprobante vinculado a orden de compra.</p>
-                            <a th:href="@{/farmacia/compras/cobranza/comprobantes/nuevo}" class="btn btn-outline-primary btn-sm">
-                                Registrar
-                            </a>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-md-4">
-                    <div class="card card-stat">
-                        <div class="card-body">
-                            <h6 class="text-muted">Consultar comprobantes</h6>
-                            <h2>LISTA</h2>
-                            <p class="text-muted mb-3">Seguimiento de comprobantes registrados.</p>
-                            <a th:href="@{/farmacia/compras/cobranza/comprobantes}" class="btn btn-outline-primary btn-sm">
-                                Consultar
-                            </a>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-md-4">
-                    <div class="card card-stat">
-                        <div class="card-body">
-                            <h6 class="text-muted">Pagos</h6>
-                            <h2>S/</h2>
-                            <p class="text-muted mb-3">Pago o anulación según estado.</p>
-                            <a th:href="@{/farmacia/compras/cobranza/comprobantes?estado=REGISTRADO}" class="btn btn-outline-primary btn-sm">
-                                Gestionar pagos
-                            </a>
-                        </div>
-                    </div>
-                </div>
-
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm mb-4">
+    <div class="container">
+        <a class="navbar-brand fw-bold" href="/farmacia/compras/cobranza/dashboard">
+            <i class="bi bi-wallet2 me-1"></i> Área de Facturación y Cobranza
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item"><a class="nav-link active" href="/farmacia/compras/cobranza/dashboard"><i class="bi bi-speedometer2"></i> Panel</a></li>
+                <li class="nav-item"><a class="nav-link" href="/farmacia/compras/cobranza/comprobantes/nuevo"><i class="bi bi-receipt"></i> Emitir Comprobante</a></li>
+                <li class="nav-item"><a class="nav-link" href="/farmacia/compras/cobranza/comprobantes"><i class="bi bi-list-columns-reverse"></i> Consultar Comprobantes</a></li>
+            </ul>
+            <div class="d-flex align-items-center">
+                <span class="navbar-text text-white me-3"><i class="bi bi-person-badge me-1"></i> Sec. Cobranza: <span th:text="${#authentication.name}">Usuario</span></span>
+                <form th:action="@{/logout}" method="post" class="m-0">
+                    <button class="btn btn-outline-light btn-sm" type="submit"><i class="bi bi-box-arrow-right me-1"></i>Salir</button>
+                </form>
             </div>
+        </div>
+    </div>
+</nav>
 
-            <div class="card mt-4 card-stat">
-                <div class="card-body">
-                    <h5>Flujo de cobranza</h5>
-                    <p class="text-muted mb-0">
-                        Registrar comprobante de pago → consultar comprobante → pagar o anular comprobante.
-                    </p>
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card border-0 shadow-sm rounded-4 p-5 border-top border-dark border-4">
+                <div class="text-center mb-5">
+                    <i class="bi bi-cash-coin text-dark display-1 mb-3"></i>
+                    <h3 class="fw-bold text-dark">Gestión de Pagos a Proveedores</h3>
+                    <p class="text-muted mb-0 fs-5">Verifique las órdenes autorizadas, registre facturas y procese los pagos.</p>
+                </div>
+
+                <div class="row g-4 mt-2">
+                    <div class="col-md-6">
+                        <a href="/farmacia/compras/cobranza/comprobantes/nuevo"
+                           class="btn btn-dark text-white w-100 p-5 rounded-4 shadow-sm dashboard-btn text-center d-flex flex-column align-items-center justify-content-center h-100">
+                            <i class="bi bi-receipt fs-1 mb-3"></i>
+                            <h4 class="fw-bold mb-2">Registrar Comprobante de Pago</h4>
+                            <p class="mb-0 fw-normal small text-light opacity-75">Seleccione una orden de compra autorizada para registrar la factura o boleta del proveedor.</p>
+                        </a>
+                    </div>
+                    <div class="col-md-6">
+                        <a href="/farmacia/compras/cobranza/comprobantes"
+                           class="btn btn-outline-dark w-100 p-5 rounded-4 shadow-sm dashboard-btn text-center d-flex flex-column align-items-center justify-content-center h-100 border-2">
+                            <i class="bi bi-bank fs-1 mb-3"></i>
+                            <h4 class="fw-bold mb-2">Consultar Comprobantes</h4>
+                            <p class="mb-0 fw-normal small text-muted">Revise el historial de comprobantes registrados. Podrá procesar los pagos pendientes o anularlos.</p>
+                        </a>
+                    </div>
                 </div>
             </div>
-
-        </main>
+        </div>
     </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

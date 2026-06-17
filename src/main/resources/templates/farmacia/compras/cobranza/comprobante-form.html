@@ -1,129 +1,136 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Registrar Comprobante | Cobranza</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" th:href="@{/css/app.css}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registrar Comprobante | Finanzas</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 </head>
-<body>
+<body class="bg-light">
 
-<div class="container-fluid">
-    <div class="row">
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm mb-4">
+    <div class="container">
+        <a class="navbar-brand fw-bold" href="/farmacia/compras/cobranza/dashboard"><i class="bi bi-wallet2 me-1"></i> Área de Facturación y Cobranza</a>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item"><a class="nav-link" href="/farmacia/compras/cobranza/dashboard">Panel</a></li>
+                <li class="nav-item"><a class="nav-link active" href="/farmacia/compras/cobranza/comprobantes/nuevo">Emitir Comprobante</a></li>
+                <li class="nav-item"><a class="nav-link" href="/farmacia/compras/cobranza/comprobantes">Consultar Comprobantes</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
 
-        <aside class="col-md-3 col-lg-2 sidebar p-3">
-            <h4 class="text-white mb-4">Cobranza</h4>
+<div class="container mt-4 mb-5">
+    
+    <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
+        <div>
+            <h1 class="h3 mb-0 text-dark fw-bold">
+                <i class="bi bi-receipt me-2"></i>Registrar Comprobante de Pago
+            </h1>
+            <p class="text-muted mb-0 mt-1" th:text="${orden == null ? 'Paso 1: Seleccione la Orden de Compra.' : 'Paso 2: Complete los datos del comprobante.'}"></p>
+        </div>
+        <div>
+            <a th:href="${orden == null ? '/farmacia/compras/cobranza/dashboard' : '/farmacia/compras/cobranza/comprobantes/nuevo'}" class="btn btn-outline-secondary shadow-sm">
+                <i class="bi bi-arrow-left me-1"></i> Volver
+            </a>
+        </div>
+    </div>
 
-            <nav class="nav flex-column">
-                <a class="nav-link" th:href="@{/farmacia/compras/cobranza/dashboard}">Dashboard</a>
-                <a class="nav-link" th:href="@{/farmacia/compras/cobranza/comprobantes/nuevo}">Registrar comprobante de pago</a>
-                <a class="nav-link" th:href="@{/farmacia/compras/cobranza/comprobantes}">Consultar comprobante de pago</a>
-                <a class="nav-link" th:href="@{/farmacia/compras/cobranza/comprobantes?estado=REGISTRADO}">Pagar comprobante</a>
-                <a class="nav-link" th:href="@{/farmacia/compras/cobranza/comprobantes?estado=REGISTRADO}">Anular comprobante</a>
-
-                <hr class="text-white">
-
-                <a class="nav-link" th:href="@{/logout}">Cerrar sesión</a>
-            </nav>
-        </aside>
-
-        <main class="col-md-9 col-lg-10 content-wrapper">
-
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <div>
-                    <h1 class="page-title">Registrar Comprobante de Pago</h1>
-                    <p class="text-muted">
-                        Registro de comprobante asociado a una orden de compra autorizada o con guía.
-                    </p>
-                </div>
-
-                <a th:href="@{/farmacia/compras/cobranza/comprobantes}" class="btn btn-outline-secondary">
-                    Volver a comprobantes
-                </a>
+    <div th:if="${orden == null}" class="card border-0 shadow-sm rounded-4 overflow-hidden mb-5 border-top border-dark border-4">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="px-4 py-3 border-0 text-secondary">Código Orden</th>
+                            <th class="border-0 text-secondary">Proveedor</th>
+                            <th class="border-0 text-secondary">Emisión</th>
+                            <th class="border-0 text-secondary">Estado Actual</th>
+                            <th class="text-end px-4 border-0 text-secondary">Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="o : ${ordenes}">
+                            <td class="px-4 fw-bold text-dark" th:text="${'OC-' + o.idOrdenCompra}">OC-1</td>
+                            <td class="fw-semibold text-dark" th:text="${o.proveedor.razonSocial}">Proveedor</td>
+                            <td th:text="${#temporals.format(o.fechaEmision, 'dd/MM/yyyy HH:mm')}"></td>
+                            <td>
+                                <span class="badge bg-secondary shadow-sm px-3 py-2" th:classappend="${o.estadoOrden == 'AUTORIZADA' ? 'bg-success' : ''}" th:text="${o.estadoOrden}"></span>
+                            </td>
+                            <td class="text-end px-4">
+                                <a th:href="@{/farmacia/compras/cobranza/comprobantes/nuevo(idOrden=${o.idOrdenCompra})}" 
+                                   class="btn btn-sm btn-dark shadow-sm fw-bold">
+                                    <i class="bi bi-check-circle me-1"></i> Seleccionar
+                                </a>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(ordenes)}">
+                            <td colspan="5" class="text-center text-muted py-5">No hay órdenes disponibles para facturar.</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
+        </div>
+    </div>
 
-            <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+    <div th:if="${orden != null}" class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm rounded-4 border-top border-dark border-4 p-4">
+                <form th:action="@{/farmacia/compras/cobranza/comprobantes/guardar}" method="post">
+                    
+                    <input type="hidden" name="idOrdenCompra" th:value="${orden.idOrdenCompra}" />
+                    
+                    <h5 class="fw-bold text-dark mb-4 border-bottom pb-2"><i class="bi bi-file-earmark-text me-2"></i>Datos de la Facturación</h5>
 
-            <form th:action="@{/farmacia/compras/cobranza/comprobantes/guardar}" method="post">
-
-                <div class="card card-stat mb-4">
-                    <div class="card-body">
-                        <h5 class="mb-3">Datos del comprobante</h5>
-
-                        <div class="row g-3">
-
-                            <div class="col-md-12">
-                                <label class="form-label">Orden de compra</label>
-                                <select name="idOrdenCompra" class="form-select" required>
-                                    <option value="">Seleccione orden</option>
-                                    <option th:each="orden : ${ordenes}"
-                                            th:if="${orden.estadoOrden == 'AUTORIZADA' or orden.estadoOrden == 'CON_GUIA'}"
-                                            th:value="${orden.idOrdenCompra}"
-                                            th:text="${'OC-' + orden.idOrdenCompra + ' | ' + orden.estadoOrden + ' | ' + orden.proveedor.razonSocial}">
-                                        Orden
-                                    </option>
-                                </select>
-                                <div class="form-text">
-                                    Solo se permiten órdenes autorizadas o con guía.
-                                </div>
-                            </div>
-
-                            <div class="col-md-4">
-                                <label class="form-label">Número comprobante</label>
-                                <input type="text" name="numeroComprobante" class="form-control" placeholder="FAC-F001-000006" required>
-                            </div>
-
-                            <div class="col-md-4">
-                                <label class="form-label">Tipo comprobante</label>
-                                <select name="tipoComprobante" class="form-select" required>
-                                    <option value="FACTURA">FACTURA</option>
-                                    <option value="BOLETA">BOLETA</option>
-                                </select>
-                            </div>
-
-                            <div class="col-md-4">
-                                <label class="form-label">Fecha emisión</label>
-                                <input type="date" name="fechaEmision" class="form-control" required>
-                            </div>
-
-                            <div class="col-md-4">
-                                <label class="form-label">Subtotal</label>
-                                <input type="number" name="subtotal" min="0.01" step="0.01" class="form-control" required>
-                            </div>
-
-                            <div class="col-md-4">
-                                <label class="form-label">IGV</label>
-                                <input type="number" name="igv" min="0" step="0.01" class="form-control" required>
-                            </div>
-
-                            <div class="col-md-4">
-                                <label class="form-label">Estado inicial</label>
-                                <input type="text" value="REGISTRADO" class="form-control" readonly>
-                            </div>
-
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold small text-muted">Tipo Documento <span class="text-danger">*</span></label>
+                            <select name="tipoComprobante" class="form-select bg-light" required>
+                                <option value="FACTURA">Factura</option>
+                                <option value="BOLETA">Boleta de Venta</option>
+                                <option value="RECIBO">Recibo por Honorarios</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold small text-muted">N° de Comprobante <span class="text-danger">*</span></label>
+                            <input type="text" name="numeroComprobante" class="form-control" placeholder="Ej: F001-000456" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold small text-muted">Fecha Emisión <span class="text-danger">*</span></label>
+                            <input type="date" name="fechaEmision" class="form-control bg-light" required>
                         </div>
                     </div>
-                </div>
 
-                <div class="card card-stat">
-                    <div class="card-body d-flex justify-content-end gap-2">
-                        <a th:href="@{/farmacia/compras/cobranza/comprobantes}" class="btn btn-outline-secondary">
-                            Cancelar
-                        </a>
+                    <h5 class="fw-bold text-dark mb-4 border-bottom pb-2 mt-4"><i class="bi bi-calculator me-2"></i>Montos Autocalculados</h5>
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold small text-muted">Subtotal (S/)</label>
+                            <input type="number" step="0.01" name="subtotal" th:value="${comprobante.subtotal}" class="form-control bg-light text-end" readonly>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold small text-muted">I.G.V. (18%)</label>
+                            <input type="number" step="0.01" name="igv" th:value="${comprobante.igv}" class="form-control bg-light text-end" readonly>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold small text-dark">Monto Total a Pagar</label>
+                            <input type="number" step="0.01" th:value="${comprobante.total}" class="form-control bg-success text-white fw-bold fs-5 text-end" readonly>
+                        </div>
+                    </div>
 
-                        <button type="submit" class="btn btn-primary">
-                            Registrar comprobante
+                    <div class="d-grid mt-5">
+                        <button type="submit" class="btn btn-dark btn-lg shadow-sm fw-bold">
+                            <i class="bi bi-save me-2"></i> Registrar Comprobante
                         </button>
                     </div>
-                </div>
-
-            </form>
-
-        </main>
+                </form>
+            </div>
+        </div>
     </div>
+
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

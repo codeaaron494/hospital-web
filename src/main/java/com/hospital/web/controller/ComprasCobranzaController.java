@@ -1,5 +1,6 @@
 package com.hospital.web.controller;
 
+import com.hospital.web.entity.ComprobantePago;
 import com.hospital.web.repository.UsuarioRepository;
 import com.hospital.web.service.ComprobantePagoService;
 import com.hospital.web.service.OrdenCompraService;
@@ -54,10 +55,47 @@ public class ComprasCobranzaController {
         return "farmacia/compras/cobranza/comprobantes";
     }
 
+    // --- METODO MODIFICADO PARA CAPTURAR LA ORDEN Y AUTOCALCULAR ---
     @GetMapping("/comprobantes/nuevo")
-    public String nuevoComprobante(Model model) {
-        model.addAttribute("ordenes", ordenCompraService.listarTodas());
-        return "farmacia/compras/cobranza/comprobante-form";
+    public String nuevoComprobante(
+            @RequestParam(required = false) Integer idOrden,
+            Model model,
+            RedirectAttributes redirectAttributes
+    ) {
+        if (idOrden == null) {
+            model.addAttribute("ordenes", ordenCompraService.listarTodas());
+            return "farmacia/compras/cobranza/comprobante-form";
+        } else {
+            return ordenCompraService.buscarPorId(idOrden).map(orden -> {
+                ComprobantePago comprobante = new ComprobantePago();
+                comprobante.setOrdenCompra(orden);
+
+                // Autocalcular usando los detalles de la orden
+                var detalles = ordenCompraService.listarDetalle(idOrden);
+                BigDecimal subtotal = BigDecimal.ZERO;
+                for (var det : detalles) {
+                    if (det.getSubtotal() != null) {
+                        subtotal = subtotal.add(det.getSubtotal());
+                    }
+                }
+                
+                BigDecimal igv = subtotal.multiply(new BigDecimal("0.18"));
+                BigDecimal total = subtotal.add(igv);
+
+                comprobante.setSubtotal(subtotal);
+                comprobante.setIgv(igv);
+                comprobante.setTotal(total);
+
+                model.addAttribute("orden", orden);
+                model.addAttribute("comprobante", comprobante);
+                
+                return "farmacia/compras/cobranza/comprobante-form";
+                
+            }).orElseGet(() -> {
+                redirectAttributes.addFlashAttribute("error", "La orden de compra no existe.");
+                return "redirect:/farmacia/compras/cobranza/comprobantes/nuevo";
+            });
+        }
     }
 
     @PostMapping("/comprobantes/guardar")

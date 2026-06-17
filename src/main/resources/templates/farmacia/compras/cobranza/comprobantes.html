@@ -1,137 +1,138 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Comprobantes de Pago | Cobranza</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" th:href="@{/css/app.css}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consultar Comprobantes | Finanzas</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 </head>
-<body>
+<body class="bg-light">
 
-<div class="container-fluid">
-    <div class="row">
-
-        <aside class="col-md-3 col-lg-2 sidebar p-3">
-            <h4 class="text-white mb-4">Cobranza</h4>
-
-            <nav class="nav flex-column">
-                <a class="nav-link" th:href="@{/farmacia/compras/cobranza/dashboard}">Dashboard</a>
-                <a class="nav-link" th:href="@{/farmacia/compras/cobranza/comprobantes/nuevo}">Registrar comprobante de pago</a>
-                <a class="nav-link" th:href="@{/farmacia/compras/cobranza/comprobantes}">Consultar comprobante de pago</a>
-                <a class="nav-link" th:href="@{/farmacia/compras/cobranza/comprobantes?estado=REGISTRADO}">Pagar comprobante</a>
-                <a class="nav-link" th:href="@{/farmacia/compras/cobranza/comprobantes?estado=REGISTRADO}">Anular comprobante</a>
-
-                <hr class="text-white">
-
-                <a class="nav-link" th:href="@{/logout}">Cerrar sesión</a>
-            </nav>
-        </aside>
-
-        <main class="col-md-9 col-lg-10 content-wrapper">
-
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <div>
-                    <h1 class="page-title">Comprobantes de Pago</h1>
-                    <p class="text-muted">
-                        Consulta de comprobantes registrados por órdenes de compra.
-                    </p>
-                </div>
-
-                <a th:href="@{/farmacia/compras/cobranza/comprobantes/nuevo}" class="btn btn-primary">
-                    Registrar comprobante
-                </a>
-            </div>
-
-            <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
-            <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
-
-            <div class="card card-stat mb-4">
-                <div class="card-body">
-                    <h5 class="mb-3">Filtrar comprobantes</h5>
-
-                    <form th:action="@{/farmacia/compras/cobranza/comprobantes}" method="get" class="row g-3">
-                        <div class="col-md-8">
-                            <label class="form-label">Estado</label>
-                            <select name="estado" class="form-select">
-                                <option value="">Todos</option>
-                                <option value="REGISTRADO" th:selected="${estadoBuscado == 'REGISTRADO'}">REGISTRADO</option>
-                                <option value="PAGADO" th:selected="${estadoBuscado == 'PAGADO'}">PAGADO</option>
-                                <option value="ANULADO" th:selected="${estadoBuscado == 'ANULADO'}">ANULADO</option>
-                            </select>
-                        </div>
-
-                        <div class="col-md-4 d-flex align-items-end">
-                            <button type="submit" class="btn btn-outline-primary w-100">
-                                Filtrar
-                            </button>
-                        </div>
-                    </form>
-
-                    <div class="mt-3">
-                        <a th:href="@{/farmacia/compras/cobranza/comprobantes}" class="btn btn-outline-secondary btn-sm">
-                            Limpiar filtro
-                        </a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="card card-stat">
-                <div class="card-body">
-                    <h5 class="mb-3">Comprobantes registrados</h5>
-
-                    <div th:if="${#lists.isEmpty(comprobantes)}" class="alert alert-warning">
-                        No se encontraron comprobantes.
-                    </div>
-
-                    <div class="table-responsive" th:if="${!#lists.isEmpty(comprobantes)}">
-                        <table class="table table-hover align-middle">
-                            <thead>
-                            <tr>
-                                <th>Código</th>
-                                <th>Número</th>
-                                <th>Tipo</th>
-                                <th>Orden</th>
-                                <th>Proveedor</th>
-                                <th>Fecha</th>
-                                <th>Total</th>
-                                <th>Estado</th>
-                                <th class="text-end">Acción</th>
-                            </tr>
-                            </thead>
-
-                            <tbody>
-                            <tr th:each="comprobante : ${comprobantes}">
-                                <td th:text="${'CP-' + comprobante.idComprobantePago}">CP-1</td>
-                                <td th:text="${comprobante.numeroComprobante}">FAC-F001-000001</td>
-                                <td th:text="${comprobante.tipoComprobante}">FACTURA</td>
-                                <td th:text="${'OC-' + comprobante.ordenCompra.idOrdenCompra}">OC-1</td>
-                                <td th:text="${comprobante.ordenCompra.proveedor.razonSocial}">Proveedor</td>
-                                <td th:text="${#temporals.format(comprobante.fechaEmision, 'dd/MM/yyyy')}">25/05/2026</td>
-                                <td th:text="${comprobante.total}">317.42</td>
-                                <td>
-                                    <span class="badge bg-secondary" th:text="${comprobante.estadoComprobante}">
-                                        REGISTRADO
-                                    </span>
-                                </td>
-                                <td class="text-end">
-                                    <a th:href="@{/farmacia/compras/cobranza/comprobantes/{id}(id=${comprobante.idComprobantePago})}"
-                                       class="btn btn-sm btn-primary">
-                                        Ver
-                                    </a>
-                                </td>
-                            </tr>
-                            </tbody>
-                        </table>
-                    </div>
-
-                </div>
-            </div>
-
-        </main>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm mb-4">
+    <div class="container">
+        <a class="navbar-brand fw-bold" href="/farmacia/compras/cobranza/dashboard"><i class="bi bi-wallet2 me-1"></i> Área de Facturación y Cobranza</a>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item"><a class="nav-link" href="/farmacia/compras/cobranza/dashboard">Panel</a></li>
+                <li class="nav-item"><a class="nav-link" href="/farmacia/compras/cobranza/comprobantes/nuevo">Emitir Comprobante</a></li>
+                <li class="nav-item"><a class="nav-link active" href="/farmacia/compras/cobranza/comprobantes">Consultar Comprobantes</a></li>
+            </ul>
+        </div>
     </div>
-</div>
+</nav>
 
+<div class="container mt-4 mb-5">
+    
+    <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
+        <div>
+            <h1 class="h3 mb-0 text-dark fw-bold"><i class="bi bi-list-columns-reverse me-2"></i>Consultar Comprobantes</h1>
+            <p class="text-muted mb-0 mt-1">Gestione el pago o anulación de las facturas registradas en el sistema.</p>
+        </div>
+        <a href="/farmacia/compras/cobranza/dashboard" class="btn btn-outline-secondary shadow-sm"><i class="bi bi-arrow-left me-1"></i> Volver al Panel</a>
+    </div>
+
+    <div th:if="${success}" class="alert alert-success alert-dismissible fade show shadow-sm"><i class="bi bi-check-circle me-2"></i><span th:text="${success}"></span><button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
+    <div th:if="${error}" class="alert alert-danger alert-dismissible fade show shadow-sm"><i class="bi bi-exclamation-triangle me-2"></i><span th:text="${error}"></span><button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
+
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-5 border-top border-dark border-4">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="px-4 py-3 border-0 text-secondary">Documento</th>
+                            <th class="border-0 text-secondary">O.C. Relacionada</th>
+                            <th class="border-0 text-secondary">Fecha Emisión</th>
+                            <th class="border-0 text-secondary text-end">Monto Total</th>
+                            <th class="text-center border-0 text-secondary">Estado</th>
+                            <th class="text-end px-4 border-0 text-secondary">Acción Rápida</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="c : ${comprobantes}">
+                            <td class="px-4 fw-bold text-dark">
+                                [[${c.tipoComprobante}]] <br><span class="fw-normal text-muted">N° [[${c.numeroComprobante}]]</span>
+                            </td>
+                            <td><span class="badge bg-light text-dark border">OC-[[${c.ordenCompra.idOrdenCompra}]]</span></td>
+                            <td th:text="${#temporals.format(c.fechaEmision, 'dd/MM/yyyy')}"></td>
+                            <td class="text-end fw-bold text-success fs-6">S/ [[${#numbers.formatDecimal(c.total, 1, 2)}]]</td>
+                            <td class="text-center">
+                                <span class="badge rounded-pill shadow-sm px-3 py-2"
+                                      th:classappend="${c.estadoComprobante == 'EMITIDO' ? 'bg-warning text-dark' : (c.estadoComprobante == 'PAGADO' ? 'bg-success' : 'bg-danger')}">
+                                    [[${c.estadoComprobante}]]
+                                </span>
+                            </td>
+                            <td class="text-end px-4">
+                                <div class="d-flex justify-content-end gap-1" th:if="${c.estadoComprobante == 'EMITIDO'}">
+                                    <button type="button" class="btn btn-sm btn-success shadow-sm" data-bs-toggle="modal" th:attr="data-bs-target='#modalPagar' + ${c.idComprobantePago}" title="Pagar">
+                                        <i class="bi bi-currency-dollar"></i> Pagar
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-danger shadow-sm" data-bs-toggle="modal" th:attr="data-bs-target='#modalAnular' + ${c.idComprobantePago}" title="Anular">
+                                        <i class="bi bi-x-circle"></i> Anular
+                                    </button>
+                                    <a th:href="@{/farmacia/compras/cobranza/comprobantes/{id}(id=${c.idComprobantePago})}" class="btn btn-sm btn-outline-dark shadow-sm" title="Detalle"><i class="bi bi-eye"></i></a>
+                                </div>
+                                <div th:if="${c.estadoComprobante != 'EMITIDO'}">
+                                    <a th:href="@{/farmacia/compras/cobranza/comprobantes/{id}(id=${c.idComprobantePago})}" class="btn btn-sm btn-outline-dark shadow-sm">
+                                        <i class="bi bi-eye me-1"></i> Ver Detalle
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(comprobantes)}"><td colspan="6" class="text-center text-muted py-5">No hay comprobantes registrados.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <th:block th:each="c : ${comprobantes}">
+        <th:block th:if="${c.estadoComprobante == 'EMITIDO'}">
+            <div class="modal fade" th:id="'modalPagar' + ${c.idComprobantePago}" tabindex="-1">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content rounded-4 border-0 shadow">
+                        <form th:action="@{/farmacia/compras/cobranza/comprobantes/{id}/pagar(id=${c.idComprobantePago})}" method="post">
+                            <div class="modal-header border-bottom-0 bg-success bg-opacity-10 text-success pt-4 px-4">
+                                <h5 class="modal-title fw-bold"><i class="bi bi-cash me-2"></i>Efectuar Pago</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body px-4 py-4 text-center">
+                                <p>¿Confirma la transferencia de <strong>S/ [[${#numbers.formatDecimal(c.total, 1, 2)}]]</strong> al proveedor?</p>
+                                <span class="badge bg-light text-dark fs-6 mt-2 border">[[${c.tipoComprobante}]] N° [[${c.numeroComprobante}]]</span>
+                            </div>
+                            <div class="modal-footer border-top-0 px-4 pb-4 justify-content-center">
+                                <button type="button" class="btn btn-light shadow-sm px-4" data-bs-dismiss="modal">Cancelar</button>
+                                <button type="submit" class="btn btn-success shadow-sm px-4 fw-bold">Sí, Pagar Factura</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal fade" th:id="'modalAnular' + ${c.idComprobantePago}" tabindex="-1">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content rounded-4 border-0 shadow">
+                        <form th:action="@{/farmacia/compras/cobranza/comprobantes/{id}/anular(id=${c.idComprobantePago})}" method="post">
+                            <div class="modal-header border-bottom-0 bg-danger bg-opacity-10 text-danger pt-4 px-4">
+                                <h5 class="modal-title fw-bold"><i class="bi bi-x-circle me-2"></i>Anular Documento</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body px-4 py-4 text-center">
+                                <p>¿Está seguro de que la información fiscal es incorrecta y desea <strong>ANULAR</strong> este registro permanentemente?</p>
+                            </div>
+                            <div class="modal-footer border-top-0 px-4 pb-4 justify-content-center">
+                                <button type="button" class="btn btn-light shadow-sm px-4" data-bs-dismiss="modal">Mantener</button>
+                                <button type="submit" class="btn btn-danger shadow-sm px-4 fw-bold">Anular Registro</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </th:block>
+    </th:block>
+
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
