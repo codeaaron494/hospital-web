@@ -2,98 +2,65 @@
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Suministro de Medicamentos | Técnico</title>
+    <title>Dashboard Técnico Farmacia | Sistema Hospitalario</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <link rel="stylesheet" th:href="@{/css/app.css}">
 </head>
-<body>
+<body class="bg-light">
 
-<div class="container-fluid">
-    <div class="row">
-
-        <aside class="col-md-3 col-lg-2 sidebar p-3">
-            <h4 class="text-white mb-4">Farmacia</h4>
-
-            <nav class="nav flex-column">
-                <a class="nav-link" th:href="@{/farmacia/entregas/dashboard}">Dashboard</a>
-                <a class="nav-link" th:href="@{/farmacia/entregas/recetas}">Consultar recetas médicas</a>
-                <a class="nav-link" th:href="@{/farmacia/entregas/recetas?estado=VIGENTE}">Registrar despacho</a>
-                <a class="nav-link" th:href="@{/farmacia/entregas/despachos}">Consultar despachos</a>
-                <a class="nav-link" th:href="@{/farmacia/entregas/despachos?estado=ATENDIDO}">Despachos atendidos</a>
-                <a class="nav-link" th:href="@{/farmacia/entregas/despachos?estado=SIN_STOCK}">Despachos sin stock</a>
-
-                <hr class="text-white">
-
-                <a class="nav-link" th:href="@{/logout}">Cerrar sesión</a>
-            </nav>
-        </aside>
-
-        <main class="col-md-9 col-lg-10 content-wrapper">
-
-            <h1 class="page-title">Gestión de Suministro de Medicamentos</h1>
-            <p class="text-muted">
-                Consulta de recetas médicas, validación de stock en Kardex y registro de despacho de medicamentos.
-            </p>
-
-            <div class="row g-4 mt-2">
-
-                <div class="col-md-4">
-                    <div class="card card-stat">
-                        <div class="card-body">
-                            <h6 class="text-muted">Recetas médicas</h6>
-                            <h2>RX</h2>
-                            <p class="text-muted mb-3">Consultar recetas pendientes o vigentes.</p>
-                            <a th:href="@{/farmacia/entregas/recetas}" class="btn btn-outline-primary btn-sm">
-                                Consultar recetas
-                            </a>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-md-4">
-                    <div class="card card-stat">
-                        <div class="card-body">
-                            <h6 class="text-muted">Despacho</h6>
-                            <h2>MED</h2>
-                            <p class="text-muted mb-3">Validar stock y entregar medicamentos.</p>
-                            <a th:href="@{/farmacia/entregas/recetas?estado=VIGENTE}" class="btn btn-outline-success btn-sm">
-                                Registrar despacho
-                            </a>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-md-4">
-                    <div class="card card-stat">
-                        <div class="card-body">
-                            <h6 class="text-muted">Historial</h6>
-                            <h2>LOG</h2>
-                            <p class="text-muted mb-3">Consultar despachos registrados.</p>
-                            <a th:href="@{/farmacia/entregas/despachos}" class="btn btn-outline-primary btn-sm">
-                                Ver despachos
-                            </a>
-                        </div>
-                    </div>
-                </div>
-
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
+    <div class="container">
+        <a class="navbar-brand fw-bold" th:href="@{/farmacia/entregas/dashboard}">
+            <i class="bi bi-hospital"></i> Área de Farmacia
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/farmacia/entregas/recetas}"><i class="bi bi-file-medical me-1"></i>Recetas</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/farmacia/entregas/despachos}"><i class="bi bi-clock-history me-1"></i>Historial</a>
+                </li>
+            </ul>
+            <div class="d-flex align-items-center">
+                <span class="navbar-text text-white me-3">
+                    <i class="bi bi-person-badge"></i>
+                    Técnico(a). <span th:text="${#authentication.name}">Usuario</span>
+                </span>
+                <form th:action="@{/logout}" method="post" class="m-0">
+                    <button class="btn btn-outline-danger btn-sm text-white border-white hover-danger" type="submit">
+                        <i class="bi bi-box-arrow-right me-1"></i>Cerrar Sesión
+                    </button>
+                </form>
             </div>
+        </div>
+    </div>
+</nav>
 
-            <div class="card mt-4 card-stat">
-                <div class="card-body">
-                    <h5>Flujo del técnico de farmacia</h5>
-                    <p class="text-muted mb-0">
-                        Recibir receta médica → validar receta → validar stock en Kardex → despachar medicamentos
-                        o registrar rechazo/falta de stock → actualizar Kardex automáticamente.
-                    </p>
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-7 text-center">
+            <div class="card border-0 shadow-sm rounded-4 p-5 mt-4">
+                <i class="bi bi-capsule text-primary display-1 mb-3"></i>
+                <h3 class="fw-bold">Panel de Entrega de Medicamentos</h3>
+                <p class="text-muted mb-4">
+                    Bienvenido. Desde aquí podrá consultar las recetas médicas, validar el stock de medicamentos directamente con el Kardex y gestionar los despachos a los pacientes.
+                </p>
+                <div class="d-grid mt-2">
+                    <a th:href="@{/farmacia/entregas/recetas}" class="btn btn-primary text-white btn-lg shadow-sm">
+                        <i class="bi bi-clipboard2-pulse me-2"></i>Registrar Despacho de Medicamentos
+                    </a>
                 </div>
             </div>
-
-        </main>
-
+        </div>
     </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

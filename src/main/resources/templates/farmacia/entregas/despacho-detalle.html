@@ -2,151 +2,138 @@
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Detalle Despacho | Suministro</title>
+    <title>Detalle Despacho | Sistema Hospitalario</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <link rel="stylesheet" th:href="@{/css/app.css}">
 </head>
-<body>
+<body class="bg-light">
 
-<div class="container-fluid">
-    <div class="row">
-
-        <aside class="col-md-3 col-lg-2 sidebar p-3">
-            <h4 class="text-white mb-4">Farmacia</h4>
-
-            <nav class="nav flex-column">
-                <a class="nav-link" th:href="@{/farmacia/entregas/dashboard}">Dashboard</a>
-                <a class="nav-link" th:href="@{/farmacia/entregas/recetas}">Consultar recetas médicas</a>
-                <a class="nav-link" th:href="@{/farmacia/entregas/recetas?estado=VIGENTE}">Registrar despacho</a>
-                <a class="nav-link" th:href="@{/farmacia/entregas/despachos}">Consultar despachos</a>
-                <a class="nav-link" th:href="@{/farmacia/entregas/despachos?estado=ATENDIDO}">Despachos atendidos</a>
-                <a class="nav-link" th:href="@{/farmacia/entregas/despachos?estado=SIN_STOCK}">Despachos sin stock</a>
-
-                <hr class="text-white">
-
-                <a class="nav-link" th:href="@{/logout}">Cerrar sesión</a>
-            </nav>
-        </aside>
-
-        <main class="col-md-9 col-lg-10 content-wrapper">
-
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <div>
-                    <h1 class="page-title">Detalle de Despacho</h1>
-                    <p class="text-muted">
-                        Consulta del despacho de medicamentos y resultado de entrega.
-                    </p>
-                </div>
-
-                <a th:href="@{/farmacia/entregas/despachos}" class="btn btn-outline-secondary">
-                    Volver a despachos
-                </a>
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
+    <div class="container">
+        <a class="navbar-brand fw-bold" th:href="@{/farmacia/entregas/dashboard}">
+            <i class="bi bi-hospital"></i> Área de Farmacia
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/farmacia/entregas/recetas}"><i class="bi bi-file-medical me-1"></i>Recetas</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active fw-semibold" th:href="@{/farmacia/entregas/despachos}"><i class="bi bi-clock-history me-1"></i>Historial</a>
+                </li>
+            </ul>
+            <div class="d-flex align-items-center">
+                <span class="navbar-text text-white me-3">
+                    <i class="bi bi-person-badge"></i> Técnico(a). <span th:text="${#authentication.name}">Usuario</span>
+                </span>
+                <form th:action="@{/logout}" method="post" class="m-0">
+                    <button class="btn btn-outline-danger btn-sm text-white border-white hover-danger" type="submit">
+                        <i class="bi bi-box-arrow-right me-1"></i>Cerrar
+                    </button>
+                </form>
             </div>
+        </div>
+    </div>
+</nav>
 
-            <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
-            <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold mb-0 text-dark"><i class="bi bi-file-earmark-text me-2 text-primary"></i>Detalle de Despacho</h2>
+            <p class="text-muted mb-0">Consulta del registro histórico de la atención farmacéutica.</p>
+        </div>
+        <a th:href="@{/farmacia/entregas/despachos}" class="btn btn-outline-secondary shadow-sm">
+            <i class="bi bi-arrow-left me-1"></i> Volver al Historial
+        </a>
+    </div>
 
-            <div class="card card-stat mb-4">
-                <div class="card-body">
-                    <h5 class="mb-3">Datos del despacho</h5>
+    <div class="alert shadow-sm border-0 d-flex align-items-center mb-4" 
+         th:classappend="${despacho.estadoDespacho == 'ATENDIDO' ? 'alert-success' : (despacho.estadoDespacho == 'SIN_STOCK' ? 'alert-warning' : 'alert-danger')}">
+        <i class="bi fs-4 me-3" 
+           th:classappend="${despacho.estadoDespacho == 'ATENDIDO' ? 'bi-check-circle-fill text-success' : (despacho.estadoDespacho == 'SIN_STOCK' ? 'bi-exclamation-triangle-fill text-warning' : 'bi-x-octagon-fill text-danger')}"></i>
+        <div>
+            <h5 class="mb-1 fw-bold">Estado: <span th:text="${despacho.estadoDespacho}"></span></h5>
+            <span th:if="${despacho.estadoDespacho == 'ATENDIDO'}">Despacho procesado con éxito. Se actualizó el Kardex automáticamente.</span>
+            <span th:if="${despacho.estadoDespacho == 'SIN_STOCK'}">Despacho catalogado sin stock. El inventario en Kardex se mantuvo intacto.</span>
+            <span th:if="${despacho.estadoDespacho == 'RECHAZADO'}">Despacho rechazado por el personal de farmacia. No se alteró el inventario.</span>
+        </div>
+    </div>
 
-                    <div class="row g-3">
-                        <div class="col-md-3">
-                            <label class="form-label">Código despacho</label>
-                            <input class="form-control" th:value="${'DSP-' + despacho.idDespachoMedicamento}" readonly>
-                        </div>
-
-                        <div class="col-md-3">
-                            <label class="form-label">Receta médica</label>
-                            <input class="form-control" th:value="${'REC-' + despacho.recetaMedica.idReceta}" readonly>
-                        </div>
-
-                        <div class="col-md-3">
-                            <label class="form-label">Fecha despacho</label>
-                            <input class="form-control"
-                                   th:value="${#temporals.format(despacho.fechaDespacho, 'dd/MM/yyyy HH:mm')}"
-                                   readonly>
-                        </div>
-
-                        <div class="col-md-3">
-                            <label class="form-label">Estado despacho</label>
-                            <input class="form-control" th:value="${despacho.estadoDespacho}" readonly>
-                        </div>
-
-                        <div class="col-md-4">
-                            <label class="form-label">Técnico responsable</label>
-                            <input class="form-control" th:value="${despacho.usuarioTecnico.username}" readonly>
-                        </div>
-
-                        <div class="col-md-8">
-                            <label class="form-label">Observación</label>
-                            <input class="form-control" th:value="${despacho.observacion}" readonly>
-                        </div>
-                    </div>
+    <div class="card border-0 shadow-sm rounded-4 mb-4">
+        <div class="card-header bg-white border-bottom-0 pt-4 pb-0 px-4">
+            <h5 class="fw-bold"><i class="bi bi-info-square me-2 text-primary"></i>Información General</h5>
+        </div>
+        <div class="card-body p-4">
+            <div class="row g-3">
+                <div class="col-md-3">
+                    <label class="form-label text-muted small fw-semibold">Código Despacho</label>
+                    <div class="fw-bold fs-5 text-dark" th:text="${'DSP-' + despacho.idDespachoMedicamento}">DSP-1</div>
                 </div>
-            </div>
-
-            <div class="card card-stat">
-                <div class="card-body">
-                    <h5 class="mb-3">Medicamentos del despacho</h5>
-
-                    <div th:if="${#lists.isEmpty(detalles)}" class="alert alert-warning">
-                        Este despacho no tiene detalle registrado.
-                    </div>
-
-                    <div class="table-responsive" th:if="${!#lists.isEmpty(detalles)}">
-                        <table class="table table-hover align-middle">
-                            <thead>
-                            <tr>
-                                <th>Medicamento</th>
-                                <th>Concentración</th>
-                                <th>Presentación</th>
-                                <th>Cantidad recetada</th>
-                                <th>Cantidad entregada</th>
-                                <th>Estado detalle</th>
-                                <th>Observación</th>
-                            </tr>
-                            </thead>
-
-                            <tbody>
-                            <tr th:each="detalle : ${detalles}">
-                                <td th:text="${detalle.medicamento.nombreCompleto}">Medicamento</td>
-                                <td th:text="${detalle.medicamento.concentracion}">500 mg</td>
-                                <td th:text="${detalle.medicamento.presentacion}">Tabletas</td>
-                                <td th:text="${detalle.cantidadRecetada}">10</td>
-                                <td th:text="${detalle.cantidadEntregada}">10</td>
-                                <td>
-                                    <span class="badge bg-secondary" th:text="${detalle.estadoDetalle}">
-                                        ENTREGADO
-                                    </span>
-                                </td>
-                                <td th:text="${detalle.observacion}">Medicamento entregado según receta.</td>
-                            </tr>
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <div class="alert alert-success mt-3" th:if="${despacho.estadoDespacho == 'ATENDIDO'}">
-                        El despacho fue atendido correctamente. El stock fue descontado automáticamente del Kardex.
-                    </div>
-
-                    <div class="alert alert-warning mt-3" th:if="${despacho.estadoDespacho == 'SIN_STOCK'}">
-                        El despacho fue registrado como sin stock. No se descontó inventario.
-                    </div>
-
-                    <div class="alert alert-danger mt-3" th:if="${despacho.estadoDespacho == 'RECHAZADO'}">
-                        El despacho fue rechazado por receta no conforme. No se descontó inventario.
-                    </div>
-
+                <div class="col-md-3">
+                    <label class="form-label text-muted small fw-semibold">Receta de Origen</label>
+                    <div class="fw-semibold text-primary" th:text="${'REC-' + despacho.recetaMedica.idReceta}">REC-1</div>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label text-muted small fw-semibold">Fecha Registro</label>
+                    <div class="text-dark" th:text="${#temporals.format(despacho.fechaDespacho, 'dd/MM/yyyy HH:mm')}">Fecha</div>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label text-muted small fw-semibold">Técnico Responsable</label>
+                    <div class="text-dark"><i class="bi bi-person me-1"></i> <span th:text="${despacho.usuarioTecnico.username}"></span></div>
+                </div>
+                <div class="col-md-12 mt-3">
+                    <label class="form-label text-muted small fw-semibold">Observaciones del Despacho</label>
+                    <div class="p-3 bg-light rounded-3 text-dark fst-italic" th:text="${despacho.observacion != null and !despacho.observacion.isBlank() ? despacho.observacion : 'Sin observaciones registradas.'}"></div>
                 </div>
             </div>
+        </div>
+    </div>
 
-        </main>
+    <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-header bg-white border-bottom-0 pt-4 pb-0 px-4">
+            <h5 class="fw-bold"><i class="bi bi-box2-heart me-2 text-primary"></i>Detalle de Medicamentos</h5>
+        </div>
+        <div class="card-body p-0">
+            <div th:if="${#lists.isEmpty(detalles)}" class="alert alert-secondary mx-4 mt-2 mb-4 text-center">
+                <i class="bi bi-info-circle me-1"></i> No se registraron entregas de medicamentos asociadas a este despacho.
+            </div>
 
+            <div class="table-responsive" th:if="${!#lists.isEmpty(detalles)}">
+                <table class="table table-hover align-middle mb-0 mt-3">
+                    <thead class="table-light">
+                    <tr>
+                        <th class="ps-4">Medicamento</th>
+                        <th class="text-center">Cant. Recetada</th>
+                        <th class="text-center">Cant. Entregada</th>
+                        <th>Estado de Fila</th>
+                        <th class="pe-4">Anotación</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="detalle : ${detalles}">
+                        <td class="ps-4">
+                            <div class="fw-bold text-dark" th:text="${detalle.medicamento.nombreCompleto}">Paracetamol</div>
+                            <div class="small text-muted"><span th:text="${detalle.medicamento.concentracion}"></span> - <span th:text="${detalle.medicamento.presentacion}"></span></div>
+                        </td>
+                        <td class="text-center fw-semibold text-muted" th:text="${detalle.cantidadRecetada}">10</td>
+                        <td class="text-center fw-bold text-primary fs-5" th:text="${detalle.cantidadEntregada}">10</td>
+                        <td>
+                            <span class="badge bg-secondary" th:text="${detalle.estadoDetalle}">ENTREGADO</span>
+                        </td>
+                        <td class="pe-4 small text-muted fst-italic" th:text="${detalle.observacion}">Obs</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

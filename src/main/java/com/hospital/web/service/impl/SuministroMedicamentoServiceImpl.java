@@ -197,6 +197,11 @@ public class SuministroMedicamentoServiceImpl implements SuministroMedicamentoSe
 
         DespachoMedicamento despachoGuardado = despachoMedicamentoRepository.save(despacho);
 
+        // --- FIX APLICADO AQUÍ: SE ACTUALIZA EL ESTADO DE LA RECETA ---
+        receta.setEstadoReceta("ATENDIDA");
+        recetaMedicaRepository.save(receta);
+        // --------------------------------------------------------------
+
         for (DetalleReceta detalle : detalles) {
             Kardex kardex = kardexRepository
                     .findByMedicamentoIdMedicamento(detalle.getMedicamento().getIdMedicamento())
@@ -261,6 +266,11 @@ public class SuministroMedicamentoServiceImpl implements SuministroMedicamentoSe
         despacho.setUsuarioTecnico(tecnico);
 
         DespachoMedicamento despachoGuardado = despachoMedicamentoRepository.save(despacho);
+
+        // --- FIX APLICADO AQUÍ: SE ACTUALIZA EL ESTADO DE LA RECETA ---
+        receta.setEstadoReceta("ANULADA"); 
+        recetaMedicaRepository.save(receta);
+        // --------------------------------------------------------------
 
         for (DetalleReceta detalle : detalles) {
             DetalleDespachoMedicamento detalleDespacho = new DetalleDespachoMedicamento();
